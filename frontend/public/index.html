@@ -1,884 +1,680 @@
 <!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>MarketMaster Academy — Next-Gen Institutional Replay Terminal</title>
+  
+  <!-- Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  
+  <!-- Material Symbols Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MarketMaster Academy — Institutional Replay Terminal</title>
-<!-- Material Symbols Outlined -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Fonts: Inter & JetBrains Mono -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
+  <!-- Tailwind CSS v3/v4 Runtime -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- TradingView Lightweight Charts (v4.2.1 Standalone Production Canvas Engine) -->
+  <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js"></script>
+
+  <script>
     tailwind.config = {
       darkMode: "class",
       theme: {
         extend: {
-          "colors": {
-            "inverse-on-surface": "#2c3039",
-            "on-primary-fixed": "#001f26",
-            "primary-fixed": "#acedff",
-            "error-container": "#93000a",
-            "on-tertiary-fixed-variant": "#92002a",
-            "secondary": "#4edea3",
-            "on-primary-container": "#00424f",
-            "surface-container-lowest": "#0a0e16",
-            "primary": "#4cd7f6",
-            "primary-container": "#06b6d4",
-            "surface-dim": "#0f131c",
-            "on-error-container": "#ffdad6",
-            "on-primary": "#003640",
-            "on-primary-fixed-variant": "#004e5c",
-            "tertiary-container": "#ff7f8b",
-            "secondary-fixed-dim": "#4edea3",
-            "tertiary": "#ffb2b7",
-            "on-background": "#dfe2ee",
-            "outline": "#869397",
-            "surface-container-low": "#181c24",
-            "tertiary-fixed-dim": "#ffb2b7",
-            "on-tertiary": "#67001b",
-            "surface-container-high": "#262a33",
-            "surface-container-highest": "#31353e",
-            "on-secondary-fixed-variant": "#005236",
-            "primary-fixed-dim": "#4cd7f6",
-            "on-tertiary-container": "#7d0023",
-            "on-surface": "#dfe2ee",
-            "surface-container": "#1c2028",
-            "inverse-surface": "#dfe2ee",
-            "secondary-fixed": "#6ffbbe",
-            "tertiary-fixed": "#ffdadb",
-            "error": "#ffb4ab",
-            "on-secondary": "#003824",
-            "outline-variant": "#3d494c",
-            "on-secondary-container": "#00311f",
-            "on-error": "#690005",
-            "secondary-container": "#00a572",
-            "surface-tint": "#4cd7f6",
-            "surface-bright": "#353942",
-            "on-tertiary-fixed": "#40000d",
-            "background": "#0f131c",
-            "inverse-primary": "#00687a",
-            "on-surface-variant": "#bcc9cd",
-            "surface-variant": "#31353e",
-            "on-secondary-fixed": "#002113",
-            "surface": "#0f131c"
+          colors: {
+            obsidian: "#080C14",
+            slateSurface: "#0E131F",
+            slateBorder: "#1E293B",
+            terminalCyan: "#06B6D4",
+            terminalEmerald: "#10B981",
+            terminalRose: "#F43F5E",
+            terminalAmber: "#F59E0B"
           },
-          "borderRadius": {
-            "DEFAULT": "0.125rem",
-            "lg": "0.25rem",
-            "xl": "0.5rem",
-            "full": "0.75rem"
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
           },
-          "spacing": {
-            "space-xl": "1.5rem",
-            "space-xs": "0.25rem",
-            "space-sm": "0.5rem",
-            "margin": "0.75rem",
-            "gutter": "0.5rem",
-            "gutter-mobile": "0.25rem",
-            "space-md": "0.75rem",
-            "space-lg": "1rem",
-            "margin-mobile": "0.5rem"
+          animation: {
+            "border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
+            "shimmer": "shimmer 2s linear infinite",
+            "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite"
           },
-          "fontFamily": {
-            "body-lg": ["Inter"],
-            "data-mono-xs": ["JetBrains Mono"],
-            "data-mono-lg": ["JetBrains Mono"],
-            "body-md": ["Inter"],
-            "label-caps": ["JetBrains Mono"],
-            "body-sm": ["Inter"],
-            "data-mono-sm": ["JetBrains Mono"],
-            "display-lg": ["Inter"],
-            "data-mono-md": ["JetBrains Mono"],
-            "headline-sm": ["Inter"],
-            "headline-lg": ["Inter"],
-            "headline-md": ["Inter"]
-          },
-          "fontSize": {
-            "body-lg": ["1rem", { "lineHeight": "1.5rem", "letterSpacing": "0em", "fontWeight": "400" }],
-            "data-mono-xs": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.02em", "fontWeight": "400" }],
-            "data-mono-lg": ["1.25rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.02em", "fontWeight": "600" }],
-            "body-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0em", "fontWeight": "400" }],
-            "label-caps": ["0.625rem", { "lineHeight": "0.75rem", "letterSpacing": "0.08em", "fontWeight": "600" }],
-            "body-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.01em", "fontWeight": "400" }],
-            "data-mono-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0em", "fontWeight": "500" }],
-            "display-lg": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.025em", "fontWeight": "700" }],
-            "data-mono-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "-0.01em", "fontWeight": "500" }],
-            "headline-sm": ["1rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-            "headline-lg": ["1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.02em", "fontWeight": "600" }],
-            "headline-md": ["1.25rem", { "lineHeight": "1.75rem", "letterSpacing": "-0.015em", "fontWeight": "600" }]
+          keyframes: {
+            "border-beam": {
+              "100%": { "offset-distance": "100%" }
+            },
+            "shimmer": {
+              "from": { "backgroundPosition": "0 0" },
+              "to": { "backgroundPosition": "-200% 0" }
+            }
           }
         }
       }
-    }
+    };
   </script>
-<style>
-    /* Custom terminal scrollbars */
-    ::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
+
+  <style>
+    /* Institutional Terminal Scrollbars */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #080C14; }
+    ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+    /* Magic UI Glassmorphism & Cyber Grid */
+    .cyber-grid {
+      background-size: 32px 32px;
+      background-image: linear-gradient(to right, rgba(30, 41, 59, 0.25) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(30, 41, 59, 0.25) 1px, transparent 1px);
     }
-    ::-webkit-scrollbar-track {
-      background: #0a0e16;
+    .glass-card {
+      background: rgba(14, 19, 31, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(30, 41, 59, 0.8);
     }
-    ::-webkit-scrollbar-thumb {
-      background: #3d494c;
-      border-radius: 2px;
+    .glow-cyan-card {
+      box-shadow: 0 0 24px -6px rgba(6, 182, 212, 0.2);
     }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #869397;
+    .shimmer-btn-emerald {
+      background: linear-gradient(110deg, #10B981 45%, #6EE7B7 55%, #10B981);
+      background-size: 200% 100%;
     }
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
-      display: inline-block;
-      vertical-align: middle;
-      line-height: 1;
-    }
-    .glow-cyan {
-      box-shadow: 0 0 12px rgba(76, 215, 246, 0.25);
-    }
-    .glow-emerald {
-      box-shadow: 0 0 12px rgba(78, 222, 163, 0.25);
-    }
-    .depth-bar-bid {
-      background: linear-gradient(90deg, rgba(78, 222, 163, 0.18) 0%, rgba(78, 222, 163, 0.02) 100%);
-    }
-    .depth-bar-ask {
-      background: linear-gradient(90deg, rgba(255, 178, 183, 0.18) 0%, rgba(255, 178, 183, 0.02) 100%);
+    .shimmer-btn-rose {
+      background: linear-gradient(110deg, #F43F5E 45%, #FDA4AF 55%, #F43F5E);
+      background-size: 200% 100%;
     }
   </style>
 </head>
-<body class="bg-background text-on-surface antialiased overflow-hidden h-screen w-screen flex flex-col font-body-sm select-none">
-<!-- TOP NAVIGATION BAR (Docked full-width, JSON style mapped) -->
-<header class="bg-surface-container-low text-primary docked full-width top-0 h-12 border-b border-outline-variant shadow-sm flex justify-between items-center w-full px-space-md shrink-0 z-50">
-<!-- Brand / Level Gamification Cluster -->
-<div class="flex items-center gap-space-md">
-<div class="flex items-center gap-space-xs">
-<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-<span class="text-headline-sm font-headline-sm font-bold tracking-tight text-primary">MarketMaster Academy</span>
-</div>
-<span class="bg-surface-container-high px-space-xs py-0.5 rounded text-label-caps font-label-caps text-on-surface-variant border border-outline-variant">
-        TERMINAL PRO v4.2
-      </span>
-<div class="hidden xl:flex items-center gap-space-xs bg-surface-container px-space-sm py-1 rounded border border-outline-variant">
-<span class="material-symbols-outlined text-primary text-base">military_tech</span>
-<span class="text-label-caps font-label-caps text-secondary font-semibold">Options Architect Lv.3</span>
-<div class="w-16 h-1.5 bg-surface-container-highest rounded-full overflow-hidden ml-1">
-<div class="w-3/5 h-full bg-primary rounded-full"></div>
-</div>
-<span class="text-data-mono-xs font-data-mono-xs text-on-surface-variant">3,420/5,000 XP</span>
-</div>
-</div>
-<!-- Center: Live Capital Telemetry -->
-<div class="hidden md:flex items-center gap-space-lg bg-surface-container-lowest px-space-md py-1 rounded border border-outline-variant">
-<div class="flex items-center gap-space-xs">
-<span class="text-label-caps font-label-caps text-on-surface-variant">VIRTUAL CAPITAL:</span>
-<span class="text-data-mono-sm font-data-mono-sm font-bold text-on-surface">₹10,00,000</span>
-</div>
-<div class="h-3 w-px bg-outline-variant"></div>
-<div class="flex items-center gap-space-xs">
-<span class="text-label-caps font-label-caps text-on-surface-variant">MARGIN USED:</span>
-<span class="text-data-mono-sm font-data-mono-sm text-primary">₹2,15,400</span>
-</div>
-<div class="h-3 w-px bg-outline-variant"></div>
-<div class="flex items-center gap-space-xs">
-<span class="text-label-caps font-label-caps text-on-surface-variant">REALIZED P&amp;L:</span>
-<span class="text-data-mono-sm font-data-mono-sm text-secondary font-bold">+₹6,200</span>
-</div>
-</div>
-<!-- Right: Telemetry Badges, Discipline Meter, Trailing Actions -->
-<div class="flex items-center gap-space-md">
-<!-- Unrealized PnL pill from JSON -->
-<div class="flex items-center gap-1 bg-surface-container px-space-sm py-1 rounded border border-secondary/30">
-<span class="text-label-caps font-label-caps text-on-surface-variant">UNREALIZED:</span>
-<span class="text-data-mono-sm font-data-mono-sm text-secondary font-bold">+₹14,250 (+1.42%)</span>
-</div>
-<!-- Discipline Meter Gauge from JSON -->
-<div class="flex items-center gap-space-xs bg-surface-container-lowest px-space-sm py-1 rounded border border-outline-variant">
-<div class="relative w-5 h-5 flex items-center justify-center">
-<svg class="w-5 h-5 transform -rotate-90" viewbox="0 0 36 36">
-<path class="text-surface-container-highest stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="4"></path>
-<path class="text-secondary stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="94, 100" stroke-linecap="round" stroke-width="4"></path>
-</svg>
-</div>
-<div class="flex flex-col leading-none">
-<span class="text-data-mono-xs font-data-mono-xs text-secondary font-bold">94/100 Discipline</span>
-<span class="text-label-caps font-label-caps text-on-surface-variant">Disciplined Trader</span>
-</div>
-</div>
-<!-- Deploy Order CTA Button -->
-<button class="bg-primary text-on-primary font-headline-sm font-semibold text-xs px-space-md py-1.5 rounded active:scale-95 transition-transform duration-100 flex items-center gap-1 hover:brightness-110">
-<span class="material-symbols-outlined text-sm">bolt</span>
-        Deploy Order
+
+<body class="bg-obsidian text-slate-100 antialiased overflow-hidden h-screen w-screen flex flex-col font-sans select-none cyber-grid">
+
+  <!-- TOP INSTITUTIONAL TELEMETRY BAR -->
+  <header class="bg-[#0A0E17]/95 backdrop-blur-md h-12 border-b border-slateBorder flex justify-between items-center w-full px-4 shrink-0 z-50">
+    <!-- Brand & Gamified Level Badge -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-terminalCyan animate-ping"></span>
+        <span class="text-sm font-bold tracking-tight text-terminalCyan font-mono">MarketMaster</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slateSurface text-slate-400 border border-slateBorder">TERMINAL PRO v4.2</span>
+      </div>
+      <div class="hidden lg:flex items-center gap-2 bg-slateSurface px-2.5 py-1 rounded border border-slateBorder">
+        <span class="material-symbols-outlined text-terminalCyan text-sm">military_tech</span>
+        <span class="text-xs font-mono font-semibold text-terminalEmerald">Options Architect Lv.3</span>
+        <div class="w-14 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+          <div class="w-3/5 h-full bg-terminalCyan rounded-full"></div>
+        </div>
+        <span class="text-[10px] font-mono text-slate-400">3,420 XP</span>
+      </div>
+    </div>
+
+    <!-- Center: Virtual Capital & Telemetry HUD -->
+    <div class="hidden md:flex items-center gap-4 bg-[#080C14] px-4 py-1 rounded-md border border-slateBorder">
+      <div class="flex items-center gap-1.5 font-mono text-xs">
+        <span class="text-slate-400 text-[10px]">CAPITAL:</span>
+        <span class="font-bold text-slate-100" id="hud-capital">₹10,00,000.00</span>
+      </div>
+      <div class="h-3 w-px bg-slateBorder"></div>
+      <div class="flex items-center gap-1.5 font-mono text-xs">
+        <span class="text-slate-400 text-[10px]">MARGIN USED:</span>
+        <span class="text-terminalCyan" id="hud-margin">₹2,15,400.00</span>
+      </div>
+      <div class="h-3 w-px bg-slateBorder"></div>
+      <div class="flex items-center gap-1.5 font-mono text-xs">
+        <span class="text-slate-400 text-[10px]">UNREALIZED:</span>
+        <span class="text-terminalEmerald font-bold" id="hud-unrealized">+₹14,250.00 (+1.42%)</span>
+      </div>
+    </div>
+
+    <!-- Right: Discipline Ring & Notifications -->
+    <div class="flex items-center gap-3">
+      <!-- Tremor-Style Discipline Ring -->
+      <div class="flex items-center gap-2 bg-slateSurface px-2.5 py-1 rounded border border-slateBorder" title="Psychological Discipline Meter">
+        <div class="relative w-5 h-5 flex items-center justify-center">
+          <svg class="w-5 h-5 transform -rotate-90" viewBox="0 0 36 36">
+            <path class="text-slate-800 stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="4"></path>
+            <path class="text-terminalEmerald stroke-current" id="discipline-circle" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="94, 100" stroke-linecap="round" stroke-width="4"></path>
+          </svg>
+        </div>
+        <div class="flex flex-col leading-tight">
+          <span class="text-[11px] font-mono font-bold text-terminalEmerald" id="discipline-val">94/100 Discipline</span>
+          <span class="text-[9px] font-mono text-slate-400">Disciplined Trader</span>
+        </div>
+      </div>
+
+      <!-- Quick Action / Avatar -->
+      <button onclick="window.advanceReplayCandle()" class="hidden sm:flex items-center gap-1 px-3 py-1 rounded bg-terminalCyan/10 hover:bg-terminalCyan/20 text-terminalCyan border border-terminalCyan/40 text-xs font-mono font-semibold transition-all">
+        <span class="material-symbols-outlined text-sm">fast_forward</span>
+        <span>Tick Next</span>
       </button>
-<!-- Trailing Icon Actions -->
-<div class="flex items-center gap-1 text-on-surface-variant">
-<button class="p-1 rounded hover:bg-surface-container-high hover:text-on-surface transition-colors relative" title="Notifications">
-<span class="material-symbols-outlined text-lg">notifications</span>
-<span class="w-1.5 h-1.5 bg-tertiary rounded-full absolute top-1 right-1"></span>
-</button>
-<button class="p-1 rounded hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Settings Tune">
-<span class="material-symbols-outlined text-lg">tune</span>
-</button>
-<div class="flex items-center gap-space-xs pl-space-xs">
-<span class="material-symbols-outlined text-2xl text-primary" title="Trader Profile Avatar">account_circle</span>
-<span class="hidden 2xl:inline text-label-caps font-label-caps text-on-surface font-medium">Rajesh K.</span>
-</div>
-</div>
-</div>
-</header>
-<!-- BODY CONTENT AREA (Sidebar + Central Terminal + Execution Dock) -->
-<div class="flex flex-1 overflow-hidden w-full">
-<!-- LEFT COMMAND SIDEBAR (Mapped from SideNavBar JSON) -->
-<aside class="bg-surface-container-lowest text-primary docked left-0 top-0 h-full w-56 border-r border-outline-variant flex flex-col justify-between p-space-sm shrink-0 select-none">
-<!-- Top Section: Header & Primary Navigation -->
-<div class="flex flex-col gap-space-sm">
-<!-- Sidebar Brand Header -->
-<div class="flex items-center justify-between px-space-sm py-space-xs border-b border-outline-variant/60">
-<div class="flex items-center gap-space-xs">
-<span class="material-symbols-outlined text-primary text-lg">shield</span>
-<div>
-<p class="text-headline-sm font-headline-sm font-bold text-primary">MarketMaster</p>
-<p class="text-label-caps font-label-caps text-on-surface-variant">Terminal v4.2</p>
-</div>
-</div>
-<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-</div>
-<!-- New Simulation CTA -->
-<button class="w-full bg-surface-container-high hover:bg-surface-container border border-outline-variant text-on-surface text-label-caps font-label-caps py-2 rounded flex items-center justify-center gap-space-xs active:scale-98 transition-all duration-100">
-<span class="material-symbols-outlined text-primary text-sm">add_circle</span>
-          New Simulation
+      <div class="flex items-center gap-1 text-slate-400">
+        <button class="p-1.5 rounded hover:bg-slate-800 hover:text-white transition-colors" title="Settings">
+          <span class="material-symbols-outlined text-base">tune</span>
         </button>
-<!-- Main Navigation Items (Active tab: Terminal) -->
-<nav class="flex flex-col gap-0.5 mt-space-xs">
-<!-- Terminal (Active) -->
-<a class="flex items-center gap-space-sm px-space-md py-space-sm bg-surface-container-high text-primary border-l-2 border-primary rounded-none font-semibold text-body-sm font-body-sm" href="index.html">
-<span class="material-symbols-outlined text-lg">candlestick_chart</span>
-<span>Terminal</span>
-</a>
-<!-- Blind Replay Gym -->
-<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors duration-150 text-body-sm font-body-sm active:scale-98" href="gym.html">
-<div class="flex items-center gap-space-sm">
-<span class="material-symbols-outlined text-lg">replay</span>
-<span>Blind Replay Gym</span>
-</div>
-<span class="text-label-caps font-label-caps bg-tertiary-container/30 text-tertiary px-1 rounded">LIVE</span>
-</a>
-<!-- Academy -->
-<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors duration-150 text-body-sm font-body-sm active:scale-98" href="academy.html">
-<span class="material-symbols-outlined text-lg">school</span>
-<span>Academy</span>
-</a>
-<!-- Strategy Lab -->
-<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors duration-150 text-body-sm font-body-sm active:scale-98" href="lab.html">
-<span class="material-symbols-outlined text-lg">science</span>
-<span>Strategy Lab</span>
-</a>
-<!-- Leaderboard -->
-<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors duration-150 text-body-sm font-body-sm active:scale-98" href="#">
-<div class="flex items-center gap-space-sm">
-<span class="material-symbols-outlined text-lg">leaderboard</span>
-<span>Leaderboard</span>
-</div>
-<span class="text-data-mono-xs font-data-mono-xs text-primary">#42</span>
-</a>
-<!-- Settings -->
-<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors duration-150 text-body-sm font-body-sm active:scale-98" href="#">
-<div class="flex items-center gap-space-sm">
-<span class="material-symbols-outlined text-lg">settings</span>
-<span>Settings</span>
-</div>
-<span class="text-label-caps font-label-caps text-outline">⌘K</span>
-</a>
-</nav>
-</div>
-<!-- Bottom Engine Status & System Footer -->
-<div class="flex flex-col gap-space-xs pt-space-sm border-t border-outline-variant/60">
-<a class="flex items-center gap-space-sm px-space-md py-space-xs text-on-surface-variant hover:text-on-surface text-label-caps font-label-caps" href="#">
-<span class="material-symbols-outlined text-base">help</span>
-<span>Support</span>
-</a>
-<a class="flex items-center gap-space-sm px-space-md py-space-xs text-on-surface-variant hover:text-on-surface text-label-caps font-label-caps" href="#">
-<span class="material-symbols-outlined text-base">sensors</span>
-<span>System Status</span>
-</a>
-<!-- Live Simulation Telemetry Box -->
-<div class="bg-surface-container p-space-xs rounded border border-outline-variant mt-space-xs">
-<div class="flex items-center justify-between text-data-mono-xs font-data-mono-xs">
-<span class="text-outline">Engine:</span>
-<span class="text-secondary flex items-center gap-1">
-<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Sync
-            </span>
-</div>
-<div class="flex items-center justify-between text-data-mono-xs font-data-mono-xs mt-0.5">
-<span class="text-outline">Tick:</span>
-<span class="text-on-surface">124ms</span>
-</div>
-<div class="flex items-center justify-between text-data-mono-xs font-data-mono-xs mt-0.5">
-<span class="text-outline">Ping:</span>
-<span class="text-primary font-semibold">18ms</span>
-</div>
-</div>
-</div>
-</aside>
-<!-- MAIN CENTRAL REPLAY TERMINAL -->
-<main class="flex-1 flex flex-col min-w-0 bg-surface border-r border-outline-variant overflow-hidden">
-<!-- Replay Control Bar (Header of chart workspace) -->
-<div class="bg-surface-container-low border-b border-outline-variant px-space-md py-space-xs flex items-center justify-between gap-space-md flex-wrap shrink-0">
-<!-- Blind Mode Masked Asset Banner -->
-<div class="flex items-center gap-space-sm">
-<div class="flex items-center gap-1.5 bg-surface-container-highest px-space-sm py-1 rounded border border-primary/30">
-<span class="text-sm">🕶️</span>
-<span class="text-label-caps font-label-caps font-bold text-primary tracking-wide">Blind Mode ON: Masked Ticker [ASSET_X_OCT24]</span>
-<span class="text-label-caps font-label-caps text-on-surface-variant text-[9px] bg-surface-container px-1 py-0.2 rounded border border-outline-variant">HISTORICAL REPLAY</span>
-</div>
-<!-- Timeframe selector -->
-<div class="flex items-center bg-surface-container rounded p-0.5 border border-outline-variant">
-<button class="px-2 py-0.5 text-data-mono-xs font-data-mono-xs text-on-surface-variant hover:text-on-surface rounded">1m</button>
-<button class="px-2 py-0.5 text-data-mono-xs font-data-mono-xs bg-primary text-on-primary font-bold rounded">5m</button>
-<button class="px-2 py-0.5 text-data-mono-xs font-data-mono-xs text-on-surface-variant hover:text-on-surface rounded">15m</button>
-<button class="px-2 py-0.5 text-data-mono-xs font-data-mono-xs text-on-surface-variant hover:text-on-surface rounded">1H</button>
-<button class="px-2 py-0.5 text-data-mono-xs font-data-mono-xs text-on-surface-variant hover:text-on-surface rounded">1D</button>
-</div>
-</div>
-<!-- Center: Replay Transport Controls -->
-<div class="flex items-center gap-space-sm">
-<div class="flex items-center bg-surface-container rounded border border-outline-variant p-0.5">
-<!-- Step Back -->
-<button class="p-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded" title="Step Back Bar">
-<span class="material-symbols-outlined text-base">skip_previous</span>
-</button>
-<!-- Play / Pause -->
-<button class="px-2 py-1 bg-secondary/20 hover:bg-secondary/30 text-secondary border border-secondary/40 rounded flex items-center gap-1 mx-0.5" title="Play Replay">
-<span class="material-symbols-outlined text-base">play_arrow</span>
-<span class="text-label-caps font-label-caps font-bold">REPLAY</span>
-</button>
-<!-- Step Next Bar -->
-<button class="p-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded" title="Step Next Bar">
-<span class="material-symbols-outlined text-base">skip_next</span>
-</button>
-</div>
-<!-- Speed pills -->
-<div class="flex items-center bg-surface-container rounded border border-outline-variant p-0.5">
-<button class="px-1.5 py-0.5 text-data-mono-xs font-data-mono-xs text-on-surface-variant hover:text-on-surface">0.5x</button>
-<button class="px-1.5 py-0.5 text-data-mono-xs font-data-mono-xs bg-primary-container text-on-primary-fixed font-bold rounded">1x</button>
-<button class="px-1.5 py-0.5 text-data-mono-xs font-data-mono-xs text-on-surface-variant hover:text-on-surface">2x</button>
-<button class="px-1.5 py-0.5 text-data-mono-xs font-data-mono-xs text-on-surface-variant hover:text-on-surface">5x</button>
-<button class="px-1.5 py-0.5 text-data-mono-xs font-data-mono-xs text-on-surface-variant hover:text-on-surface">10x</button>
-</div>
-<!-- Jump to Date picker button -->
-<button class="flex items-center gap-1 bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface px-space-sm py-1 rounded border border-outline-variant text-label-caps font-label-caps">
-<span class="material-symbols-outlined text-sm">calendar_today</span>
-            Jump Date
-          </button>
-</div>
-<!-- Indicators Active Legend -->
-<div class="hidden lg:flex items-center gap-space-sm text-data-mono-xs font-data-mono-xs">
-<span class="text-primary flex items-center gap-1">
-<span class="w-2 h-0.5 bg-primary inline-block"></span> EMA 9: 24,528.2
+        <span class="material-symbols-outlined text-2xl text-terminalCyan" title="Profile">account_circle</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- WORKSPACE BODY (Sidebar + Charting + Execution Dock) -->
+  <div class="flex flex-1 overflow-hidden w-full">
+
+    <!-- LEFT COMMAND SIDEBAR -->
+    <aside class="bg-[#0A0E17] w-56 border-r border-slateBorder flex flex-col justify-between p-2 shrink-0 select-none">
+      <div class="flex flex-col gap-2">
+        <div class="px-3 py-2 border-b border-slateBorder/60 flex items-center justify-between">
+          <span class="text-xs font-mono font-bold text-slate-300">WORKSPACE</span>
+          <span class="w-2 h-2 rounded-full bg-terminalEmerald"></span>
+        </div>
+
+        <nav class="flex flex-col gap-1 mt-1 font-mono text-xs">
+          <!-- Terminal (Active) -->
+          <a href="index.html" class="flex items-center gap-2.5 px-3 py-2 bg-slateSurface text-terminalCyan border-l-2 border-terminalCyan font-semibold rounded-r">
+<span class="material-symbols-outlined text-base">candlestick_chart</span>
+            <span>Terminal</span>
+          </a>
+          <!-- Replay Gym -->
+          <a href="gym.html" class="flex items-center justify-between px-3 py-2 text-slate-400 hover:bg-slateSurface hover:text-slate-100 transition-colors rounded">
+            <div class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-base">replay</span>
+              <span>Replay Gym</span>
+            </div>
+            <span class="text-[9px] bg-rose-500/20 text-terminalRose px-1 rounded font-bold">LIVE</span>
+          </a>
+          <!-- Academy -->
+          <a href="academy.html" class="flex items-center gap-2.5 px-3 py-2 text-slate-400 hover:bg-slateSurface hover:text-slate-100 transition-colors rounded">
+            <span class="material-symbols-outlined text-base">school</span>
+            <span>Academy (L0-L5)</span>
+          </a>
+          <!-- Strategy Lab -->
+          <a href="lab.html" class="flex items-center gap-2.5 px-3 py-2 text-slate-400 hover:bg-slateSurface hover:text-slate-100 transition-colors rounded">
+<span class="material-symbols-outlined text-base">science</span>
+            <span>Strategy Lab</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Engine Telemetry Status Footer -->
+      <div class="bg-slateSurface p-2 rounded border border-slateBorder text-[10px] font-mono flex flex-col gap-1">
+        <div class="flex justify-between items-center text-slate-400">
+          <span>Engine:</span>
+          <span class="text-terminalEmerald font-semibold flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-terminalEmerald"></span> Sync
           </span>
-<span class="text-[#f59e0b] flex items-center gap-1">
-<span class="w-2 h-0.5 bg-[#f59e0b] inline-block"></span> EMA 21: 24,510.8
+        </div>
+        <div class="flex justify-between items-center text-slate-400">
+          <span>GPU Render:</span>
+          <span class="text-terminalCyan">Canvas 60fps</span>
+        </div>
+        <div class="flex justify-between items-center text-slate-400">
+          <span>Simulation Ping:</span>
+          <span class="text-slate-200">12ms</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER CHARTING & REPLAY COCKPIT -->
+    <main class="flex-1 flex flex-col min-w-0 bg-[#080C14] border-r border-slateBorder overflow-hidden">
+      <!-- Replay Controls Bar -->
+      <div class="bg-[#0A0E17] border-b border-slateBorder px-4 py-1.5 flex items-center justify-between gap-3 flex-wrap shrink-0">
+        <!-- Blind Mode Pill -->
+        <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1.5 bg-slateSurface px-2.5 py-1 rounded border border-terminalCyan/30 text-xs font-mono">
+            <span>🕶️</span>
+            <span class="font-bold text-terminalCyan tracking-wide">Blind Mode ON: [ASSET_X_OCT24]</span>
+          </div>
+          <!-- Timeframe Pills -->
+          <div class="flex items-center bg-slateSurface rounded border border-slateBorder p-0.5 text-xs font-mono">
+            <button class="px-2 py-0.5 text-slate-400 hover:text-white rounded">1m</button>
+            <button class="px-2 py-0.5 bg-terminalCyan text-slate-950 font-bold rounded">5m</button>
+            <button class="px-2 py-0.5 text-slate-400 hover:text-white rounded">15m</button>
+            <button class="px-2 py-0.5 text-slate-400 hover:text-white rounded">1H</button>
+            <button class="px-2 py-0.5 text-slate-400 hover:text-white rounded">1D</button>
+          </div>
+        </div>
+
+        <!-- Center: Replay Transport Buttons -->
+        <div class="flex items-center gap-2">
+          <div class="flex items-center bg-slateSurface rounded border border-slateBorder p-0.5">
+            <button onclick="window.advanceReplayCandle()" class="p-1 text-slate-400 hover:text-white rounded" title="Step Back">
+              <span class="material-symbols-outlined text-base">skip_previous</span>
+            </button>
+            <button id="main-replay-btn" class="px-3 py-0.5 bg-terminalEmerald/20 hover:bg-terminalEmerald/30 text-terminalEmerald border border-terminalEmerald/40 rounded flex items-center gap-1 font-mono text-xs font-bold transition-all" title="Toggle Play / Pause Replay">
+              <span class="material-symbols-outlined text-sm">play_arrow</span>
+              <span>REPLAY</span>
+            </button>
+            <button onclick="window.advanceReplayCandle()" class="p-1 text-slate-400 hover:text-white rounded" title="Step Next Bar">
+              <span class="material-symbols-outlined text-base">skip_next</span>
+            </button>
+          </div>
+          <!-- Replay Speeds -->
+          <div class="flex items-center bg-slateSurface rounded border border-slateBorder p-0.5 text-[11px] font-mono">
+            <button class="px-1.5 py-0.5 text-slate-400 hover:text-white speed-pill">0.5x</button>
+            <button class="px-1.5 py-0.5 bg-terminalCyan text-slate-950 font-bold rounded speed-pill">1x</button>
+            <button class="px-1.5 py-0.5 text-slate-400 hover:text-white speed-pill">2x</button>
+            <button class="px-1.5 py-0.5 text-slate-400 hover:text-white speed-pill">5x</button>
+            <button class="px-1.5 py-0.5 text-slate-400 hover:text-white speed-pill">10x</button>
+          </div>
+        </div>
+
+        <!-- Indicator Legend -->
+        <div class="hidden xl:flex items-center gap-3 text-xs font-mono">
+          <span class="text-terminalCyan flex items-center gap-1">
+            <span class="w-2.5 h-0.5 bg-terminalCyan inline-block"></span> EMA 9: <strong id="val-ema9">24,528.20</strong>
           </span>
-<span class="text-on-surface-variant">VWAP: 24,519.4</span>
-<span class="text-secondary">RSI(14): 62.4</span>
-<span class="text-secondary bg-surface-container px-1 py-0.5 rounded border border-outline-variant">Supertrend(10,3): BULL</span>
-</div>
-</div>
-<!-- CANDLESTICK CHART CANVAS WORKSPACE -->
-<div class="flex-1 flex relative overflow-hidden bg-surface-container-lowest">
-<!-- Left Chart Drawing Tools Toolbar -->
-<div class="w-9 border-r border-outline-variant/60 bg-surface-container-lowest flex flex-col items-center py-space-sm gap-2 shrink-0 z-10 text-on-surface-variant">
-<button class="p-1 hover:text-primary hover:bg-surface-container rounded" title="Crosshair">
-<span class="material-symbols-outlined text-base">drag_pan</span>
-</button>
-<button class="p-1 hover:text-primary hover:bg-surface-container rounded text-primary" title="Trendline Tool">
-<span class="material-symbols-outlined text-base">show_chart</span>
-</button>
-<button class="p-1 hover:text-primary hover:bg-surface-container rounded" title="Fibonacci Retracement">
-<span class="material-symbols-outlined text-base">stacked_line_chart</span>
-</button>
-<button class="p-1 hover:text-primary hover:bg-surface-container rounded" title="Horizontal Price Line">
-<span class="material-symbols-outlined text-base">horizontal_rule</span>
-</button>
-<button class="p-1 hover:text-primary hover:bg-surface-container rounded" title="Price Range / Measure Tool">
-<span class="material-symbols-outlined text-base">straighten</span>
-</button>
-<button class="p-1 hover:text-primary hover:bg-surface-container rounded" title="Long Position Risk Tool">
-<span class="material-symbols-outlined text-base">call_made</span>
-</button>
-<button class="p-1 hover:text-primary hover:bg-surface-container rounded" title="Text Note">
-<span class="material-symbols-outlined text-base">edit_note</span>
-</button>
-<div class="w-4 h-px bg-outline-variant my-1"></div>
-<button class="p-1 hover:text-tertiary hover:bg-surface-container rounded" title="Delete Drawings">
-<span class="material-symbols-outlined text-base">delete</span>
-</button>
-</div>
-<!-- Primary Chart Display Area -->
-<div class="flex-1 flex flex-col relative overflow-hidden">
-<!-- OHLC Header Bar Overlay -->
-<div class="absolute top-2 left-3 z-20 flex items-center gap-space-md text-data-mono-xs font-data-mono-xs bg-surface-container-low/80 backdrop-blur-sm px-space-sm py-1 rounded border border-outline-variant/80">
-<span class="text-on-surface font-bold">ASSET_X_OCT24 (5m)</span>
-<span class="text-outline">O: <strong class="text-on-surface font-normal">24,512.00</strong></span>
-<span class="text-outline">H: <strong class="text-on-surface font-normal">24,560.80</strong></span>
-<span class="text-outline">L: <strong class="text-on-surface font-normal">24,495.20</strong></span>
-<span class="text-outline">C: <strong class="text-secondary font-bold">24,538.50</strong></span>
-<span class="text-secondary font-semibold">Change: +142.30 (+0.58%)</span>
-</div>
-<!-- Chart Rendering (High-Fidelity SVG with 30+ Candlesticks + Moving Averages + Volumes) -->
-<div class="flex-1 w-full h-full relative">
-<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 1000 500">
-<defs>
-<!-- Grid pattern -->
-<pattern height="40" id="grid" patternunits="userSpaceOnUse" width="50">
-<path d="M 50 0 L 0 0 0 40" fill="none" stroke="#1c2028" stroke-width="0.8"></path>
-</pattern>
-<lineargradient id="volGradGreen" x1="0" x2="0" y1="0" y2="1">
-<stop offset="0%" stop-color="#4edea3" stop-opacity="0.5"></stop>
-<stop offset="100%" stop-color="#4edea3" stop-opacity="0.05"></stop>
-</lineargradient>
-<lineargradient id="volGradRed" x1="0" x2="0" y1="0" y2="1">
-<stop offset="0%" stop-color="#ffb2b7" stop-opacity="0.5"></stop>
-<stop offset="100%" stop-color="#ffb2b7" stop-opacity="0.05"></stop>
-</lineargradient>
-</defs>
-<!-- Chart Background Grid -->
-<rect fill="url(#grid)" height="500" width="1000"></rect>
-<!-- Volume Histogram at Base (y: 430 to 490) -->
-<!-- Green volumes -->
-<rect fill="url(#volGradGreen)" height="25" width="16" x="30" y="470"></rect>
-<rect fill="url(#volGradGreen)" height="35" width="16" x="60" y="460"></rect>
-<rect fill="url(#volGradRed)" height="45" width="16" x="90" y="450"></rect>
-<rect fill="url(#volGradGreen)" height="30" width="16" x="120" y="465"></rect>
-<rect fill="url(#volGradGreen)" height="55" width="16" x="150" y="440"></rect>
-<rect fill="url(#volGradRed)" height="40" width="16" x="180" y="455"></rect>
-<rect fill="url(#volGradGreen)" height="50" width="16" x="210" y="445"></rect>
-<rect fill="url(#volGradRed)" height="25" width="16" x="240" y="470"></rect>
-<rect fill="url(#volGradRed)" height="35" width="16" x="270" y="460"></rect>
-<rect fill="url(#volGradGreen)" height="55" width="16" x="300" y="440"></rect>
-<rect fill="url(#volGradGreen)" height="65" width="16" x="330" y="430"></rect>
-<rect fill="url(#volGradRed)" height="45" width="16" x="360" y="450"></rect>
-<rect fill="url(#volGradGreen)" height="30" width="16" x="390" y="465"></rect>
-<rect fill="url(#volGradGreen)" height="45" width="16" x="420" y="450"></rect>
-<rect fill="url(#volGradGreen)" height="60" width="16" x="450" y="435"></rect>
-<rect fill="url(#volGradRed)" height="50" width="16" x="480" y="445"></rect>
-<rect fill="url(#volGradGreen)" height="45" width="16" x="510" y="450"></rect>
-<rect fill="url(#volGradGreen)" height="65" width="16" x="540" y="430"></rect>
-<rect fill="url(#volGradRed)" height="35" width="16" x="570" y="460"></rect>
-<rect fill="url(#volGradRed)" height="30" width="16" x="600" y="465"></rect>
-<rect fill="url(#volGradGreen)" height="55" width="16" x="630" y="440"></rect>
-<rect fill="url(#volGradGreen)" height="60" width="16" x="660" y="435"></rect>
-<rect fill="url(#volGradRed)" height="45" width="16" x="690" y="450"></rect>
-<rect fill="url(#volGradGreen)" height="65" width="16" x="720" y="430"></rect>
-<rect fill="url(#volGradGreen)" height="70" width="16" x="750" y="425"></rect>
-<rect fill="url(#volGradGreen)" height="55" width="16" x="780" y="440"></rect>
-<rect fill="url(#volGradRed)" height="40" width="16" x="810" y="455"></rect>
-<rect fill="url(#volGradGreen)" height="65" width="16" x="840" y="430"></rect>
-<rect fill="url(#volGradGreen)" height="75" width="16" x="870" y="420"></rect>
-<rect fill="url(#volGradGreen)" height="70" width="16" x="900" y="425"></rect>
-<!-- Candlestick Series (30 Bars) -->
-<!-- Bar 1: Green -->
-<line stroke="#4edea3" stroke-width="1.5" x1="38" x2="38" y1="280" y2="340"></line>
-<rect fill="#4edea3" height="30" rx="0.5" width="12" x="32" y="295"></rect>
-<!-- Bar 2: Green -->
-<line stroke="#4edea3" stroke-width="1.5" x1="68" x2="68" y1="260" y2="320"></line>
-<rect fill="#4edea3" height="32" rx="0.5" width="12" x="62" y="275"></rect>
-<!-- Bar 3: Red Pullback -->
-<line stroke="#ffb2b7" stroke-width="1.5" x1="98" x2="98" y1="270" y2="325"></line>
-<rect fill="#ffb2b7" height="28" rx="0.5" width="12" x="92" y="280"></rect>
-<!-- Bar 4: Green -->
-<line stroke="#4edea3" stroke-width="1.5" x1="128" x2="128" y1="260" y2="310"></line>
-<rect fill="#4edea3" height="26" rx="0.5" width="12" x="122" y="270"></rect>
-<!-- Bar 5: Green Breakout -->
-<line stroke="#4edea3" stroke-width="1.5" x1="158" x2="158" y1="230" y2="290"></line>
-<rect fill="#4edea3" height="38" rx="0.5" width="12" x="152" y="242"></rect>
-<!-- Bar 6: Red -->
-<line stroke="#ffb2b7" stroke-width="1.5" x1="188" x2="188" y1="235" y2="275"></line>
-<rect fill="#ffb2b7" height="20" rx="0.5" width="12" x="182" y="244"></rect>
-<!-- Bar 7: Green Continuation -->
-<line stroke="#4edea3" stroke-width="1.5" x1="218" x2="218" y1="220" y2="265"></line>
-<rect fill="#4edea3" height="25" rx="0.5" width="12" x="212" y="230"></rect>
-<!-- Bar 8: Red Pinbar -->
-<line stroke="#ffb2b7" stroke-width="1.5" x1="248" x2="248" y1="205" y2="255"></line>
-<rect fill="#ffb2b7" height="15" rx="0.5" width="12" x="242" y="222"></rect>
-<!-- Bar 9: Red -->
-<line stroke="#ffb2b7" stroke-width="1.5" x1="278" x2="278" y1="215" y2="270"></line>
-<rect fill="#ffb2b7" height="28" rx="0.5" width="12" x="272" y="230"></rect>
-<!-- Bar 10: Green Hammer -->
-<line stroke="#4edea3" stroke-width="1.5" x1="308" x2="308" y1="220" y2="295"></line>
-<rect fill="#4edea3" height="18" rx="0.5" width="12" x="302" y="228"></rect>
-<!-- Bar 11: Green Strong -->
-<line stroke="#4edea3" stroke-width="1.5" x1="338" x2="338" y1="185" y2="240"></line>
-<rect fill="#4edea3" height="36" rx="0.5" width="12" x="332" y="196"></rect>
-<!-- Bar 12: Red Doji -->
-<line stroke="#ffb2b7" stroke-width="1.5" x1="368" x2="368" y1="180" y2="225"></line>
-<rect fill="#ffb2b7" height="10" rx="0.5" width="12" x="362" y="198"></rect>
-<!-- Bar 13: Green -->
-<line stroke="#4edea3" stroke-width="1.5" x1="398" x2="398" y1="175" y2="220"></line>
-<rect fill="#4edea3" height="22" rx="0.5" width="12" x="392" y="188"></rect>
-<!-- Bar 14: Green -->
-<line stroke="#4edea3" stroke-width="1.5" x1="428" x2="428" y1="165" y2="205"></line>
-<rect fill="#4edea3" height="25" rx="0.5" width="12" x="422" y="174"></rect>
-<!-- Bar 15: Green Expansion -->
-<line stroke="#4edea3" stroke-width="1.5" x1="458" x2="458" y1="140" y2="195"></line>
-<rect fill="#4edea3" height="34" rx="0.5" width="12" x="452" y="150"></rect>
-<!-- Bar 16: Red Consolidation -->
-<line stroke="#ffb2b7" stroke-width="1.5" x1="488" x2="488" y1="145" y2="190"></line>
-<rect fill="#ffb2b7" height="20" rx="0.5" width="12" x="482" y="155"></rect>
-<!-- Bar 17: Green -->
-<line stroke="#4edea3" stroke-width="1.5" x1="518" x2="518" y1="140" y2="185"></line>
-<rect fill="#4edea3" height="22" rx="0.5" width="12" x="512" y="148"></rect>
-<!-- Bar 18: Green Huge Expansion -->
-<line stroke="#4edea3" stroke-width="1.5" x1="548" x2="548" y1="110" y2="165"></line>
-<rect fill="#4edea3" height="38" rx="0.5" width="12" x="542" y="122"></rect>
-<!-- Bar 19: Red Pullback -->
-<line stroke="#ffb2b7" stroke-width="1.5" x1="578" x2="578" y1="118" y2="160"></line>
-<rect fill="#ffb2b7" height="22" rx="0.5" width="12" x="572" y="126"></rect>
-<!-- Bar 20: Red -->
-<line stroke="#ffb2b7" stroke-width="1.5" x1="608" x2="608" y1="130" y2="175"></line>
-<rect fill="#ffb2b7" height="26" rx="0.5" width="12" x="602" y="138"></rect>
-<!-- Bar 21: Green Support Bounce -->
-<line stroke="#4edea3" stroke-width="1.5" x1="638" x2="638" y1="120" y2="180"></line>
-<rect fill="#4edea3" height="34" rx="0.5" width="12" x="632" y="132"></rect>
-<!-- Bar 22: Green Rally -->
-<line stroke="#4edea3" stroke-width="1.5" x1="668" x2="668" y1="105" y2="150"></line>
-<rect fill="#4edea3" height="30" rx="0.5" width="12" x="662" y="115"></rect>
-<!-- Bar 23: Red -->
-<line stroke="#ffb2b7" stroke-width="1.5" x1="698" x2="698" y1="108" y2="145"></line>
-<rect fill="#ffb2b7" height="18" rx="0.5" width="12" x="692" y="116"></rect>
-<!-- Bar 24: Green -->
-<line stroke="#4edea3" stroke-width="1.5" x1="728" x2="728" y1="90" y2="135"></line>
-<rect fill="#4edea3" height="28" rx="0.5" width="12" x="722" y="100"></rect>
-<!-- Bar 25: Green -->
-<line stroke="#4edea3" stroke-width="1.5" x1="758" x2="758" y1="80" y2="125"></line>
-<rect fill="#4edea3" height="30" rx="0.5" width="12" x="752" y="88"></rect>
-<!-- Bar 26: Green High Test -->
-<line stroke="#4edea3" stroke-width="1.5" x1="788" x2="788" y1="65" y2="110"></line>
-<rect fill="#4edea3" height="28" rx="0.5" width="12" x="782" y="76"></rect>
-<!-- Bar 27: Red Reject Wick -->
-<line stroke="#ffb2b7" stroke-width="1.5" x1="818" x2="818" y1="60" y2="115"></line>
-<rect fill="#ffb2b7" height="24" rx="0.5" width="12" x="812" y="80"></rect>
-<!-- Bar 28: Green -->
-<line stroke="#4edea3" stroke-width="1.5" x1="848" x2="848" y1="65" y2="105"></line>
-<rect fill="#4edea3" height="24" rx="0.5" width="12" x="842" y="74"></rect>
-<!-- Bar 29: Green ATH Thrust -->
-<line stroke="#4edea3" stroke-width="1.5" x1="878" x2="878" y1="50" y2="95"></line>
-<rect fill="#4edea3" height="30" rx="0.5" width="12" x="872" y="58"></rect>
-<!-- Bar 30: Current Active Live Bar (24,538.50) -->
-<line stroke="#4edea3" stroke-width="2" x1="908" x2="908" y1="42" y2="88"></line>
-<rect class="animate-pulse" fill="#4edea3" height="24" rx="0.5" width="14" x="901" y="48"></rect>
-<!-- EMA 9 Moving Average Overlay (Cyan Line) -->
-<path d="M 38 310 Q 98 290, 158 260 T 278 245 T 398 200 T 518 160 T 638 140 T 758 100 T 878 70 T 908 60" fill="none" stroke="#4cd7f6" stroke-linecap="round" stroke-width="2.5"></path>
-<!-- EMA 21 Moving Average Overlay (Amber Line) -->
-<path d="M 38 335 Q 128 310, 218 280 T 368 240 T 518 200 T 668 165 T 788 130 T 908 95" fill="none" stroke="#f59e0b" stroke-dasharray="4 2" stroke-linecap="round" stroke-width="2"></path>
-<!-- Price Cursor Horizontal Dotted Line at 24,538.50 (y=60) -->
-<line stroke="#4cd7f6" stroke-dasharray="3 3" stroke-width="1" x1="0" x2="960" y1="60" y2="60"></line>
-</svg>
-<!-- Price Scale Right Axis with Floating Price Tag -->
-<div class="absolute right-0 top-0 bottom-0 w-16 border-l border-outline-variant bg-surface-container-lowest/90 flex flex-col justify-between py-2 text-right pr-1 text-data-mono-xs font-data-mono-xs text-outline select-none">
-<span>24,580.00</span>
-<span>24,560.00</span>
-<!-- Active Highlight Tag -->
-<div class="absolute top-[52px] right-0 bg-primary text-on-primary font-bold px-1.5 py-0.5 rounded-l text-data-mono-xs font-data-mono-xs shadow">
-                24,538.50
-              </div>
-<span>24,540.00</span>
-<span>24,520.00</span>
-<span>24,500.00</span>
-<span>24,480.00</span>
-<span>24,460.00</span>
-<span>24,440.00</span>
-<span>24,420.00</span>
-</div>
-<!-- Time Axis at Bottom -->
-<div class="absolute bottom-0 left-9 right-16 h-5 border-t border-outline-variant bg-surface-container-lowest/90 flex justify-between items-center px-4 text-data-mono-xs font-data-mono-xs text-outline">
-<span>09:15</span>
-<span>09:45</span>
-<span>10:15</span>
-<span>10:45</span>
-<span>11:15</span>
-<span>11:45</span>
-<span>12:15</span>
-<span>12:45</span>
-<span>13:15</span>
-<span>13:45</span>
-<span class="text-primary font-semibold">14:15 [NOW]</span>
-</div>
-</div>
-</div>
-</div>
-<!-- BOTTOM TABBED ANALYTICAL DRAWER -->
-<div class="h-48 border-t border-outline-variant bg-surface-container-low flex flex-col shrink-0">
-<!-- Tabs Bar -->
-<div class="flex items-center justify-between border-b border-outline-variant px-space-md bg-surface-container-lowest">
-<div class="flex items-center gap-space-md">
-<button class="flex items-center gap-1.5 py-2 border-b-2 border-primary text-primary text-data-mono-sm font-data-mono-sm font-semibold">
-<span class="material-symbols-outlined text-sm">inventory_2</span>
-              Open Positions (2)
+          <span class="text-terminalAmber flex items-center gap-1">
+            <span class="w-2.5 h-0.5 bg-terminalAmber inline-block"></span> EMA 21: <strong id="val-ema21">24,510.80</strong>
+          </span>
+          <span class="text-terminalEmerald bg-terminalEmerald/10 px-1.5 py-0.5 rounded border border-terminalEmerald/30">Supertrend: BULL</span>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE TRADINGVIEW LIGHTWEIGHT CHARTS CANVAS VIEWPORT -->
+      <div class="flex-1 w-full h-full relative overflow-hidden bg-[#080C14]">
+        <!-- OHLC Floating Header Overlay -->
+        <div class="absolute top-2 left-3 z-20 flex items-center gap-3 text-xs font-mono bg-slateSurface/80 backdrop-blur-md px-3 py-1 rounded border border-slateBorder">
+          <span class="text-slate-100 font-bold">ASSET_X (5m)</span>
+          <span class="text-slate-400">O: <strong class="text-slate-200 font-normal" id="ohlc-o">24,512.00</strong></span>
+          <span class="text-slate-400">H: <strong class="text-slate-200 font-normal" id="ohlc-h">24,560.80</strong></span>
+          <span class="text-slate-400">L: <strong class="text-slate-200 font-normal" id="ohlc-l">24,495.20</strong></span>
+          <span class="text-slate-400">C: <strong class="text-terminalEmerald font-bold" id="ohlc-c">24,538.50</strong></span>
+          <span class="text-terminalEmerald font-semibold" id="ohlc-chg">+142.30 (+0.58%)</span>
+        </div>
+
+        <!-- Chart Container Target -->
+        <div id="tv-chart-container" class="w-full h-full"></div>
+      </div>
+
+      <!-- BOTTOM TABBED ANALYTICAL DRAWER -->
+      <div class="h-44 border-t border-slateBorder bg-[#0A0E17] flex flex-col shrink-0">
+        <!-- Tabs Header -->
+        <div class="flex items-center justify-between border-b border-slateBorder px-4 bg-[#080C14]">
+          <div class="flex items-center gap-4 text-xs font-mono">
+            <button class="flex items-center gap-1.5 py-2 border-b-2 border-terminalCyan text-terminalCyan font-semibold">
+              <span class="material-symbols-outlined text-sm">inventory_2</span>
+              <span>Open Positions (2)</span>
             </button>
-<button class="flex items-center gap-1.5 py-2 text-on-surface-variant hover:text-on-surface text-data-mono-sm font-data-mono-sm">
-<span class="material-symbols-outlined text-sm">history</span>
-              Order History (14)
+            <button class="flex items-center gap-1.5 py-2 text-slate-400 hover:text-slate-200">
+              <span class="material-symbols-outlined text-sm">history</span>
+              <span>Order History (14)</span>
             </button>
-<button class="flex items-center gap-1.5 py-2 text-on-surface-variant hover:text-on-surface text-data-mono-sm font-data-mono-sm">
-<span class="material-symbols-outlined text-sm">smart_toy</span>
-              Automated Trade Post-Mortem (AI Audit)
+            <button onclick="openPostMortemModal()" class="flex items-center gap-1.5 py-2 text-terminalAmber hover:text-amber-300 font-semibold">
+              <span class="material-symbols-outlined text-sm">psychology</span>
+              <span>Automated Post-Mortem Audit</span>
             </button>
-</div>
-<!-- Quick Post-Mortem preview chip -->
-<div class="hidden lg:flex items-center gap-2 bg-surface-container px-space-sm py-1 rounded border border-outline-variant text-data-mono-xs font-data-mono-xs">
-<span class="material-symbols-outlined text-secondary text-sm">verified_user</span>
-<span class="text-on-surface">Discipline Audit: Stop loss placed strictly within 1.5% rule. Emotional score: <span class="text-secondary font-bold">Calm</span>.</span>
-</div>
-</div>
-<!-- Open Positions Table -->
-<div class="flex-1 overflow-auto">
-<table class="w-full text-left border-collapse text-data-mono-xs font-data-mono-xs">
-<thead>
-<tr class="bg-surface-container-low text-outline border-b border-outline-variant uppercase text-[10px] tracking-wider">
-<th class="py-1.5 px-3">Instrument</th>
-<th class="py-1.5 px-2">Type / Qty</th>
-<th class="py-1.5 px-2">Avg. Price</th>
-<th class="py-1.5 px-2">LTP</th>
-<th class="py-1.5 px-2">P&amp;L (Unrealized)</th>
-<th class="py-1.5 px-2">Stop Loss</th>
-<th class="py-1.5 px-2">Trailing TP</th>
-<th class="py-1.5 px-3 text-right">Action</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-outline-variant/40">
-<!-- Position 1 -->
-<tr class="hover:bg-surface-container transition-colors">
-<td class="py-2 px-3 flex items-center gap-1.5">
-<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-<span class="font-bold text-on-surface">NIFTY 24500 CE</span>
-<span class="text-[9px] bg-secondary/10 text-secondary border border-secondary/20 px-1 rounded">OPT</span>
-</td>
-<td class="py-2 px-2 text-on-surface">Long 150 Qty <span class="text-outline">(3 Lots)</span></td>
-<td class="py-2 px-2 text-on-surface">₹142.50</td>
-<td class="py-2 px-2 text-primary font-bold">₹198.50</td>
-<td class="py-2 px-2 text-secondary font-bold text-sm">+₹8,400.00 <span class="text-xs font-normal">(+39.3%)</span></td>
-<td class="py-2 px-2 text-tertiary">₹125.00</td>
-<td class="py-2 px-2 text-primary">₹215.00</td>
-<td class="py-2 px-3 text-right">
-<button class="bg-tertiary/10 hover:bg-tertiary text-tertiary hover:text-surface-container-lowest border border-tertiary/40 px-2 py-0.5 rounded text-[10px] font-bold transition-all">
+          </div>
+          <div class="hidden lg:flex items-center gap-2 text-xs font-mono text-slate-400">
+            <span class="material-symbols-outlined text-terminalEmerald text-sm">verified_user</span>
+            <span>Stop-Loss Enforcement: <strong class="text-terminalEmerald">Active (1.5% Rule Compliant)</strong></span>
+          </div>
+        </div>
+
+        <!-- Positions Table -->
+        <div class="flex-1 overflow-auto">
+          <table class="w-full text-left border-collapse text-xs font-mono">
+            <thead>
+              <tr class="bg-[#0A0E17] text-slate-400 border-b border-slateBorder text-[10px] uppercase tracking-wider">
+                <th class="py-1 px-3">Instrument</th>
+                <th class="py-1 px-2">Type / Qty</th>
+                <th class="py-1 px-2">Avg Price</th>
+                <th class="py-1 px-2">LTP</th>
+                <th class="py-1 px-2">Unrealized P&L</th>
+                <th class="py-1 px-2">Stop Loss</th>
+                <th class="py-1 px-2">Target (TP)</th>
+                <th class="py-1 px-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slateBorder/40">
+              <!-- Row 1 -->
+              <tr class="hover:bg-slateSurface/60 transition-colors">
+                <td class="py-1.5 px-3 flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-terminalEmerald"></span>
+                  <span class="font-bold text-slate-200">NIFTY 24500 CE</span>
+                  <span class="text-[9px] bg-emerald-500/10 text-terminalEmerald border border-emerald-500/20 px-1 rounded">OPT</span>
+                </td>
+                <td class="py-1.5 px-2 text-slate-300">Long 150 Qty <span class="text-slate-500">(3 Lots)</span></td>
+                <td class="py-1.5 px-2 text-slate-300">₹142.50</td>
+                <td class="py-1.5 px-2 text-terminalCyan font-bold active-ltp">₹198.50</td>
+                <td class="py-1.5 px-2 text-terminalEmerald font-bold">+₹8,400.00 (+39.3%)</td>
+                <td class="py-1.5 px-2 text-terminalRose">₹125.00</td>
+                <td class="py-1.5 px-2 text-terminalCyan">₹215.00</td>
+                <td class="py-1.5 px-3 text-right">
+                  <button onclick="handleExitPosition('NIFTY 24500 CE', 8400)" class="bg-rose-500/15 hover:bg-rose-500 text-terminalRose hover:text-slate-950 border border-rose-500/40 px-2.5 py-0.5 rounded text-[10px] font-bold transition-all">
                     Exit Mkt
                   </button>
-</td>
-</tr>
-<!-- Position 2 -->
-<tr class="hover:bg-surface-container transition-colors">
-<td class="py-2 px-3 flex items-center gap-1.5">
-<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-<span class="font-bold text-on-surface">BANKNIFTY Futures</span>
-<span class="text-[9px] bg-primary/10 text-primary border border-primary/20 px-1 rounded">FUT</span>
-</td>
-<td class="py-2 px-2 text-on-surface">Long 30 Qty <span class="text-outline">(2 Lots)</span></td>
-<td class="py-2 px-2 text-on-surface">₹51,820.00</td>
-<td class="py-2 px-2 text-primary font-bold">₹52,015.00</td>
-<td class="py-2 px-2 text-secondary font-bold text-sm">+₹5,850.00 <span class="text-xs font-normal">(+0.38%)</span></td>
-<td class="py-2 px-2 text-tertiary">₹51,700.00</td>
-<td class="py-2 px-2 text-primary">₹52,400.00</td>
-<td class="py-2 px-3 text-right">
-<button class="bg-tertiary/10 hover:bg-tertiary text-tertiary hover:text-surface-container-lowest border border-tertiary/40 px-2 py-0.5 rounded text-[10px] font-bold transition-all">
+                </td>
+              </tr>
+              <!-- Row 2 -->
+              <tr class="hover:bg-slateSurface/60 transition-colors">
+                <td class="py-1.5 px-3 flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-terminalEmerald"></span>
+                  <span class="font-bold text-slate-200">BANKNIFTY FUT</span>
+                  <span class="text-[9px] bg-cyan-500/10 text-terminalCyan border border-cyan-500/20 px-1 rounded">FUT</span>
+                </td>
+                <td class="py-1.5 px-2 text-slate-300">Long 30 Qty <span class="text-slate-500">(2 Lots)</span></td>
+                <td class="py-1.5 px-2 text-slate-300">₹51,820.00</td>
+                <td class="py-1.5 px-2 text-terminalCyan font-bold">₹52,015.00</td>
+                <td class="py-1.5 px-2 text-terminalEmerald font-bold">+₹5,850.00 (+0.38%)</td>
+                <td class="py-1.5 px-2 text-terminalRose">₹51,700.00</td>
+                <td class="py-1.5 px-2 text-terminalCyan">₹52,400.00</td>
+                <td class="py-1.5 px-3 text-right">
+                  <button onclick="handleExitPosition('BANKNIFTY FUT', 5850)" class="bg-rose-500/15 hover:bg-rose-500 text-terminalRose hover:text-slate-950 border border-rose-500/40 px-2.5 py-0.5 rounded text-[10px] font-bold transition-all">
                     Exit Mkt
                   </button>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</main>
-<!-- RIGHT EXECUTION DOCK (Fast Order Pad & Depth Ladder) -->
-<aside class="w-80 2xl:w-96 bg-surface-container-lowest border-l border-outline-variant flex flex-col shrink-0 overflow-y-auto">
-<!-- Fast Order Pad Header -->
-<div class="px-space-md py-space-sm border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
-<div class="flex items-center gap-1.5">
-<span class="material-symbols-outlined text-primary text-base">flash_on</span>
-<span class="text-headline-sm font-headline-sm text-sm font-bold text-on-surface">Fast Order Pad</span>
-</div>
-<!-- Order Style Toggle -->
-<div class="flex items-center bg-surface-container rounded p-0.5 border border-outline-variant text-[10px] font-label-caps">
-<button class="px-1.5 py-0.5 bg-primary text-on-primary font-bold rounded">Regular</button>
-<button class="px-1.5 py-0.5 text-on-surface-variant hover:text-on-surface">Bracket</button>
-<button class="px-1.5 py-0.5 text-on-surface-variant hover:text-on-surface">OCO</button>
-</div>
-</div>
-<!-- Execution Form Content -->
-<div class="p-space-md flex flex-col gap-space-sm border-b border-outline-variant">
-<!-- Order Type Selector -->
-<div class="grid grid-cols-4 gap-1 bg-surface-container p-0.5 rounded border border-outline-variant text-label-caps font-label-caps text-center">
-<button class="py-1 text-on-surface-variant hover:text-on-surface rounded">Market</button>
-<button class="py-1 bg-primary text-on-primary font-bold rounded shadow-sm">Limit</button>
-<button class="py-1 text-on-surface-variant hover:text-on-surface rounded">Stop Loss</button>
-<button class="py-1 text-on-surface-variant hover:text-on-surface rounded">Bracket</button>
-</div>
-<!-- Quantity Input with Stepper -->
-<div class="flex flex-col gap-1">
-<div class="flex justify-between items-center text-label-caps font-label-caps">
-<span class="text-outline">QUANTITY (LOTS)</span>
-<span class="text-on-surface-variant">Lot Size: 50</span>
-</div>
-<div class="flex items-center bg-surface-container border border-outline-variant rounded focus-within:border-primary">
-<button class="px-2.5 py-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high text-lg font-bold border-r border-outline-variant">-</button>
-<input class="w-full bg-transparent text-center text-data-mono-sm font-data-mono-sm text-on-surface py-1 focus:outline-none border-none" type="text" value="150 Qty (3 Lots)"/>
-<button class="px-2.5 py-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high text-lg font-bold border-l border-outline-variant">+</button>
-</div>
-<!-- Quick Allocation Chips -->
-<div class="flex items-center gap-1 mt-0.5 text-data-mono-xs font-data-mono-xs">
-<button class="flex-1 bg-surface-container hover:bg-surface-container-high border border-outline-variant py-0.5 rounded text-outline hover:text-on-surface">25%</button>
-<button class="flex-1 bg-surface-container hover:bg-surface-container-high border border-outline-variant py-0.5 rounded text-outline hover:text-on-surface">50%</button>
-<button class="flex-1 bg-surface-container hover:bg-surface-container-high border border-outline-variant py-0.5 rounded text-outline hover:text-on-surface">75%</button>
-<button class="flex-1 bg-surface-container hover:bg-surface-container-high border border-outline-variant py-0.5 rounded text-outline hover:text-on-surface">100%</button>
-<button class="flex-1 bg-primary/10 hover:bg-primary/20 border border-primary/30 py-0.5 rounded text-primary font-semibold">1% Risk</button>
-</div>
-</div>
-<!-- Limit Price Input -->
-<div class="flex flex-col gap-1">
-<div class="flex justify-between items-center text-label-caps font-label-caps">
-<span class="text-outline">LIMIT PRICE</span>
-<span class="text-on-surface-variant">Tick Size: 0.05</span>
-</div>
-<div class="flex items-center bg-surface-container border border-outline-variant rounded focus-within:border-primary">
-<span class="pl-2 text-outline text-data-mono-sm font-data-mono-sm">₹</span>
-<input class="w-full bg-transparent text-data-mono-md font-data-mono-md text-on-surface py-1 pl-1 focus:outline-none border-none font-bold" type="text" value="198.50"/>
-<div class="flex flex-col border-l border-outline-variant">
-<button class="px-1 text-[9px] hover:bg-surface-container-high text-on-surface-variant">▲</button>
-<button class="px-1 text-[9px] hover:bg-surface-container-high text-on-surface-variant border-t border-outline-variant">▼</button>
-</div>
-</div>
-</div>
-<!-- Risk Management Glassmorphic Box -->
-<div class="bg-surface-container/60 p-2.5 rounded border border-outline-variant backdrop-blur-sm flex flex-col gap-2">
-<div class="flex items-center justify-between">
-<span class="text-label-caps font-label-caps text-on-surface-variant flex items-center gap-1">
-<span class="material-symbols-outlined text-xs text-primary">security</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT EXECUTION DOCK (Fast Order Pad & Depth Ladder) -->
+    <aside class="w-80 xl:w-96 bg-[#0A0E17] border-l border-slateBorder flex flex-col shrink-0 overflow-y-auto">
+      <!-- Order Pad Header -->
+      <div class="px-4 py-2 border-b border-slateBorder bg-[#0E131F] flex items-center justify-between">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-terminalCyan text-base">bolt</span>
+          <span class="text-xs font-mono font-bold text-slate-100">Fast Order Pad</span>
+        </div>
+        <div class="flex items-center bg-[#080C14] rounded p-0.5 border border-slateBorder text-[10px] font-mono">
+          <button class="px-2 py-0.5 bg-terminalCyan text-slate-950 font-bold rounded">Regular</button>
+          <button class="px-2 py-0.5 text-slate-400 hover:text-white">Bracket</button>
+        </div>
+      </div>
+
+      <!-- Execution Form -->
+      <div class="p-4 flex flex-col gap-3 border-b border-slateBorder">
+        <!-- Order Type Selector -->
+        <div class="grid grid-cols-4 gap-1 bg-slateSurface p-1 rounded border border-slateBorder text-[11px] font-mono text-center">
+          <button class="py-1 text-slate-400 hover:text-white rounded">Market</button>
+          <button class="py-1 bg-terminalCyan text-slate-950 font-bold rounded shadow">Limit</button>
+          <button class="py-1 text-slate-400 hover:text-white rounded">SL</button>
+          <button class="py-1 text-slate-400 hover:text-white rounded">BO</button>
+        </div>
+
+        <!-- Quantity Input with Steppers -->
+        <div class="flex flex-col gap-1 text-xs font-mono">
+          <div class="flex justify-between items-center text-slate-400 text-[10px]">
+            <span>QUANTITY (LOTS)</span>
+            <span>Lot Size: 50</span>
+          </div>
+          <div class="flex items-center bg-slateSurface border border-slateBorder rounded focus-within:border-terminalCyan">
+            <button onclick="adjustQty(-50)" class="px-3 py-1 text-slate-400 hover:text-white text-base font-bold border-r border-slateBorder">-</button>
+            <input id="input-qty" class="w-full bg-transparent text-center text-slate-100 py-1 focus:outline-none border-none font-bold" type="text" value="150 Qty (3 Lots)"/>
+            <button onclick="adjustQty(50)" class="px-3 py-1 text-slate-400 hover:text-white text-base font-bold border-l border-slateBorder">+</button>
+          </div>
+          <!-- Quick Allocation Chips -->
+          <div class="flex items-center gap-1 text-[10px] font-mono mt-0.5">
+            <button class="flex-1 bg-slateSurface hover:bg-slate-800 border border-slateBorder py-0.5 rounded text-slate-400">25%</button>
+            <button class="flex-1 bg-slateSurface hover:bg-slate-800 border border-slateBorder py-0.5 rounded text-slate-400">50%</button>
+            <button class="flex-1 bg-slateSurface hover:bg-slate-800 border border-slateBorder py-0.5 rounded text-slate-400">75%</button>
+            <button class="flex-1 bg-slateSurface hover:bg-slate-800 border border-slateBorder py-0.5 rounded text-slate-400">100%</button>
+            <button class="flex-1 bg-terminalCyan/10 hover:bg-terminalCyan/20 border border-terminalCyan/40 py-0.5 rounded text-terminalCyan font-bold">1% Risk</button>
+          </div>
+        </div>
+
+        <!-- Limit Price Input -->
+        <div class="flex flex-col gap-1 text-xs font-mono">
+          <div class="flex justify-between items-center text-slate-400 text-[10px]">
+            <span>LIMIT PRICE</span>
+            <span>Tick Size: 0.05</span>
+          </div>
+          <div class="flex items-center bg-slateSurface border border-slateBorder rounded focus-within:border-terminalCyan px-2">
+            <span class="text-slate-500">₹</span>
+            <input id="input-price" class="w-full bg-transparent text-slate-100 py-1 pl-1 focus:outline-none border-none font-bold" type="text" value="24538.50"/>
+          </div>
+        </div>
+
+        <!-- Risk Management Card -->
+        <div class="bg-slateSurface/80 p-2.5 rounded border border-slateBorder flex flex-col gap-1.5 text-xs font-mono">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-slate-400 flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs text-terminalCyan">shield</span>
               BRACKET RISK SIZING
             </span>
-<span class="bg-primary/10 text-primary border border-primary/30 text-data-mono-xs font-data-mono-xs px-1.5 py-0.5 rounded font-bold">
-              1 : 2.5 R:R
-            </span>
-</div>
-<div class="grid grid-cols-2 gap-2 text-data-mono-xs font-data-mono-xs">
-<!-- Stop Loss -->
-<div class="bg-surface-container-lowest p-1.5 rounded border border-outline-variant">
-<span class="text-tertiary block font-semibold">SL: ₹182.00</span>
-<span class="text-outline text-[10px]">Risk: -₹2,475 (-1.1%)</span>
-</div>
-<!-- Target Profit -->
-<div class="bg-surface-container-lowest p-1.5 rounded border border-outline-variant">
-<span class="text-secondary block font-semibold">TP: ₹239.75</span>
-<span class="text-outline text-[10px]">Reward: +₹6,187 (+2.76%)</span>
-</div>
-</div>
-</div>
-<!-- Dual Execution Action Buttons (Buy Long / Sell Short) -->
-<div class="grid grid-cols-2 gap-2 pt-1">
-<!-- Buy / Long Button -->
-<button class="bg-secondary/15 hover:bg-secondary text-secondary hover:text-on-secondary-container border border-secondary p-2.5 rounded flex flex-col items-center justify-center transition-all duration-150 glow-emerald active:scale-95 group">
-<span class="font-headline-sm font-headline-sm text-xs font-bold tracking-wider group-hover:text-surface-container-lowest">BUY / LONG</span>
-<span class="text-label-caps font-label-caps text-[9px] opacity-80 group-hover:text-surface-container-lowest">Est: ₹29,775</span>
-</button>
-<!-- Sell / Short Button -->
-<button class="bg-tertiary/15 hover:bg-tertiary text-tertiary hover:text-on-tertiary-container border border-tertiary p-2.5 rounded flex flex-col items-center justify-center transition-all duration-150 active:scale-95 group">
-<span class="font-headline-sm font-headline-sm text-xs font-bold tracking-wider group-hover:text-surface-container-lowest">SELL / SHORT</span>
-<span class="text-label-caps font-label-caps text-[9px] opacity-80 group-hover:text-surface-container-lowest">Est: ₹29,775</span>
-</button>
-</div>
-<!-- Regulatory & Simulated Cost Bar -->
-<div class="flex items-center justify-between text-data-mono-xs font-data-mono-xs text-outline pt-0.5">
-<span>Est. STT + Exch + GST: ₹34.20</span>
-<span class="text-secondary font-medium">Brokerage: ₹0.00 (Sim)</span>
-</div>
-</div>
-<!-- LEVEL 2 DEPTH LADDER (ORDER BOOK WIDGET 5x5) -->
-<div class="flex-1 flex flex-col p-space-md">
-<div class="flex items-center justify-between mb-2">
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-outline text-xs">format_align_justify</span>
-<span class="text-label-caps font-label-caps text-on-surface-variant font-bold">Order Book Depth (5x5)</span>
-</div>
-<span class="text-data-mono-xs font-data-mono-xs text-outline">Spread: <strong class="text-primary font-normal">0.50 (0.002%)</strong></span>
-</div>
-<!-- Depth Table Header -->
-<div class="grid grid-cols-6 text-[10px] text-outline font-label-caps pb-1 border-b border-outline-variant text-center">
-<span class="text-left">Orders</span>
-<span class="text-right">Qty</span>
-<span class="text-right text-secondary">Bid</span>
-<span class="text-left pl-2 text-tertiary">Ask</span>
-<span class="text-right">Qty</span>
-<span class="text-right">Orders</span>
-</div>
-<!-- 5 Bid & Ask Rows -->
-<div class="flex flex-col text-data-mono-xs font-data-mono-xs py-1">
-<!-- Row 1 -->
-<div class="grid grid-cols-6 py-0.5 hover:bg-surface-container transition-colors items-center text-center relative">
-<span class="text-left text-outline">14</span>
-<span class="text-right text-on-surface">3,450</span>
-<span class="text-right font-bold text-secondary">24,538.50</span>
-<span class="text-left pl-2 font-bold text-tertiary">24,539.00</span>
-<span class="text-right text-on-surface">2,850</span>
-<span class="text-right text-outline">11</span>
-</div>
-<!-- Row 2 -->
-<div class="grid grid-cols-6 py-0.5 hover:bg-surface-container transition-colors items-center text-center relative depth-bar-bid">
-<span class="text-left text-outline">28</span>
-<span class="text-right text-on-surface">8,120</span>
-<span class="text-right font-bold text-secondary">24,538.00</span>
-<span class="text-left pl-2 font-bold text-tertiary">24,539.50</span>
-<span class="text-right text-on-surface">6,400</span>
-<span class="text-right text-outline">22</span>
-</div>
-<!-- Row 3 (High Wall) -->
-<div class="grid grid-cols-6 py-0.5 hover:bg-surface-container transition-colors items-center text-center relative depth-bar-ask">
-<span class="text-left text-outline">42</span>
-<span class="text-right text-secondary font-semibold">12,400</span>
-<span class="text-right font-bold text-secondary">24,537.50</span>
-<span class="text-left pl-2 font-bold text-tertiary">24,540.00</span>
-<span class="text-right text-tertiary font-semibold">15,200</span>
-<span class="text-right text-outline">55</span>
-</div>
-<!-- Row 4 -->
-<div class="grid grid-cols-6 py-0.5 hover:bg-surface-container transition-colors items-center text-center relative">
-<span class="text-left text-outline">19</span>
-<span class="text-right text-on-surface">5,200</span>
-<span class="text-right font-bold text-secondary">24,537.00</span>
-<span class="text-left pl-2 font-bold text-tertiary">24,540.50</span>
-<span class="text-right text-on-surface">4,100</span>
-<span class="text-right text-outline">16</span>
-</div>
-<!-- Row 5 -->
-<div class="grid grid-cols-6 py-0.5 hover:bg-surface-container transition-colors items-center text-center relative depth-bar-bid">
-<span class="text-left text-outline">31</span>
-<span class="text-right text-on-surface">9,800</span>
-<span class="text-right font-bold text-secondary">24,536.50</span>
-<span class="text-left pl-2 font-bold text-tertiary">24,541.00</span>
-<span class="text-right text-on-surface">11,050</span>
-<span class="text-right text-outline">38</span>
-</div>
-</div>
-<!-- Depth Totals Comparison -->
-<div class="mt-2 pt-2 border-t border-outline-variant flex items-center justify-between text-data-mono-xs font-data-mono-xs">
-<div class="text-left">
-<span class="text-outline block text-[9px]">TOTAL BIDS</span>
-<span class="text-secondary font-bold">38,970 Qty (58.4%)</span>
-</div>
-<div class="w-16 h-1.5 bg-tertiary/30 rounded-full overflow-hidden flex">
-<div class="w-[58%] h-full bg-secondary"></div>
-<div class="w-[42%] h-full bg-tertiary"></div>
-</div>
-<div class="text-right">
-<span class="text-outline block text-[9px]">TOTAL ASKS</span>
-<span class="text-tertiary font-bold">39,600 Qty (41.6%)</span>
-</div>
-</div>
-</div>
-</aside>
-</div>
-<script src="terminal-engine.js"></script>
-</body></html>
+            <span class="bg-terminalCyan/10 text-terminalCyan border border-terminalCyan/30 text-[10px] px-1.5 py-0.2 rounded font-bold">1 : 2.5 R:R</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-[11px]">
+            <div class="bg-[#080C14] p-1.5 rounded border border-slateBorder">
+              <span class="text-terminalRose block font-semibold">SL: ₹24,510.00</span>
+              <span class="text-slate-500 text-[9px]">Risk: -₹4,275 (-1.1%)</span>
+            </div>
+            <div class="bg-[#080C14] p-1.5 rounded border border-slateBorder">
+              <span class="text-terminalEmerald block font-semibold">TP: ₹24,610.00</span>
+              <span class="text-slate-500 text-[9px]">Reward: +₹10,725 (+2.7%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shimmer Buy / Sell Execution Triggers -->
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="handleBuyOrder()" class="shimmer-btn-emerald text-slate-950 font-bold py-2.5 px-3 rounded flex flex-col items-center justify-center transition-all duration-150 active:scale-95 shadow-lg shadow-emerald-500/20">
+            <span class="font-mono text-xs tracking-wider">BUY / LONG</span>
+            <span class="text-[9px] font-mono opacity-90">Est Margin: ₹29,775</span>
+          </button>
+          <button onclick="handleSellOrder()" class="shimmer-btn-rose text-slate-950 font-bold py-2.5 px-3 rounded flex flex-col items-center justify-center transition-all duration-150 active:scale-95 shadow-lg shadow-rose-500/20">
+            <span class="font-mono text-xs tracking-wider">SELL / SHORT</span>
+            <span class="text-[9px] font-mono opacity-90">Est Margin: ₹29,775</span>
+          </button>
+        </div>
+
+        <!-- Regulatory & Taxes Breakdown -->
+        <div class="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-0.5">
+          <span>Est. STT + Exch + GST: ₹34.20</span>
+          <span class="text-terminalEmerald font-medium">Brokerage: ₹0.00 (Sim)</span>
+        </div>
+      </div>
+
+      <!-- LEVEL 2 DEPTH LADDER (ORDER BOOK 5x5) -->
+      <div class="flex-1 flex flex-col p-3">
+        <div class="flex items-center justify-between mb-1.5 text-xs font-mono">
+          <span class="text-slate-400 font-bold text-[11px]">Order Book Depth (5x5)</span>
+          <span class="text-slate-500 text-[10px]">Spread: <strong class="text-terminalCyan font-normal">0.50 (0.002%)</strong></span>
+        </div>
+        <div class="grid grid-cols-6 text-[9px] text-slate-500 font-mono pb-1 border-b border-slateBorder text-center uppercase">
+          <span class="text-left">Orders</span>
+          <span class="text-right">Qty</span>
+          <span class="text-right text-terminalEmerald">Bid</span>
+          <span class="text-left pl-2 text-terminalRose">Ask</span>
+          <span class="text-right">Qty</span>
+          <span class="text-right">Orders</span>
+        </div>
+        <!-- 5 Bid/Ask Rows -->
+        <div class="flex flex-col text-[11px] font-mono py-1">
+          <div class="grid grid-cols-6 py-0.5 hover:bg-slateSurface items-center text-center">
+            <span class="text-left text-slate-500">14</span>
+            <span class="text-right text-slate-200">3,450</span>
+            <span class="text-right font-bold text-terminalEmerald">24,538.50</span>
+            <span class="text-left pl-2 font-bold text-terminalRose">24,539.00</span>
+            <span class="text-right text-slate-200">2,850</span>
+            <span class="text-right text-slate-500">11</span>
+          </div>
+          <div class="grid grid-cols-6 py-0.5 hover:bg-slateSurface items-center text-center bg-emerald-500/5">
+            <span class="text-left text-slate-500">28</span>
+            <span class="text-right text-slate-200">8,120</span>
+            <span class="text-right font-bold text-terminalEmerald">24,538.00</span>
+            <span class="text-left pl-2 font-bold text-terminalRose">24,539.50</span>
+            <span class="text-right text-slate-200">6,400</span>
+            <span class="text-right text-slate-500">22</span>
+          </div>
+          <div class="grid grid-cols-6 py-0.5 hover:bg-slateSurface items-center text-center bg-rose-500/5">
+            <span class="text-left text-slate-500">42</span>
+            <span class="text-right text-terminalEmerald font-semibold">12,400</span>
+            <span class="text-right font-bold text-terminalEmerald">24,537.50</span>
+            <span class="text-left pl-2 font-bold text-terminalRose">24,540.00</span>
+            <span class="text-right text-terminalRose font-semibold">15,200</span>
+            <span class="text-right text-slate-500">55</span>
+          </div>
+          <div class="grid grid-cols-6 py-0.5 hover:bg-slateSurface items-center text-center">
+            <span class="text-left text-slate-500">19</span>
+            <span class="text-right text-slate-200">5,200</span>
+            <span class="text-right font-bold text-terminalEmerald">24,537.00</span>
+            <span class="text-left pl-2 font-bold text-terminalRose">24,540.50</span>
+            <span class="text-right text-slate-200">4,100</span>
+            <span class="text-right text-slate-500">16</span>
+          </div>
+          <div class="grid grid-cols-6 py-0.5 hover:bg-slateSurface items-center text-center bg-emerald-500/5">
+            <span class="text-left text-slate-500">31</span>
+            <span class="text-right text-slate-200">9,800</span>
+            <span class="text-right font-bold text-terminalEmerald">24,536.50</span>
+            <span class="text-left pl-2 font-bold text-terminalRose">24,541.00</span>
+            <span class="text-right text-slate-200">11,050</span>
+            <span class="text-right text-slate-500">38</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- INTERACTIVE SIMULATION RUNTIME & TRADINGVIEW LOGIC -->
+  <script src="terminal-engine.js"></script>
+
+  <script>
+    // Initialize TradingView Lightweight Charts (v4.2)
+    let tvChart, candleSeries, volumeSeries, ema9Series, ema21Series;
+    let currentBarIndex = 30;
+    let baseTime = Math.floor(Date.now() / 1000) - 30 * 300; // 5-minute bars
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const container = document.getElementById("tv-chart-container");
+      if (!container || !window.LightweightCharts) return;
+
+      tvChart = LightweightCharts.createChart(container, {
+        layout: {
+          background: { color: "#080C14" },
+          textColor: "#94A3B8",
+          fontFamily: "JetBrains Mono, monospace",
+          fontSize: 11
+        },
+        grid: {
+          vertLines: { color: "#161F30" },
+          horzLines: { color: "#161F30" }
+        },
+        crosshair: {
+          mode: LightweightCharts.CrosshairMode.Normal,
+          vertLine: { color: "#06B6D4", width: 1, style: 3 },
+          horzLine: { color: "#06B6D4", width: 1, style: 3 }
+        },
+        rightPriceScale: {
+          borderColor: "#1E293B",
+          scaleMargins: { top: 0.1, bottom: 0.2 }
+        },
+        timeScale: {
+          borderColor: "#1E293B",
+          timeVisible: true,
+          secondsVisible: false
+        }
+      });
+
+      // Candlestick Series
+      candleSeries = tvChart.addCandlestickSeries({
+        upColor: "#10B981",
+        downColor: "#F43F5E",
+        borderUpColor: "#10B981",
+        borderDownColor: "#F43F5E",
+        wickUpColor: "#10B981",
+        wickDownColor: "#F43F5E"
+      });
+
+      // Volume Series
+      volumeSeries = tvChart.addHistogramSeries({
+        color: "#26a69a",
+        priceFormat: { type: "volume" },
+        priceScaleId: "",
+        scaleMargins: { top: 0.8, bottom: 0 }
+      });
+
+      // EMA Indicators
+      ema9Series = tvChart.addLineSeries({ color: "#06B6D4", lineWidth: 2, title: "EMA 9" });
+      ema21Series = tvChart.addLineSeries({ color: "#F59E0B", lineWidth: 2, title: "EMA 21" });
+
+      // Generate 35 realistic initial bars
+      const candleData = [];
+      const volumeData = [];
+      const ema9Data = [];
+      const ema21Data = [];
+
+      let currentPrice = 24420.00;
+      for (let i = 0; i < 35; i++) {
+        const time = baseTime + i * 300;
+        const open = currentPrice;
+        const delta = (Math.random() - 0.46) * 22;
+        const close = open + delta;
+        const high = Math.max(open, close) + Math.random() * 12;
+        const low = Math.min(open, close) - Math.random() * 10;
+        currentPrice = close;
+
+        candleData.push({ time, open, high, low, close });
+        volumeData.push({
+          time,
+          value: Math.floor(Math.random() * 45000 + 15000),
+          color: close >= open ? "rgba(16, 185, 129, 0.4)" : "rgba(244, 63, 94, 0.4)"
+        });
+
+        ema9Data.push({ time, value: open * 0.999 + delta * 0.2 });
+        ema21Data.push({ time, value: open * 0.998 - delta * 0.1 });
+      }
+
+      candleSeries.setData(candleData);
+      volumeSeries.setData(volumeData);
+      ema9Series.setData(ema9Data);
+      ema21Series.setData(ema21Data);
+
+      tvChart.timeScale().fitContent();
+
+      // Window resize handler
+      window.addEventListener("resize", () => {
+        if (tvChart && container) {
+          tvChart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
+        }
+      });
+    });
+
+    // Helper functions for order entry
+    function adjustQty(delta) {
+      const input = document.getElementById("input-qty");
+      let current = parseInt(input.value) || 150;
+      current = Math.max(50, current + delta);
+      input.value = `${current} Qty (${Math.round(current / 50)} Lots)`;
+    }
+
+    function handleBuyOrder() {
+      const price = parseFloat(document.getElementById("input-price").value) || 24538.50;
+      const qtyStr = document.getElementById("input-qty").value;
+      const lots = parseInt(qtyStr) || 150;
+      window.MM_STATE.currentLTP = price;
+
+      // Deduct margin
+      window.MM_STATE.marginUsed += 29775;
+      document.getElementById("hud-margin").textContent = `₹${window.MM_STATE.marginUsed.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+      
+      // Update discipline
+      window.MM_STATE.disciplineScore = Math.min(100, window.MM_STATE.disciplineScore + 1);
+      document.getElementById("discipline-val").textContent = `${window.MM_STATE.disciplineScore}/100 Discipline`;
+
+      // Trigger Web Audio + Confetti
+      playChime(880, "sine", 0.18);
+      launchConfetti();
+      showToast(`🚀 Order Filled: BUY ${lots} Qty @ ₹${price.toFixed(2)} (Slippage: ₹0.05)`, "success");
+    }
+
+    function handleSellOrder() {
+      const price = parseFloat(document.getElementById("input-price").value) || 24538.50;
+      playChime(440, "sine", 0.18);
+      showToast(`🔻 Order Filled: SELL / SHORT 150 Qty @ ₹${price.toFixed(2)}`, "warning");
+    }
+
+    function handleExitPosition(symbol, pnl) {
+      window.MM_STATE.realizedPnL += pnl;
+      window.MM_STATE.virtualEquity += pnl;
+      document.getElementById("hud-capital").textContent = `₹${window.MM_STATE.virtualEquity.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+      
+      playChime(783.99, "sine", 0.2);
+      launchConfetti();
+      openPostMortemModal();
+    }
+  </script>
+</body>
+</html>

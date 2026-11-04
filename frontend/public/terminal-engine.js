@@ -22,6 +22,7 @@
       osc.stop(audioCtx.currentTime + duration);
     } catch (e) { }
   }
+  window.playChime = playChime;
 
   // Pure Canvas Confetti Burst (Zero external library)
   function launchConfetti(x = window.innerWidth / 2, y = window.innerHeight / 2) {
@@ -346,4 +347,12 @@
     }
   }
 
+  // Export functions globally
+  window.playChime = playChime;
+  window.launchConfetti = launchConfetti;
+  window.openPostMortemModal = openPostMortemModal;
+  window.showToast = showToast;
+  window.runBacktestSimulation = runBacktestSimulation;
+
 })();
+

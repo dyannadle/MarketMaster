@@ -1,84 +1,88 @@
-# Frontend Architecture Specification: Stitch-Powered Responsive UI
+# Modern Frontend Architecture Specification (2025/2026 Edition)
 ## Project: MarketMaster Academy
-**Framework**: Next.js 15 (App Router), React 19, TypeScript 5.5+, Tailwind CSS v4  
-**UI Engine & Prototyping**: Stitch UI AI Platform, Framer Motion, Lucide Icons, TradingView Lightweight Charts  
-**Aesthetic Standard**: Institutional Dark Terminal (`#080C14`), Luminous Accent Accents, Responsive Multi-Breakpoint  
-**Version**: 2.0.0  
+**Core Framework**: Next.js 15 (App Router), React 19, TypeScript 5.5+, Tailwind CSS v4  
+**Modern UI Ecosystem**:
+* **Charting Engine**: TradingView Lightweight Charts (Canvas/WebGL GPU-accelerated, ~45KB)
+* **Design & Primitive System**: shadcn/ui + Radix UI accessible primitives
+* **Visual Polish & Micro-Interactions**: Magic UI (Border Beams, Retro Grid, Neon Shimmer) & Aceternity UI
+* **Financial Analytics & KPI Telemetry**: Tremor-style metric cards, delta trackers, and performance heatmaps
+* **Notifications & Feedback**: Sonner stackable toasts + Browser Web Audio API sound synthesis + Canvas Confetti
+* **State Management**: Zustand (isolated high-frequency tick subscriptions without root re-renders)
+**Aesthetic Palette**: Institutional Obsidian (`#080C14`), Glassmorphism (`rgba(14, 19, 31, 0.75)` with 16px blur), Emerald Long (`#10B981`), Rose Short (`#F43F5E`), Cyan Telemetry (`#06B6D4`), Amber Warning (`#F59E0B`)  
+**Version**: 3.0.0  
 
 ---
 
-### 1. Stitch UI Integration & Design Philosophy
-
-MarketMaster Academy leverages **Stitch UI** to design, prototype, and synthesize production-grade interactive screens and design systems:
-
-* **Institutional Terminal Dark Theme**:
-  * Deep background: `slate-950` (`#080C14`) with glassmorphism card containers (`rgba(15, 23, 42, 0.75)` with subtle `border-slate-800/80`).
-  * Financial metrics: Emerald green (`#10B981`) for profits and bids; bright rose (`#F43F5E`) for losses and asks; cyan (`#06B6D4`) for order markers and execution cursors.
-* **Fluid Responsiveness Across All Form Factors**:
-  * **Desktop Terminal (>= 1280px)**: Multi-pane Bloomberg/TradingView workstation layout (Watchlist, 1-min Chart, Level-2 Depth Ladder, Fast Order Dock, and Positions Ledger visible simultaneously).
-  * **Tablet / Compact (768px - 1279px)**: Dual-pane collapsible drawer layout with tabbed bottom dock.
-  * **Mobile Terminal (< 768px)**: Bottom-sheet execution drawer, quick-swipe timeframe toggles, and thumb-friendly One-Tap Buy/Sell buttons.
-* **Micro-Interactions & Gamified Rewards**:
-  * **Framer Motion**: Smooth entry/exit animations for modals, price flash animations when bids/asks tick, and animated progress rings for lesson completion.
-  * **Discipline Visualizer**: Dynamic glowing ring showing real-time trader discipline score.
-  * **Sound & Confetti**: Subtle audio feedback on order execution; canvas-confetti bursts upon mastering a curriculum level or completing a Daily Replay Challenge.
-
----
-
-### 2. Component Hierarchy & Layout Tree
+### 1. Technology Choices & Modern Fintech UI Stack
 
 ```mermaid
 graph TD
-    RootLayout["RootLayout (app/layout.tsx)<br/>• ThemeProvider (Institutional Dark)<br/>• ToastProvider<br/>• SoundFXProvider"]
+    ClientApp["MarketMaster Academy Next.js 15 Client"]
     
-    RootLayout --> TopNav["TopNavBar<br/>• MarketMaster Logo<br/>• Level & XP Mastery Bar<br/>• Virtual Balance Counter (₹10,00,000)<br/>• Discipline Score Ring (92/100)"]
-    RootLayout --> SideNav["SideNavBar (Collapsible)<br/>• Terminal (Live Replay)<br/>• ChartingPark Gym<br/>• 6-Level Academy<br/>• Strategy Lab<br/>• Leaderboards<br/>• Settings"]
-    
-    RootLayout --> MainContent["Dynamic Route Viewport"]
-    
-    subgraph Viewports["Core Viewports"]
-        TerminalPage["/terminal (Stitch Pro Terminal)"]
-        GymPage["/gym/replay (Blind Replay Gym)"]
-        AcademyPage["/academy/[level]/[concept]"]
-        LabPage["/strategy-lab (Pyodide Algo Lab)"]
+    subgraph UIStack["Modern UI & Component Ecosystem"]
+        TVChart["TradingView Lightweight Charts<br/>(45KB GPU Canvas Candlestick & Volume Engine)"]
+        Shadcn["shadcn/ui + Radix UI<br/>(Accessible Modals, Dropdowns, Sheets, Tooltips)"]
+        MagicUI["Magic UI & Aceternity UI<br/>(Border Beam Glow, Shimmer Buttons, Neon Glows)"]
+        Tremor["Tremor KPI Primitives<br/>(R:R Badges, Drawdown Meters, Streak Heatmaps)"]
+        Sonner["Sonner Toasts + Web Audio FX<br/>(Synthesized Order Execution Chimes)"]
     end
     
-    MainContent --> Viewports
+    subgraph StateAndQuant["Client-Side Quant & State Isolation"]
+        ZustandStore["Zustand State Isolation<br/>(Throttled WebSocket & Replay Subscriptions)"]
+        PyodideWASM["Pyodide Python WASM Sandbox<br/>(Vector Backtesting & Execution Slicers)"]
+    end
+    
+    ClientApp --> UIStack
+    ClientApp --> StateAndQuant
 
-    subgraph TerminalComponents["Terminal Sub-Components (Stitch Synthesized)"]
-        Watchlist["WatchlistBar (Tickers & Depth)"]
-        Chart["TradingViewChart (Canvas / WebGL)"]
-        OrderBook["DepthLadder (5x5 Bids & Asks)"]
-        OrderDock["InstantOrderDock (Market, Limit, SL, BO)"]
-        PostMortemModal["AutomatedTradePostMortemModal"]
-        PositionsTable["ActivePositions & Ledger"]
-    end
-    
-    TerminalPage --> TerminalComponents
+    style TVChart fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#ffffff
+    style MagicUI fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#ffffff
+    style ZustandStore fill:#1f2937,stroke:#06b6d4,stroke-width:2px,color:#ffffff
 ```
 
 ---
 
-### 3. Client-Side State Management (Zustand Flowchart)
+### 2. Multi-Breakpoint Responsive Layout Matrix
 
-```mermaid
-flowchart LR
-    subgraph StateStores["Zustand Client Stores"]
-        AuthStore["useAuthStore<br/>• User Profile<br/>• JWT Tokens<br/>• Streak Days"]
-        TradingStore["useTradingStore<br/>• Active Orders<br/>• Open Positions<br/>• Virtual Cash<br/>• Unrealized PnL"]
-        ReplayStore["useReplayStore<br/>• Current Bar Index<br/>• Playback Speed (0.5x-10x)<br/>• IsBlindMode (Boolean)<br/>• Masked Ticker ASSET_X"]
-        DisciplineStore["useDisciplineStore<br/>• Discipline Index (0-100)<br/>• Revenge Trade Alert<br/>• CoolDownState"]
-    end
+The interface adapts dynamically across three primary viewport tiers:
 
-    subgraph UIComponents["Subscriber Components"]
-        ChartComp["TradingViewCandleChart"]
-        DepthComp["MarketDepthLadder"]
-        OrderDockComp["InstantOrderDock"]
-        HeaderComp["TopAccountBar"]
-    end
+| Breakpoint Tier | Layout Strategy | Panels Displayed | Interaction Pattern |
+| :--- | :--- | :--- | :--- |
+| **Desktop Ultra-Wide (>= 1440px)** | 16-Column Multi-Dock Grid | Sidebar (2 cols), Watchlist (2 cols), Chart + Replay (7 cols), Fast Order Pad + Depth Ladder (3 cols), Positions Drawer (bottom) | Multi-monitor institutional cockpit with keyboard shortcuts (`B` for Buy, `S` for Sell, `Space` for Replay Play/Pause) |
+| **Laptop / Tablet (768px - 1439px)** | 8-Column Fluid Split | Collapsible sidebar, Full-width Chart with overlay indicators, Tabbed right drawer toggling between Order Pad and Level-2 Depth | Touch and trackpad optimized gestures with pinch-to-zoom candles |
+| **Mobile Screen (< 768px)** | Single-Column Stack + Bottom Sheet | Sticky top balance & ticker bar, Fullscreen interactive chart, Bottom-sheet floating action bar for instant 1-tap Buy/Sell | Bottom drawer swipe-up for full order entry and positions review |
 
-    TradingStore -->|Select Positions & PnL| OrderDockComp
-    TradingStore -->|Select Cash & Equity| HeaderComp
-    ReplayStore -->|Select Current Candle| ChartComp
-    DisciplineStore -->|Discipline Alert| HeaderComp
+---
+
+### 3. Magic UI & Institutional Design Tokens
+
+#### 3.1 Animated Border Beam (`border-beam`)
+Used on active order pad containers and live trade post-mortem modals to provide subtle, premium visual cues without causing CPU drain:
+```css
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+.border-beam {
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+  mask-clip: padding-box, border-box;
+  mask-composite: intersect;
+}
 ```
+
+#### 3.2 Strict Directional Color Semantics
+* **Bullish / Profit / Bid**: `#10B981` (Emerald-500), dark background `rgba(16, 185, 129, 0.12)`.
+* **Bearish / Loss / Ask**: `#F43F5E` (Rose-500), dark background `rgba(244, 63, 94, 0.12)`.
+* **Telemetry / Execution Active**: `#06B6D4` (Cyan-500) and `#38BDF8` (Sky-400).
+* **Margin Warning / Risk Calls**: `#F59E0B` (Amber-500).
+
+---
+
+### 4. Zero-Dependency Audio Synthesis & Confetti Engine
+* **Web Audio API**: Browser-synthesized sine/triangle chimes at 880Hz (order fill) and 440Hz (order cancel) with exponential gain decay. Zero external audio asset loading required.
+* **Canvas Confetti**: High-performance requestAnimationFrame 60fps particle physics engine triggered upon completing daily replay challenges and adhering to stop-loss rules.

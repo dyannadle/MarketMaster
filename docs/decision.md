@@ -179,3 +179,16 @@
   3. Wire live historical replay bar ticking, working order execution with power-law slippage preview, instant toast alerts, audio chimes, canvas confetti bursts, and the Automated Trade Post-Mortem Diagnostic modal.
 * **Why Taken**: Static UI designs do not allow users to experience market replay dynamics, psychological risk enforcement, or institutional execution slicing. By embedding an interactive simulation engine natively, users can immediately experience realistic trading feedback in any browser without requiring external dependencies or running servers.
 * **Impact**: Unrivaled interactive fidelity, zero npm install friction for quick inspection, enlightening pedagogical feedback upon closing trades, and instant tactile proof of the platform's vision.
+
+---
+
+### Record: ADR-017 — Modern UI Ecosystem Synthesis (TradingView Lightweight Charts, Magic UI & Tremor)
+* **Date & Timestamp**: 2026-11-04 16:56:00 UTC (Local: 2026-11-04 22:26:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Integrate TradingView Lightweight Charts (v4.2.1) GPU-accelerated canvas engine for native candlestick, volume histogram, and EMA line series rendering.
+  2. Adopt Magic UI & Aceternity UI design patterns: animated border beams (`border-beam`), cyber-matrix background grid, and gradient shimmer buttons for high-stakes Buy/Sell execution actions.
+  3. Adopt Tremor-style financial KPI telemetry cards and real-time discipline ring progress meters.
+  4. Implement Sonner-inspired stackable toast alerts paired with browser-synthesized Web Audio order feedback.
+* **Why Taken**: Competitive analysis of the 2025/2026 fintech and trading UI landscape confirms that traders demand high-density, millisecond-level canvas rendering that does not choke the DOM. Lightweight Charts delivers a ~45KB footprint with 60fps GPU acceleration, while Magic UI border beams and Tremor telemetry give the interface an institutional, Bloomberg-tier visual authority.
+* **Impact**: Unrivaled charting performance, immediate visual distinction, responsive cross-device layout, and an engaging simulation theater for students and traders.
