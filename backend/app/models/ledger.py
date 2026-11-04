@@ -21,3 +21,4 @@ class CashLedger(Base):
     __table_args__ = (
         Index("idx_user_ledger_date", "user_id", "created_at"),
     )
+

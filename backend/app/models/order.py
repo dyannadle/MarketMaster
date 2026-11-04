@@ -26,3 +26,4 @@ class Order(Base):
     __table_args__ = (
         Index("idx_user_orders_status", "user_id", "status"),
     )
+

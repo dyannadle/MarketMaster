@@ -84,3 +84,4 @@ class ReplayService:
             "current_index": clipped_index,
             "has_more": clipped_index < len(candles)
         }
+

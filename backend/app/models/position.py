@@ -26,3 +26,4 @@ class Position(Base):
     __table_args__ = (
         Index("idx_user_positions_open", "user_id", "is_open"),
     )
+

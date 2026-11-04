@@ -82,3 +82,4 @@ async def test_high_volume_transaction_loop_integrity(db_session: AsyncSession, 
 
     # Strict audit check
     assert await LedgerService.verify_integrity(db_session, seed_user.id) is True
+

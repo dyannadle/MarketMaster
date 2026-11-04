@@ -258,3 +258,20 @@
   * Engineered vectorized Black-Scholes pricing with full analytical first/second-order Greeks and dual-EMA backtesting.
   * Verified DPDP Act 2023 "Right to Erasure" cascading data purging.
   * Executed comprehensive automated test suite (15/15 tests passing, 100% green rate).
+
+---
+
+### [v1.0.15-PURGE-TEMPORARY-UI-FOR-CUSTOM-DELIVERY] — 2026-11-04 17:38:00 UTC (Local: 2026-11-04 23:08:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: UI Decoupling & Custom Integration Readiness (`UI`, `Frontend`, `Decoupling`)
+* **Files Removed & Modified**:
+  * Removed `frontend/public/index.html`, `frontend/public/gym.html`, `frontend/public/academy.html`, `frontend/public/lab.html`
+  * Removed `frontend/public/terminal-engine.js`
+  * Removed `scripts/inject_engine.py`, `scripts/link_screens.py`
+  * Created `frontend/.gitkeep` (Clean placeholder for incoming user UI codebase)
+  * `README.md` (Updated status matrix to await user custom UI integration)
+  * `docs/decision.md` (Recorded ADR-019)
+  * `docs/changes.md` (Logged v1.0.15 release entry)
+* **Detailed Description**:
+  * Purged all generated temporary frontend prototype files and injection scripts per explicit user request.
+  * Preserved the backend API layer and full 15-test automated suite (100% pass rate) ready for custom frontend connection.

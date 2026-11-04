@@ -28,3 +28,4 @@ class PositionExitResponse(BaseModel):
     margin_released: float
     discipline_score: int
     post_mortem: dict
+

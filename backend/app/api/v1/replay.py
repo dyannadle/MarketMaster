@@ -45,3 +45,4 @@ async def slice_candles(req: SliceRequest):
         current_index=req.current_index,
         window_size=req.window_size
     )
+

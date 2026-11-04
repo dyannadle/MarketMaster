@@ -26,7 +26,7 @@ flowchart LR
 | Subsystem | Tech Stack | Status | Reference Spec |
 | :--- | :--- | :---: | :--- |
 | **Specifications & Blueprints** | Markdown, Mermaid, IEEE 830 | ✅ Complete | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| **Frontend Web Terminal** | Next.js 15, Stitch UI, TV Lightweight Charts, Magic UI, Tremor | ✅ 4 Screens Active | [`docs/FRONTEND_ARCHITECTURE.md`](docs/FRONTEND_ARCHITECTURE.md) |
+| **Frontend Web Terminal** | Custom Modern UI (Dedicated integration) | 🟡 Ready for User Delivery | [`docs/FRONTEND_ARCHITECTURE.md`](docs/FRONTEND_ARCHITECTURE.md) |
 | **Backend & Quant Engine** | Python 3.13+, FastAPI, Polars, Async SQLAlchemy, NumPy, SciPy | ✅ Tested (100% Pass) | [`docs/BACKEND_ARCHITECTURE.md`](docs/BACKEND_ARCHITECTURE.md) |
 | **Database & Caching** | PostgreSQL 16, SQLite (aiosqlite), Redis 7 Docker compose | ✅ Implemented | [`docs/DATABASE_SCHEMA.md`](docs/DATABASE_SCHEMA.md) |
 | **Simulation & Replay Engine** | Non-Linear Power-Law Slippage, Indian Taxes, Double-Entry Ledger | ✅ Tested (100% Pass) | [`docs/PAPER_TRADING_ENGINE_SPEC.md`](docs/PAPER_TRADING_ENGINE_SPEC.md) |

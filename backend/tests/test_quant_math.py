@@ -73,3 +73,4 @@ def test_vectorized_dual_ema_backtest():
     assert len(res.equity_curve) > 5
     assert isinstance(res.sharpe_ratio, float)
     assert isinstance(res.sortino_ratio, float)
+

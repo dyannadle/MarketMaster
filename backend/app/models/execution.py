@@ -22,3 +22,4 @@ class TradeExecution(Base):
     exchange_charges = Column(Float, default=0.0, nullable=False)
     
     executed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+

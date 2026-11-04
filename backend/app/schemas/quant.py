@@ -43,3 +43,4 @@ class BacktestResponse(BaseModel):
     net_pnl: float
     equity_curve: List[float]
     slippage_savings: float
+

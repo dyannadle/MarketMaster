@@ -57,3 +57,4 @@ async def test_order_execution_and_discipline_update(db_session: AsyncSession, s
     # Stop-loss was provided -> user rewarded +2 discipline points
     assert seed_user.discipline_score == initial_discipline + 2
     assert seed_user.reserved_margin > 0.0
+

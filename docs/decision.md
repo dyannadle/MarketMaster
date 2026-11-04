@@ -208,3 +208,15 @@
   7. Construct a 15-test automated test suite across 4 test modules (`test_ledger_reconciliation.py`, `test_quant_math.py`, `test_matching_engine.py`, `test_api_endpoints.py`), achieving 100% test pass rate prior to commit per Rule 8.1.
 * **Why Taken**: Fulfills the quant backend requirement with a ₹0 cloud footprint, high mathematical precision via NumPy/SciPy/Polars, and strict bank-grade double-entry financial integrity.
 * **Impact**: Zero mathematical drift in virtual trading portfolios, realistic slippage and statutory costs for paper traders, verified DPDP compliance, and instant analytical option metrics.
+
+---
+
+### Record: ADR-019 — Decoupling and Purging Temporary Generated UI for Custom User UI Integration
+* **Date & Timestamp**: 2026-11-04 17:37:00 UTC (Local: 2026-11-04 23:07:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Remove temporary generated UI prototypes (`frontend/public/*.html`, `terminal-engine.js`, and screen link scripts) per explicit user directive.
+  2. Preserve the frontend repository root directory (`frontend/.gitkeep`) in a clean, decoupled state to cleanly ingest the user's custom-built UI codebase.
+  3. Retain the fully functional and tested Python quantitative backend, double-entry ledger, matching engine, and API layer (`backend/`) intact and ready for seamless frontend API integration.
+* **Why Taken**: User will provide a bespoke, comprehensive UI application separately. Purging prototype artifacts avoids codebase collisions, obsolete bundle assets, and merge conflicts.
+* **Impact**: Clean architectural boundary; backend remains completely verified (15/15 tests passing) and prepared to serve the incoming user-supplied UI.

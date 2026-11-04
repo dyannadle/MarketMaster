@@ -115,3 +115,4 @@ async def delete_account(
     
     await db.commit()
     return {"status": "SUCCESS", "message": "All personal data and trading records permanently erased."}
+

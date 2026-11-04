@@ -150,3 +150,4 @@ async def test_replay_session_and_polars_slice(async_client: AsyncClient):
     assert len(slice_data["visible_candles"]) == 20
     assert slice_data["current_index"] == 25
     assert slice_data["has_more"] is True
+

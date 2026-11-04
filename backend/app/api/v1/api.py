@@ -10,3 +10,4 @@ api_router.include_router(auth_router, prefix="/auth", tags=["Authentication & U
 api_router.include_router(trading_router, prefix="/trading", tags=["Virtual Trading & Ledger"])
 api_router.include_router(quant_router, prefix="/quant", tags=["Quantitative Models & Derivatives"])
 api_router.include_router(replay_router, prefix="/replay", tags=["Market Replay & Gym Engine"])
+
