@@ -179,3 +179,21 @@
   * `docs/changes.md` (Logged v1.0.10 release entry)
 * **Detailed Description**:
   * Evolved the technical architecture to a lightweight, modern Python 3.12+ ASGI quant stack and committed to starting construction from the UI layer using Stitch UI.
+
+---
+
+### [v1.0.11-STITCH-UI-SCREENS-SCAFFOLDING] — 2026-11-04 16:39:00 UTC (Local: 2026-11-04 22:09:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: UI Scaffolding, Generative Design & Git Remote Alignment (`UI`, `Stitch`, `Frontend`, `ADR`)
+* **Files Created & Modified**:
+  * `frontend/public/index.html` (Deployed Stitch-generated 52KB Institutional Trading Terminal & Replay Simulator)
+  * `frontend/public/gym.html` (Deployed Stitch-generated 49KB ChartingPark Blind Replay Gym & Daily Challenge Arena)
+  * `frontend/public/academy.html` (Deployed Stitch-generated 47KB Academy Course Hub with Spaced Repetition Learning Theater)
+  * `scripts/link_screens.py` (Created automated cross-screen navigation link synchronizer)
+  * `docs/decision.md` (Recorded ADR-015 for multi-screen Stitch UI deployment)
+  * `docs/changes.md` (Recorded v1.0.11 release entry)
+* **Detailed Description**:
+  * Initiated code construction directly from the UI layer using the Stitch AI design engine (`projects/8751679670035874305`).
+  * Synthesized three production-grade, responsive screens sharing the dark institutional glassmorphism design system (`#080C14` background, `#10B981` emerald profits, `#F43F5E` rose losses, `#06B6D4` cyan telemetry, and JetBrains Mono tabular digits).
+  * Automated navigation cross-linking across all three viewports for immediate local exploration in any browser.
+  * Re-aligned Git remote origin directly to `https://github.com/dyannadle/MarketMaster.git`.

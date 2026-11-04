@@ -154,3 +154,16 @@
 * **Alternatives Considered**:
   * *Maintaining Java/Spring Boot exclusively*: Rejected because Python's rich quant ecosystem (Polars, NumPy, SciPy, Pyodide parity) enables vastly faster development of financial indicators and algorithmic slicers.
 * **Impact**: Lighter cloud footprint, instantaneous local development startup (<1 sec vs 25 sec JVM boot), seamless data science parity between backend and Pyodide client sandbox, and visually striking, responsive Stitch-crafted UI.
+
+---
+
+### Record: ADR-015 — Multi-Screen Stitch-Generated UI Suite Deployment
+* **Date & Timestamp**: 2026-11-04 16:38:00 UTC (Local: 2026-11-04 22:08:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: Deploy a comprehensive 3-screen interactive frontend suite in `frontend/public/` synthesized using Stitch UI AI engine (`projects/8751679670035874305`), sharing the unified `MarketMaster Academy` institutional dark terminal design system (`assets/e90035912b7c402c9691fd64fb4450f8`):
+  1. *Screen 1*: `frontend/public/index.html` (Institutional Trading Terminal & Replay Simulator).
+  2. *Screen 2*: `frontend/public/gym.html` (ChartingPark Blind Replay Gym & Daily Challenge Arena).
+  3. *Screen 3*: `frontend/public/academy.html` (Academy Course Hub & Spaced Repetition SM-2 Learning Theater).
+  4. Cross-link all screens through unified sidebar navigation.
+* **Why Taken**: Provides immediate tactile, visual feedback for students and developers, allowing direct previewing in any web browser without waiting for backend API completion. Adheres strictly to the user instruction to begin construction from the UI.
+* **Impact**: Instant visual validation of institutional terminal density, 100% responsive dark mode, glassmorphism design tokens, and seamless cross-screen navigation for user testing.
