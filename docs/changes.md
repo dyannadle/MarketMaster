@@ -197,3 +197,22 @@
   * Synthesized three production-grade, responsive screens sharing the dark institutional glassmorphism design system (`#080C14` background, `#10B981` emerald profits, `#F43F5E` rose losses, `#06B6D4` cyan telemetry, and JetBrains Mono tabular digits).
   * Automated navigation cross-linking across all three viewports for immediate local exploration in any browser.
   * Re-aligned Git remote origin directly to `https://github.com/dyannadle/MarketMaster.git`.
+
+---
+
+### [v1.0.12-COMPLETE-INTERACTIVE-UI-SUITE] — 2026-11-04 16:50:00 UTC (Local: 2026-11-04 22:20:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Interactive UI, Audio Simulation & Strategy Lab (`UI`, `Interactive`, `WASM`, `Quant`)
+* **Files Created & Modified**:
+  * `frontend/public/lab.html` (Deployed Stitch-generated 44KB Strategy Lab & Algorithmic Execution Sandbox with in-browser Python IDE, TWAP/VWAP slicers, and performance tearsheet)
+  * `frontend/public/terminal-engine.js` (Authored zero-dependency real-time simulation runtime: Web Audio synthesizer chimes, canvas confetti, automated post-mortem trade diagnostic modal, replay tick loop, and order execution handling)
+  * `frontend/public/index.html` (Cross-linked Strategy Lab and injected `terminal-engine.js`)
+  * `frontend/public/gym.html` (Cross-linked Strategy Lab and injected `terminal-engine.js`)
+  * `frontend/public/academy.html` (Cross-linked Strategy Lab and injected `terminal-engine.js`)
+  * `scripts/link_screens.py` (Updated to cross-link all 4 viewports)
+  * `scripts/inject_engine.py` (Automation utility ensuring script injection across all screens)
+  * `docs/decision.md` (Recorded ADR-016)
+  * `docs/changes.md` (Logged v1.0.12 release entry)
+* **Detailed Description**:
+  * Elevated the UI from static mockups to a living, interactive, and enlightening institutional trading experience.
+  * Added working replay animation, instant Buy/Sell execution with slippage chimes, automated post-mortem analysis modal with XP rewards on position exit, and vector backtesting simulation with canvas confetti celebrations.

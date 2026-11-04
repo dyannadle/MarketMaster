@@ -167,3 +167,15 @@
   4. Cross-link all screens through unified sidebar navigation.
 * **Why Taken**: Provides immediate tactile, visual feedback for students and developers, allowing direct previewing in any web browser without waiting for backend API completion. Adheres strictly to the user instruction to begin construction from the UI.
 * **Impact**: Instant visual validation of institutional terminal density, 100% responsive dark mode, glassmorphism design tokens, and seamless cross-screen navigation for user testing.
+
+---
+
+### Record: ADR-016 — Interactive Client-Side Simulation Runtime & Complete 4-Screen UI Suite
+* **Date & Timestamp**: 2026-11-04 16:49:00 UTC (Local: 2026-11-04 22:19:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Complete the full 4-screen visual suite by adding `frontend/public/lab.html` (Strategy Lab & Institutional Algorithmic Execution Sandbox) synthesized via Stitch (`projects/8751679670035874305`).
+  2. Implement an in-browser zero-dependency simulation runtime (`frontend/public/terminal-engine.js`) using standard HTML5 Canvas, Web Audio API, and DOM reactive event listeners.
+  3. Wire live historical replay bar ticking, working order execution with power-law slippage preview, instant toast alerts, audio chimes, canvas confetti bursts, and the Automated Trade Post-Mortem Diagnostic modal.
+* **Why Taken**: Static UI designs do not allow users to experience market replay dynamics, psychological risk enforcement, or institutional execution slicing. By embedding an interactive simulation engine natively, users can immediately experience realistic trading feedback in any browser without requiring external dependencies or running servers.
+* **Impact**: Unrivaled interactive fidelity, zero npm install friction for quick inspection, enlightening pedagogical feedback upon closing trades, and instant tactile proof of the platform's vision.
