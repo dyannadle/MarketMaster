@@ -1,43 +1,57 @@
-# Backend Architecture Specification
+# Backend Architecture Specification: Lightweight Python Quant Stack
 ## Project: MarketMaster Academy
-**Runtime & Framework**: Java 21 LTS / Spring Boot 3.3+  
-**Architecture Pattern**: Modular Monolith with Virtual Threads (Project Loom)  
-**Version**: 1.0.0  
+**Runtime & Framework**: Python 3.12+ / FastAPI / Uvicorn (ASGI)  
+**Architecture Pattern**: Async Modular Architecture with High-Performance Quant Libraries  
+**Version**: 2.0.0  
 
 ---
 
 ### 1. Technology Choices & High-Concurrency Principles
-* **Java 21 Virtual Threads**: Handles 10,000+ concurrent simulated WebSocket connections with near-zero memory footprint compared to OS-level platform threads.
-* **Spring Boot 3.3**: Enterprise-grade dependency injection, declarative security, and Spring Data JPA integration.
-* **Flyway**: Versioned database migration scripts ensuring idempotent relational schema evolution.
-* **Caffeine & Redis**: Dual-tier caching strategy: L1 in-memory microsecond cache (Caffeine) for hot order quotes; L2 distributed Redis cache for user session state and global leaderboard scores.
+
+To deliver maximum agility, rapid development velocity, lightweight cloud footprint, and native financial mathematical capabilities, MarketMaster Academy standardizes on an ultra-lightweight, high-performance Python asynchronous stack:
+
+* **FastAPI + Uvicorn**: High-performance, asynchronous ASGI web framework. Native asynchronous request handling, sub-millisecond route dispatching, automatic OpenAPI 3.1 interactive docs, and seamless WebSocket streaming for live order-book tickers.
+* **Polars & Pandas**: Lightning-fast columnar DataFrame processing. Polars uses multi-threaded Rust internals for blazing-fast OHLCV historical candle slicing, rolling indicator computation, and backtesting aggregations with 1/10th the memory footprint of traditional JVM monoliths.
+* **NumPy & SciPy**: Native vectorized math engine powering Black-Scholes option pricing, Greeks ($\Delta, \Gamma, \Theta, \mathcal{V}, \rho$), Sortino/Sharpe ratios, maximum drawdown calculations, and Glicko-2 rating updates.
+* **SQLAlchemy 2.0 (Asyncio) & Alembic**: Non-blocking asynchronous ORM connecting to PostgreSQL 16 with asyncpg drivers. Automated, declarative schema migrations via Alembic.
+* **Pydantic v2**: High-speed Rust-compiled schema validation, enforcing zero-frontend-trust data verification on every order tick, lot size, and margin calculation.
+* **Redis-Py (Asyncio)**: Low-latency caching for real-time order depth ladders, active session tokens, and daily challenge leaderboards.
 
 ---
 
-### 2. Service Modules & Inter-Module Interfaces
+### 2. Service Modules & Async Architecture
 
-```
-                    ┌───────────────────────────────┐
-                    │     Spring Web & Security     │
-                    │   (JWT Filter, Rate Limiter)  │
-                    └───────────────┬───────────────┘
-                                    │
-    ┌───────────────────────────────┼───────────────────────────────┐
-    ▼                               ▼                               ▼
-┌───────────────────────┐ ┌───────────────────────┐ ┌───────────────────────┐
-│     CourseModule      │ │    TradingModule      │ │   MarketDataModule    │
-│ • CourseService       │ │ • OrderExecutionService│ │ • CandleFeedService   │
-│ • ProgressRepository  │ │ • VirtualLedgerService│ │ • SyntheticGenerator  │
-│ • QuizEvaluator       │ │ • RmsCheckService     │ │ • CorporateActionAdj  │
-└───────────────────────┘ └───────────────────────┘ └───────────────────────┘
-```
+```mermaid
+flowchart TD
+    Client["Next.js Web / Android / WebSocket Client"] --> Ingress["FastAPI ASGI Gateway<br/>(JWT Bearer Auth, Rate Limiter, CORS)"]
 
-**Inter-Service Communication**: In-process synchronous Java method calls across module boundaries using strongly-typed service interfaces. Event communication handled via Spring `ApplicationEventPublisher`.
+    subgraph CoreServices["FastAPI Modular Domain Services (Asyncio)"]
+        CourseMod["Course & Academy Service<br/>(Curriculum, Quizzes, Progress)"]
+        TradingMod["Trading & Matching Service<br/>(Order Book, Slippage, Double-Entry Ledger)"]
+        MarketMod["Market Data & Replay Service<br/>(Polars OHLCV Slicers, Synthetic GBM)"]
+        RMSMod["RMS & Risk Service<br/>(SPAN Margin, Liquidation Engine)"]
+        QuantMod["Strategy Lab Service<br/>(Vector Backtesting, Tearsheet Analytics)"]
+    end
+
+    Ingress --> CourseMod
+    Ingress --> TradingMod
+    Ingress --> MarketMod
+    Ingress --> RMSMod
+    Ingress --> QuantMod
+
+    TradingMod --> Postgres[("PostgreSQL 16<br/>(cash_ledger, orders, positions)")]
+    MarketMod --> ParquetStore[("Parquet / Cache<br/>(1-Min Candle Store)")]
+    RMSMod --> RedisCache[("Redis 7<br/>(L2 Depth & Price Quotes)")]
+
+    style Ingress fill:#1f2937,stroke:#3b82f6,stroke-width:2px,color:#ffffff
+    style TradingMod fill:#0f291e,stroke:#10b981,stroke-width:2px,color:#ffffff
+    style MarketMod fill:#3d2f0a,stroke:#f59e0b,stroke-width:2px,color:#ffffff
+```
 
 ---
 
-### 3. Background Scheduled Jobs
-1. **Daily Challenge Rotator**: Fires daily at 00:00:00 UTC via `@Scheduled(cron = "0 0 0 * * *")` to select 3 new randomized historical scenarios and reset daily competition leaderboards.
-2. **RMS Margin Evaluator**: Runs every 1 second during simulated active market hours to check open positions against required maintenance margins and issue automated margin calls.
-3. **End-of-Day Settlement Job**: Simulates MTM cash credits/debits, exercises expiring in-the-money options contracts, and accrues overnight interest or roll charges.
+### 3. Background Async Tasks & Cron Schedulers
 
+1. **Daily Challenge Rotator**: Fires daily at 00:00:00 UTC via async background worker to select 3 new randomized historical scenarios, calculate previous day's rankings, and reset leaderboards.
+2. **RMS Real-time Margin Evaluator**: Runs on async event loop every 100ms during active replay sessions to verify position margins against liquidation boundaries.
+3. **Double-Entry Reconciliation Worker**: Runs every 10 minutes to verify the zero-sum ledger invariant ($\sum \text{Debits} == \sum \text{Credits}$) across all accounts.

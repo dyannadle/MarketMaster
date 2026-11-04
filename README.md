@@ -5,6 +5,129 @@ MarketMaster Academy combines a 6-tier comprehensive financial education curricu
 
 ---
 
+## Current Build & Implementation Status
+
+```mermaid
+flowchart LR
+    Phase0["Phase 0: Specifications<br/>✅ Complete (58 Docs)"] --> Phase1["Phase 1: Core Scaffolding<br/>🟡 In Progress (Sprint 1-2)"]
+    Phase1 --> Phase2["Phase 2: Replay & Matching<br/>⚪ Scheduled (Sprint 3-4)"]
+    Phase2 --> Phase3["Phase 3: ChartingPark Gym<br/>⚪ Scheduled (Sprint 5-6)"]
+    Phase3 --> Phase4["Phase 4: Strategy Lab<br/>⚪ Scheduled (Sprint 7-8)"]
+    Phase4 --> Phase5["Phase 5: Android APK<br/>⚪ Scheduled (Sprint 9-10)"]
+
+    style Phase0 fill:#1e3a1e,stroke:#4caf50,stroke-width:2px,color:#ffffff
+    style Phase1 fill:#3d2f0a,stroke:#ff9800,stroke-width:2px,color:#ffffff
+    style Phase2 fill:#1f2937,stroke:#6b7280,stroke-width:1px,color:#cccccc
+    style Phase3 fill:#1f2937,stroke:#6b7280,stroke-width:1px,color:#cccccc
+    style Phase4 fill:#1f2937,stroke:#6b7280,stroke-width:1px,color:#cccccc
+    style Phase5 fill:#1f2937,stroke:#6b7280,stroke-width:1px,color:#cccccc
+```
+
+| Subsystem | Tech Stack | Status | Reference Spec |
+| :--- | :--- | :---: | :--- |
+| **Specifications & Blueprints** | Markdown, Mermaid, IEEE 830 | ✅ Complete | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| **Frontend Web Terminal** | Next.js 15, React 19, Tailwind CSS v4, Stitch UI, TV Charts | 🟡 In Progress | [`docs/FRONTEND_ARCHITECTURE.md`](docs/FRONTEND_ARCHITECTURE.md) |
+| **Backend & Quant Engine** | Python 3.12+, FastAPI, Polars, Async SQLAlchemy, NumPy | 🟡 In Progress | [`docs/BACKEND_ARCHITECTURE.md`](docs/BACKEND_ARCHITECTURE.md) |
+| **Database & Caching** | PostgreSQL 16, Alembic, Redis 7 (Asyncio) | 🟡 In Progress | [`docs/DATABASE_SCHEMA.md`](docs/DATABASE_SCHEMA.md) |
+| **Simulation & Replay Engine** | In-Memory Order Book, Power-Law Slippage | ⚪ Scheduled | [`docs/PAPER_TRADING_ENGINE_SPEC.md`](docs/PAPER_TRADING_ENGINE_SPEC.md) |
+| **Algo Sandbox** | Client-Side Pyodide (Python WASM) | ⚪ Scheduled | [`docs/STRATEGY_LAB.md`](docs/STRATEGY_LAB.md) |
+| **Mobile Android App** | Kotlin 2.0, Jetpack Compose, Room DB | ⚪ Scheduled | [`docs/ANDROID_ARCHITECTURE.md`](docs/ANDROID_ARCHITECTURE.md) |
+
+---
+
+## Documentation Synchronization & Strategic Enhancement Suite
+
+### Part 1: Documentation Updates Completed
+
+| Document | Nature of Update | Direct Link |
+| :--- | :--- | :--- |
+| **`README.md`** | Added Live Implementation Status Dashboard, monorepo directory layout (`frontend/`, `backend/`, `android/`, `docker/`), and Developer Quickstart guide. | [`README.md`](README.md) |
+| **`docs/ROADMAP.md`** | Synchronized milestones: demarcated Phase 0 (100% complete architecture) from Phase 1 (active code scaffolding sprint) and Phases 2–5 (scheduled). Added progress flowcharts and status matrices. | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| **`docs/CONTRIBUTING.md`** | Rebuilt into an actionable developer onboarding guide: Git branching rules, Conventional Commits, clean architecture rules, and pre-PR verification checklists. | [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) |
+| **`docs/PROJECT_IMPROVEMENT_PROPOSALS.md`** | New specification: Deep strategic proposals across pedagogy, market realism, performance, gamification, and compliance. | [`docs/PROJECT_IMPROVEMENT_PROPOSALS.md`](docs/PROJECT_IMPROVEMENT_PROPOSALS.md) |
+| **`docs/decision.md`** | Appended ADR-011 (Active Build Phase Scaffolding & Milestone Tracking) and ADR-012 (Adoption of Strategic Improvement Proposals) per Rule 7.1. | [`docs/decision.md`](docs/decision.md) |
+| **`docs/changes.md`** | Fixed legacy directory path references and logged release entry `v1.0.8-DOCS-BUILD-UPDATE-AND-RECOMMENDATIONS` per Rule 7.2. | [`docs/changes.md`](docs/changes.md) |
+
+### Part 2: Strategic Recommendations to Make the Project Better in All Ways
+
+The proposed enhancements are codified in [`docs/PROJECT_IMPROVEMENT_PROPOSALS.md`](docs/PROJECT_IMPROVEMENT_PROPOSALS.md). A summary of the highest-impact improvements across all dimensions includes:
+
+#### 1. Pedagogy & Trader Psychology (The Learning Engine)
+* **Automated Trade Post-Mortem & Mistake Journal**: After every paper trade or replay session, automatically prompt a post-mortem modal evaluating whether the trader adhered to their plan (e.g., `#RevengeTrade`, `#MovedStopLossFurther`, `#CutWinnerEarly`). Generate a personal Mistake Heatmap showing where capital is lost.
+* **Spaced Repetition (SM-2 Algorithm)**: Integrate client-side spaced repetition flashcards for all 200+ micro-concepts to resurface topics (e.g., Delta-neutral hedging, Wyckoff accumulation) at optimal retention intervals (1, 3, 7, and 21 days).
+* **Real-time Discipline Index (0–100)**: Calculate a live psychological discipline score. If a user suffers losses and begins revenge trading within 30 seconds or aggressively scales into a falling knife without a plan, trigger a mandatory 5-minute Cool-Down Breathing Mode.
+
+#### 2. Market Realism & Microstructure (The Financial Simulator)
+* **Microstructure Latency Jitter (5ms–50ms)**: Introduce realistic network ping jitter and queue slippage during fast markets (e.g., RBI rate announcements or budget days) to teach users why market orders in volatile tapes cause adverse fills.
+* **FIFO Level-3 Queue Priority**: Track the number of contracts ahead of limit orders at the bid/ask. The order only executes once preceding depth volume is consumed, eliminating optimistic fill bias.
+* **Historical News Catalyst Overlay**: Pin historical macroeconomic releases (CPI inflation, GDP prints, earnings surprises) directly onto the chart timeline at the exact minute they crossed the tape (masked in Blind Mode).
+
+#### 3. Engineering Architecture & Scalability (The ₹0 Stack)
+* **Turborepo / pnpm Workspace Tooling**: Unify `frontend/`, `backend/`, and `scripts/` under a monorepo setup with cached builds and parallel linting/testing commands (`pnpm dev`, `pnpm test:all`).
+* **Testcontainers for Integration Testing**: Spin up lightweight, ephemeral Docker instances of PostgreSQL 16 and Redis 7 during `mvn test` to guarantee 100% test parity without external dependencies.
+* **Progressive Web App (PWA) Offline Terminal**: Equip Next.js with `next-pwa` service workers and IndexedDB caching so traders can practice historical replay drills on planes or commutes with zero internet connection.
+
+#### 4. Gamification & Community Retention
+* **Weekly "Alpha Arena" Paper Tournaments**: Host free weekly simulation leagues (Mon 09:15 to Fri 15:30 IST) ranked on **Calmar Ratio** and **Risk-Adjusted Return** rather than raw P&L, preventing reckless 100x leverage gambling from taking the top spot.
+* **One-Click Annotated Chart Sharing**: Enable traders to export an interactive snapshot of their chart with trendlines, stop loss, and target levels to an anonymous peer-review forum for feedback.
+
+#### 5. Compliance & Security Hardening
+* **Automated DPDP "Right to Erasure" CI Tests**: Add regression suites verifying that `POST /api/v1/auth/delete-account` immediately cascades deletions across all orders, ledger entries, and redis sessions with zero orphaned records.
+* **Strict Content Security Policy (CSP v3)**: Implement fine-grained headers restricting script execution to `'self'` and `'wasm-unsafe-eval'` (required for Pyodide).
+
+---
+
+## Monorepo Workspace Structure
+
+As the application is scaffolded during active building, the repository follows a clean, decoupled monorepo topology:
+
+```text
+MarketMaster/
+├── docs/                        # Complete specification & governance suite (59 docs)
+│   ├── rules.md                 # Mandatory project rules & coding standards
+│   ├── decision.md              # Living Architectural Decision Records (ADR log)
+│   ├── changes.md               # Continuous audit changelog & release history
+│   ├── ROADMAP.md               # Phased sprint and milestone progress tracker
+│   └── PROJECT_IMPROVEMENT_PROPOSALS.md  # Architectural enhancement proposals
+├── frontend/                    # Next.js 15 web client & TradingView terminal
+├── backend/                     # Java 21 / Spring Boot 3.3 modular backend
+├── android/                     # Kotlin 2.0 / Jetpack Compose native mobile app
+├── docker/                      # ₹0 local infrastructure (Postgres 16, Redis 7)
+├── scripts/                     # Synthetic data generation & utility scripts
+└── README.md                    # Primary repository index & entrypoint
+```
+
+---
+
+## Developer Quick Start
+
+### 1. Prerequisites
+- **Java 21 LTS** (Eclipse Temurin, OpenJDK, or Corretto)
+- **Node.js 20+** / npm or pnpm
+- **Docker & Docker Compose** (for local PostgreSQL & Redis)
+
+### 2. Boot Local Infrastructure
+```bash
+docker compose -f docker/docker-compose.yml up -d
+```
+
+### 3. Run Backend Service
+```bash
+cd backend
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+*Health Check*: `http://localhost:8080/actuator/health`
+
+### 4. Run Frontend Web Application
+```bash
+cd frontend
+npm install
+npm run dev
+```
+*Terminal URL*: `http://localhost:3000`
+
+---
+
 ## Complete Project Documentation
 
 All specifications, architectural designs, API contracts, curriculum maps, security policies, and legal frameworks are centralized in the **[`docs/`](docs/)** directory:
@@ -49,10 +172,12 @@ All specifications, architectural designs, API contracts, curriculum maps, secur
 * [`docs/HISTORICAL_MARKET_DATA_SPECIFICATION.md`](docs/HISTORICAL_MARKET_DATA_SPECIFICATION.md) — Parquet Storage & Synthetic GBM Data
 * [`docs/MARKET_DATA.md`](docs/MARKET_DATA.md) — Data Feeds & WebSocket Ticker Architecture
 
-### 6. Project Rules, Living Decision Log & Changes
+### 6. Project Rules, Living Tracking & Evolution
 * [`docs/rules.md`](docs/rules.md) — Mandatory Development & Compliance Rules
 * [`docs/decision.md`](docs/decision.md) — Living ADR Log of All Architectural Decisions
 * [`docs/changes.md`](docs/changes.md) — Granular Timestamped Changelog & Version History
+* [`docs/ROADMAP.md`](docs/ROADMAP.md) — Phased Release Roadmap & Sprint Tracker
+* [`docs/PROJECT_IMPROVEMENT_PROPOSALS.md`](docs/PROJECT_IMPROVEMENT_PROPOSALS.md) — Strategic System Enhancement Blueprint
 
 ### 7. Legal, Privacy & Compliance
 * [`docs/PRIVACY_POLICY.md`](docs/PRIVACY_POLICY.md) — DPDP Act 2023 & GDPR Compliance
@@ -76,14 +201,13 @@ All specifications, architectural designs, API contracts, curriculum maps, secur
 * [`docs/SEO_AND_METADATA_SPEC.md`](docs/SEO_AND_METADATA_SPEC.md) — Open Graph, Sitemap & Search Console
 
 ### 10. Build, Test & Deployment
+* [`docs/AUTOMATION_AND_CICD_SPEC.md`](docs/AUTOMATION_AND_CICD_SPEC.md) — Automated Testing Matrix & Gated CI/CD Workflows
 * [`docs/BUILD.md`](docs/BUILD.md) — Build Instructions for Web, JAR, and APK
-* [`docs/TESTING.md`](docs/TESTING.md) — Automated Test Commands
+* [`docs/TESTING.md`](docs/TESTING.md) — Automated Test Commands & Invariants
 * [`docs/QA.md`](docs/QA.md) — Quality Assurance & Reconciliation Testing
 * [`docs/APP_TESTING_GUIDELINES.md`](docs/APP_TESTING_GUIDELINES.md) — Mobile Device Matrix & Offline Testing
 * [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md) — Environment Variable Directory
 * [`docs/CONFIGURATION_MANAGEMENT.md`](docs/CONFIGURATION_MANAGEMENT.md) — Secret Management & Feature Flags
 * [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — Free-Tier Cloud Deployment Topology
 * [`docs/PRODUCTION_DEPLOYMENT.md`](docs/PRODUCTION_DEPLOYMENT.md) — Production Release Checklist
-* [`docs/ROADMAP.md`](docs/ROADMAP.md) — Phased Release Roadmap (Q1–Q5)
-* [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) — Contributor Workflow
-
+* [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) — Contributor Workflow & PR Checklist

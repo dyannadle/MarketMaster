@@ -79,9 +79,9 @@
 * **Author**: Antigravity Enterprise Architecture Team
 * **Change Category**: Project Structure & File Organization (`Refactor`, `Docs`, `ADR`)
 * **Files Created & Modified**:
-  * Created directory `D:\Projects\Trade\docs\`
-  * Relocated all 58 specification documents into `D:\Projects\Trade\docs/`
-  * Created `D:\Projects\Trade\README.md` containing a comprehensive categorized table of contents and clickable links to all documents in `docs/`
+  * Created directory `D:\Projects\MarketMaster\docs\`
+  * Relocated all 58 specification documents into `D:\Projects\MarketMaster\docs/`
+  * Created `D:\Projects\MarketMaster\README.md` containing a comprehensive categorized table of contents and clickable links to all documents in `docs/`
   * Updated `docs/decision.md` with ADR-008
   * Updated `docs/changes.md` with v1.0.5 release entry
 * **Detailed Description**:
@@ -93,13 +93,13 @@
 * **Author**: Antigravity Enterprise Architecture Team
 * **Change Category**: Workspace Hygiene & Structure Cleanup (`Refactor`, `Changelog`)
 * **Files Removed from Root**:
-  * `D:\Projects\Trade\changes.md` (Removed from root; maintained exclusively in `docs/changes.md`)
-  * `D:\Projects\Trade\decision.md` (Removed from root; maintained exclusively in `docs/decision.md`)
-  * `D:\Projects\Trade\rules.md` (Removed from root; maintained exclusively in `docs/rules.md`)
+  * `D:\Projects\MarketMaster\changes.md` (Removed from root; maintained exclusively in `docs/changes.md`)
+  * `D:\Projects\MarketMaster\decision.md` (Removed from root; maintained exclusively in `docs/decision.md`)
+  * `D:\Projects\MarketMaster\rules.md` (Removed from root; maintained exclusively in `docs/rules.md`)
 * **Files Modified**:
-  * `D:\Projects\Trade\README.md` (Updated links so all governance and rule links point to `docs/`)
-  * `D:\Projects\Trade\docs\changes.md` (Recorded v1.0.6 release entry)
-  * `D:\Projects\Trade\docs\decision.md` (Recorded ADR-009)
+  * `D:\Projects\MarketMaster\README.md` (Updated links so all governance and rule links point to `docs/`)
+  * `D:\Projects\MarketMaster\docs\changes.md` (Recorded v1.0.6 release entry)
+  * `D:\Projects\MarketMaster\docs\decision.md` (Recorded ADR-009)
 * **Detailed Description**:
   * Enforced strict single-entrypoint root architecture: only `README.md` and the `docs/` directory reside in the repository root. All governance files (`rules.md`, `decision.md`, `changes.md`) are now centralized exclusively inside `docs/`.
 
@@ -132,3 +132,50 @@
 
 
 
+
+---
+
+### [v1.0.8-DOCS-BUILD-UPDATE-AND-RECOMMENDATIONS] — 2026-11-04 15:28:30 UTC (Local: 2026-11-04 20:58:30 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Documentation Update, Milestone Synchronization & Product Strategy (`Docs`, `Roadmap`, `ADR`)
+* **Files Created & Modified**:
+  * `README.md` (Added Live Build & Implementation Status Dashboard, monorepo layout, quickstart instructions, and updated doc index)
+  * `docs/ROADMAP.md` (Updated phased delivery roadmap: demarcated Phase 0 as complete, Phase 1 as active sprint, Phase 2-5 as scheduled; added implementation progress overview flowchart and status matrix)
+  * `docs/CONTRIBUTING.md` (Comprehensive rewrite into developer onboarding guide with Git branching rules, conventional commits, quality standards, and PR checklist)
+  * `docs/PROJECT_IMPROVEMENT_PROPOSALS.md` (Created comprehensive strategic enhancement blueprint covering 6 pillars: Pedagogy, Simulation Realism, Architecture/Performance, Developer Experience, Gamification, and Security/Privacy)
+  * `docs/decision.md` (Appended ADR-011 for Active Build Scaffolding & ADR-012 for System Improvement Proposals)
+  * `docs/changes.md` (Corrected legacy directory path strings and appended v1.0.8 changelog entry)
+* **Detailed Description**:
+  * Synchronized all project documentation with the active state of construction as the platform transitions from pure specification to implementation scaffolding.
+  * Formulated and codified an exhaustive improvement proposal suite (`docs/PROJECT_IMPROVEMENT_PROPOSALS.md`) delivering institutional-grade realism, automated trade post-mortems, spaced repetition learning, and zero-cost cloud resiliency.
+
+---
+
+### [v1.0.9-TEST-FIRST-AUTOMATION-RULE] — 2026-11-04 15:44:00 UTC (Local: 2026-11-04 21:14:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Project Rules, Automation Architecture & Deployment Gating (`Rule`, `ADR`, `Docs`, `CI/CD`)
+* **Files Created & Modified**:
+  * `docs/rules.md` (Added Section 8: Rules 8.1, 8.2, 8.3, and 8.4 codifying synchronous document updates, full-spectrum automation, mandatory test-before-deploy gating, and automated instant rollback)
+  * `docs/AUTOMATION_AND_CICD_SPEC.md` (Authored complete specification for pre-commit hooks, 7-layer automated testing matrix, double-entry financial reconciliation tests, and test-gated GitHub Actions deployment workflows)
+  * `docs/TESTING.md` (Updated testing pyramid, execution commands, and fail-closed pre-deployment gating standards)
+  * `docs/DEPLOYMENT.md` (Updated free-tier deployment guide with automated fail-closed workflow and automated health check probes)
+  * `docs/decision.md` (Recorded ADR-013 establishing mandatory test-first automation and deployment gating)
+  * `docs/changes.md` (Recorded v1.0.9 release entry with detailed change breakdown)
+* **Detailed Description**:
+  * Formally codified the core operational invariant that every single document across `docs/` must be updated as per need whenever changes occur.
+  * Mandated that 100% of all workflows (linting, testing, formatting, doc checks, packaging, and deployments) must be automated.
+  * Enforced the strict rule that whenever any change is made, it MUST first be thoroughly and properly tested across all automated test suites and verified 100% green before any deployment pipeline can execute.
+
+---
+
+### [v1.0.10-PYTHON-QUANT-AND-STITCH-UI] — 2026-11-04 15:49:00 UTC (Local: 2026-11-04 21:19:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Tech Stack Evolution & UI Strategy (`Architecture`, `ADR`, `Frontend`, `Backend`)
+* **Files Modified**:
+  * `docs/BACKEND_ARCHITECTURE.md` (Transited to lightweight Python 3.12+ FastAPI, Polars, Async SQLAlchemy, Pydantic, and NumPy/SciPy stack)
+  * `docs/FRONTEND_ARCHITECTURE.md` (Integrated Stitch UI generative design platform, dark institutional terminal theme, fluid responsive layouts, and Framer Motion micro-interactions)
+  * `README.md` (Updated Subsystem tech stack table reflecting Python + Stitch UI)
+  * `docs/decision.md` (Recorded ADR-014 approving Python quant stack and Stitch-first UI construction)
+  * `docs/changes.md` (Logged v1.0.10 release entry)
+* **Detailed Description**:
+  * Evolved the technical architecture to a lightweight, modern Python 3.12+ ASGI quant stack and committed to starting construction from the UI layer using Stitch UI.

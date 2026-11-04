@@ -99,3 +99,58 @@
 
 
 
+
+---
+
+### Record: ADR-011 — Transition to Active Build Phase & Granular Milestone Tracking
+* **Date & Timestamp**: 2026-11-04 15:27:00 UTC (Local: 2026-11-04 20:57:00 +05:30)
+* **Status**: Approved & Actively Enforced
+* **Decision Taken**: Formally transition the project status from Phase 0 (Pure Architectural & System Specification) to Phase 1 (Active Code Construction & Foundation Scaffolding). Update `ROADMAP.md`, `README.md`, and `CONTRIBUTING.md` to reflect real-time specification vs. implementation status.
+* **Why Taken**: To prevent misconception that subsequent phases are already complete, maintain absolute integrity in project progress reporting, and give active developers a concrete roadmap of active sprints, prerequisites, and definitions of done.
+* **Alternatives Considered**:
+  * *Keeping roadmap checkboxes static*: Rejected because marking unwritten code as completed is misleading to contributors and auditors.
+* **Impact**: Transparent sprint tracking, clear demarcation between completed architecture and active code scaffolding, and aligned developer expectations across the monorepo.
+
+---
+
+### Record: ADR-012 — Adoption of Comprehensive System Improvement Proposals (PIP)
+* **Date & Timestamp**: 2026-11-04 15:28:00 UTC (Local: 2026-11-04 20:58:00 +05:30)
+* **Status**: Approved & Adopted as Strategic Blueprint
+* **Decision Taken**: Formulate and institutionalize `docs/PROJECT_IMPROVEMENT_PROPOSALS.md` as the living strategic roadmap for future feature expansions across 6 core pillars:
+  1. *Pedagogical Enhancements*: Automated post-mortem trade journaling, spaced repetition (SM-2) for micro-concepts, and behavioral discipline/tilt scores.
+  2. *Market Microstructure Realism*: Order processing latency jitter, historical news/catalyst overlays, and simulated FIFO Level-3 queue priority.
+  3. *Engineering & Architecture*: Turborepo/pnpm monorepo tooling, Testcontainers integration testing for zero-flake CI, and Progressive Web App (PWA) offline terminal capabilities.
+  4. *Developer Experience (DX)*: Husky pre-commit gates enforcing documentation sync, and synthetic market data seed generators.
+  5. *Gamification & Community*: Weekly zero-cost simulation tournaments ("Alpha Arena") scored on Calmar ratio, and anonymous chart annotation sharing.
+  6. *Compliance Hardening*: Automated DPDP account deletion regression test suites and strict Content Security Policy v3 headers.
+* **Why Taken**: To ensure MarketMaster Academy is not just a standard paper-trading app, but an industry-defining, institutional-grade digital university that fosters disciplined trading habits while respecting a strict ₹0 cloud budget.
+* **Impact**: Clear competitive differentiation, elevated learning efficacy, institutional-grade realism, and a structured expansion plan for upcoming sprints.
+
+---
+
+### Record: ADR-013 — Full-Spectrum Automation, Synchronous Documentation Updates & Mandatory Test-First Gated Deployment
+* **Date & Timestamp**: 2026-11-04 15:43:00 UTC (Local: 2026-11-04 21:13:00 +05:30)
+* **Status**: Approved & Actively Enforced (Codified in `rules.md` Section 8)
+* **Decision Taken**: Formally mandate three interconnected operational invariants:
+  1. *Synchronous Documentation Updates*: Every single specification, architecture blueprint, API contract, and guide across `docs/` must be updated as per need concurrently with code modifications.
+  2. *End-to-End Automation*: Automate every developer and operational process (linting, doc sync verification, unit tests, integration tests, ledger reconciliation, builds, and releases) using GitHub Actions, Husky pre-commit hooks, and Docker Compose.
+  3. *Test-Before-Deploy Gate*: Every single time any change is executed (regardless of scope), it must first pass 100% of all automated test suites. The deployment pipeline is fail-closed and cannot execute unless all tests are verified green.
+* **Why Taken**: In a high-fidelity financial simulation university with complex matching engines and double-entry accounting ledgers, unverified deployments or outdated documentation lead to catastrophic data drift, ledger inconsistencies, and user mistrust. Automated testing gates guarantee that regressions never reach production.
+* **Alternatives Considered**:
+  * *Manual deployment post-testing*: Rejected because manual steps are prone to human error, missed commands, or forgotten schema migrations.
+  * *Post-deployment testing*: Rejected because broken code would be exposed to end users before faults are identified.
+* **Impact**: Zero regressions reach staging or production, documentation is permanently current with codebase reality, and developers operate with high velocity backed by automated safety nets.
+
+---
+
+### Record: ADR-014 — Lightweight Python Quant Stack & Stitch-Powered UI Architecture
+* **Date & Timestamp**: 2026-11-04 15:48:00 UTC (Local: 2026-11-04 21:18:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Standardize backend services and quant engines on Python 3.12+, FastAPI (ASGI), Polars, async SQLAlchemy, Pydantic v2, and NumPy/SciPy.
+  2. Adopt Stitch UI as the AI design engine for synthesizing high-contrast, responsive terminal screens.
+  3. Start active implementation immediately from the frontend UI layer.
+* **Why Taken**: Python is the global industry gold standard for quantitative finance, vector backtesting, and market replay. Polars provides sub-millisecond candle slicing at 1/10th the memory footprint of JVM setups, fitting perfectly within the ₹0 budget invariant. Starting with UI via Stitch ensures users immediately receive an intuitive, attractive, and responsive terminal experience.
+* **Alternatives Considered**:
+  * *Maintaining Java/Spring Boot exclusively*: Rejected because Python's rich quant ecosystem (Polars, NumPy, SciPy, Pyodide parity) enables vastly faster development of financial indicators and algorithmic slicers.
+* **Impact**: Lighter cloud footprint, instantaneous local development startup (<1 sec vs 25 sec JVM boot), seamless data science parity between backend and Pyodide client sandbox, and visually striking, responsive Stitch-crafted UI.

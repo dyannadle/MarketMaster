@@ -72,4 +72,17 @@
 * **Rule 7.3 (Zero Unrecorded Actions)**:
   * No development action, code commit, or architectural modification shall be considered complete without contemporaneous, synchronized updates to `decision.md` and `changes.md`.
 
+---
 
+### 8. Full-Spectrum Automation, Continuous Testing & Gated Deployment
+* **Rule 8.1 (Mandatory Synchronous Documentation Updates)**:
+  * Every single document across `docs/` and root (including architecture blueprints, API contracts, database schemas, run instructions, and roadmaps) MUST be updated as per need whenever any code, configuration, or operational change is made. Documentation must never lag behind code.
+* **Rule 8.2 (Full-Spectrum Automation for Everything)**:
+  * There must be 100% automation for each and every operational workflow: code formatting, linting, type-checking, documentation sync validation, unit tests, integration tests, financial math reconciliation, database migrations, build packaging, staging smoke probes, and production deployments.
+  * Manual FTP deployments, ad-hoc server modifications, and unscripted database schema alterations in production are strictly forbidden.
+* **Rule 8.3 (Strict Test-Before-Deploy Invariant)**:
+  * Every single time any change is done—regardless of size (bug fix, refactor, feature, or config tweak)—it MUST first be thoroughly and properly tested across all automated test suites.
+  * Deployment pipelines are configured as hard, fail-closed gates: **ONLY when 100% of all tests pass and are verified completely green in automated CI can the deployment trigger**. If a single test fails, the build halts immediately and zero deployment steps execute.
+* **Rule 8.4 (Automated Zero-Cost Rollback)**:
+  * Every automated deployment must perform immediate post-deployment synthetic health checks (`/actuator/health`, HTTP 200 checks on index and API ping).
+  * If the newly deployed service fails health probes within 60 seconds, an automated zero-downtime rollback to the prior known stable release artifact must trigger automatically without human delay.
