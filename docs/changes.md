@@ -336,3 +336,21 @@
 * **Detailed Description**:
   * Implemented all three major milestone deliverables in a unified sprint.
   * Verified 100% test pass rate across Vitest and Nitro production builds.
+
+---
+
+### [v1.0.19-BLIND-REPLAY-GYM-POST-MORTEM-AND-OPTIONS-CHAIN] — 2026-11-07 14:58:00 UTC (Local: 2026-11-07 20:28:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Historical Candle Replay, Behavioral Diagnostics & Options Chain (`Replay`, `Psychology`, `OptionsChain`, `Discipline`)
+* **Files Created & Modified**:
+  * `frontend/src/routes/challenges.tsx` (Engineered Blind Practice Gym on masked `ASSET_X` with candle stepping, 1x-10x speed controls, in-replay trading, and session scorecard)
+  * `frontend/src/components/trading/PostMortemModal.tsx` (Automated behavioral diagnostics modal triggered on trade exit with psychological pattern tags and 3-minute cool-down breathing mode)
+  * `frontend/src/components/trading/OptionsChainMatrix.tsx` (NSE-style derivative option chain matrix with strike ladder, ITM shading, and one-click order ticket strike integration)
+  * `frontend/src/routes/trade.tsx` (Integrated view switcher between Candlestick Terminal and Options Chain, wired post-mortem modal on position exit, and enforced cool-down trade lock)
+  * `docs/decision.md` (Recorded ADR-023)
+  * `docs/changes.md` (Logged v1.0.19 release entry)
+* **Detailed Description**:
+  * Added ChartingPark-style candle-by-candle blind practice replay eliminating hindsight bias.
+  * Embedded automated trade post-mortem and behavioral tagging to discipline trader psychology.
+  * Delivered professional derivative options chain matrix for high-speed strike selection.
+  * All Vitest tests (5/5) and Nitro production builds passing cleanly (100% green rate).

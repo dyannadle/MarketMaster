@@ -259,3 +259,4 @@ function generateCandles(basePrice: number, count: number, timeframe: Timeframe)
   }
   return candles;
 }
+

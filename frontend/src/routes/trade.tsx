@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
-import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, XCircle } from "lucide-react";
+import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change } from "@/components/AppShell";
 import { inr, instruments } from "@/lib/data";
 import { applyOrder, useAccount, useLivePrices } from "@/lib/paper";
 import { backendApi } from "@/lib/api";
 import { CandlestickChart } from "@/components/trading/CandlestickChart";
+import { PostMortemModal, PostMortemData } from "@/components/trading/PostMortemModal";
+import { OptionsChainMatrix, SelectedOptionStrike } from "@/components/trading/OptionsChainMatrix";
 
 export const Route = createFileRoute("/trade")({
   validateSearch: (s: Record<string, unknown>): { s?: string | undefined } => ({
@@ -40,16 +42,44 @@ function Trade() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [backendPositions, setBackendPositions] = useState<any[]>([]);
 
+  // Navigation View Toggle: Candlestick Chart vs Options Chain Matrix
+  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN">("CHART");
+
+  // Post-Mortem & Psychological Diagnostics State
+  const [postMortemData, setPostMortemData] = useState<PostMortemData | null>(null);
+  const [isPostMortemOpen, setIsPostMortemOpen] = useState(false);
+  const [disciplineScore, setDisciplineScore] = useState(85);
+
+  // Cool-Down Breathing Mode (Discipline < 70)
+  const [isCoolDownActive, setIsCoolDownActive] = useState(false);
+  const [coolDownRemaining, setCoolDownRemaining] = useState(0);
+
   const inst = tradable.find((t) => t.symbol === sym) || tradable[0]!;
   const q = prices[sym] || { p: 24500, base: 24450 };
 
-  // Fetch backend positions if user is authenticated
+  // Cool-Down Timer Ticker
+  useEffect(() => {
+    if (!isCoolDownActive || coolDownRemaining <= 0) return;
+    const timer = setInterval(() => {
+      setCoolDownRemaining((prev) => {
+        if (prev <= 1) {
+          setIsCoolDownActive(false);
+          toast.info("Cool-down finished. You may resume trading with calm focus.");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [isCoolDownActive, coolDownRemaining]);
+
+  // Fetch backend positions
   const refreshPositions = async () => {
     try {
       const pos = await backendApi.getPositions();
       if (Array.isArray(pos)) setBackendPositions(pos.filter((p) => p.is_open));
     } catch {
-      // Local mode fallback
+      // Local fallback
     }
   };
 
@@ -69,7 +99,7 @@ function Trade() {
     const estFill = side === "BUY" ? q.p + pts : q.p - pts;
 
     const turnover = qty * estFill;
-    const margin = Math.round(turnover * 0.10); // 10% Initial Margin
+    const margin = Math.round(turnover * 0.10);
     const stt = side === "SELL" ? turnover * 0.000125 : 0.0;
     const stampDuty = side === "BUY" ? turnover * 0.00002 : 0.0;
     const exchangeCharge = turnover * 0.000019;
@@ -84,7 +114,7 @@ function Trade() {
     };
   }, [qty, side, q.p]);
 
-  // Level-2 simulated depth ladder
+  // Simulated Level-2 Depth Book
   const book = useMemo(() => {
     return Array.from({ length: 5 }, (_, i) => ({
       bid: q.p * (1 - 0.0003 * (i + 1)),
@@ -94,8 +124,13 @@ function Trade() {
     }));
   }, [q.p]);
 
-  // Execute Order: Dispatches to FastAPI Matching Engine with local fallback
+  // Execute Order
   const place = async () => {
+    if (isCoolDownActive) {
+      toast.error(`Cool-Down Mode Active! Please wait ${formatTime(coolDownRemaining)} before trading.`);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const backendRes = await backendApi.placeOrder({
@@ -128,15 +163,81 @@ function Trade() {
     }
   };
 
-  // Exit Open Position
-  const handleExit = async (posId: string) => {
+  // Exit Open Position with Automated Post-Mortem Diagnostics
+  const handleExit = async (posId: string, posSymbol?: string, posAvgPrice?: number, posQty?: number) => {
+    let exitData: any = null;
+    const currentLtp = prices[posSymbol || sym]?.p || q.p;
+
     try {
-      await backendApi.exitPosition(posId, q.p);
+      const res = await backendApi.exitPosition(posId, currentLtp);
+      exitData = res;
       toast.success("Position closed at market price.");
       await refreshPositions();
     } catch {
-      toast.error("Could not close position via backend.");
+      // Local fallback calculation
+      const avg = posAvgPrice || q.base;
+      const quantity = posQty || inst.lot;
+      const pnl = (currentLtp - avg) * quantity;
+      exitData = {
+        position_id: posId,
+        symbol: posSymbol || sym,
+        exit_price: currentLtp,
+        realized_pnl: pnl,
+        discipline_score: pnl < 0 && !stopLoss ? Math.max(0, disciplineScore - 10) : Math.min(100, disciplineScore + 3),
+        post_mortem: {
+          tags: pnl < 0
+            ? stopLoss ? ["#ControlledRisk", "#PlanAdhered"] : ["#NoStopLoss", "#RevengeRisk"]
+            : ["#ProfitableExit", "#TargetAchieved"],
+        },
+      };
     }
+
+    if (exitData) {
+      const pnl = exitData.realized_pnl;
+      const isLoss = pnl < 0;
+      const newScore = exitData.discipline_score ?? 85;
+      const isCoolDown = newScore < 70;
+
+      setDisciplineScore(newScore);
+
+      if (isCoolDown) {
+        setIsCoolDownActive(true);
+        setCoolDownRemaining(180);
+        toast.warning("Discipline dropped below 70! Mandatory 3-minute cool-down breathing mode activated.");
+      }
+
+      setPostMortemData({
+        symbol: exitData.symbol || sym,
+        side: "BUY",
+        quantity: posQty || qty,
+        entryPrice: posAvgPrice || px,
+        exitPrice: exitData.exit_price || currentLtp,
+        realizedPnl: pnl,
+        disciplineScore: newScore,
+        disciplineDelta: isLoss ? -10 : +5,
+        tags: exitData.post_mortem?.tags || (isLoss ? ["#NoStopLoss"] : ["#ProfitableExit"]),
+        stopLossUsed: Boolean(stopLoss),
+        targetUsed: Boolean(targetPrice),
+        isCoolDownTriggered: isCoolDown,
+      });
+      setIsPostMortemOpen(true);
+    }
+  };
+
+  // One-Click Options Strike Selection Handler
+  const handleSelectOptionStrike = (opt: SelectedOptionStrike) => {
+    setSym(opt.symbol);
+    setSide("BUY");
+    setType("LIMIT");
+    setLimit(opt.ltp.toFixed(2));
+    setLots(1);
+    toast.info(`Selected ${opt.type} strike ${opt.strike} @ ₹${opt.ltp}. Order ticket populated.`);
+  };
+
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
   };
 
   return (
@@ -174,33 +275,79 @@ function Trade() {
         </ul>
       </div>
 
-      {/* 2. Main Stage: Candlestick Chart, Positions & Order History */}
+      {/* 2. Main Stage: View Switcher, Candlesticks / Options Chain, Positions & History */}
       <div className="space-y-4">
-        {/* Instrument Title & Candlestick Canvas */}
-        <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm">
-          <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-black tracking-tight">{sym}</h1>
-                <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary uppercase">
-                  {inst.segment}
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {inst.name} · {inst.exchange} · Lot Size: {inst.lot}
-              </p>
-            </div>
-            <div className="text-right">
-              <span className="num text-2xl font-black text-foreground">{q.p.toLocaleString("en-IN")}</span>
-              <div className="mt-0.5">
-                <Change v={((q.p - q.base) / q.base) * 100} />
-              </div>
-            </div>
+        {/* Top View Selector Bar */}
+        <div className="flex items-center justify-between rounded-xl border border-border/80 bg-card p-3 shadow-sm">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setTerminalView("CHART")}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                terminalView === "CHART" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <ChartIcon className="h-3.5 w-3.5" /> Candlestick Terminal
+            </button>
+            <button
+              onClick={() => setTerminalView("OPTIONS_CHAIN")}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                terminalView === "OPTIONS_CHAIN" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <Layers className="h-3.5 w-3.5" /> Options Chain Matrix
+            </button>
           </div>
 
-          {/* Interactive Candlestick Chart */}
-          <CandlestickChart symbol={sym} currentPrice={q.p} basePrice={q.base} />
+          <div className="flex items-center gap-3">
+            {/* Discipline Score Tag */}
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="text-muted-foreground">Discipline:</span>
+              <span className={`num font-bold ${disciplineScore >= 80 ? "text-gain" : disciplineScore >= 70 ? "text-amber-400" : "text-loss"}`}>
+                {disciplineScore}/100
+              </span>
+            </div>
+
+            {/* Cool-Down Indicator */}
+            {isCoolDownActive && (
+              <span className="flex items-center gap-1 rounded-full border border-rose-500/30 bg-rose-500/10 px-2.5 py-0.5 text-[11px] font-bold text-rose-400 animate-pulse">
+                <HeartPulse className="h-3 w-3" /> Cool-Down ({formatTime(coolDownRemaining)})
+              </span>
+            )}
+          </div>
         </div>
+
+        {/* View Switch: Candlesticks vs Options Chain */}
+        {terminalView === "CHART" ? (
+          <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm">
+            <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-black tracking-tight">{sym}</h1>
+                  <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary uppercase">
+                    {inst.segment}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {inst.name} · {inst.exchange} · Lot Size: {inst.lot}
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="num text-2xl font-black text-foreground">{q.p.toLocaleString("en-IN")}</span>
+                <div className="mt-0.5">
+                  <Change v={((q.p - q.base) / q.base) * 100} />
+                </div>
+              </div>
+            </div>
+
+            <CandlestickChart symbol={sym} currentPrice={q.p} basePrice={q.base} />
+          </div>
+        ) : (
+          <OptionsChainMatrix
+            underlyingSymbol={sym}
+            spotPrice={q.p}
+            onSelectOption={handleSelectOptionStrike}
+          />
+        )}
 
         {/* Live Positions Telemetry */}
         <div className="rounded-xl border border-border/80 bg-card shadow-sm">
@@ -248,7 +395,7 @@ function Trade() {
                         </td>
                         <td className="p-2.5 text-center">
                           <button
-                            onClick={() => handleExit(pos.id)}
+                            onClick={() => handleExit(pos.id, pos.symbol, pos.avg_entry_price, pos.quantity)}
                             className="rounded bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-rose-400 hover:bg-destructive/20"
                           >
                             Exit
@@ -273,7 +420,14 @@ function Trade() {
                           <td className={`p-2.5 text-right font-bold ${pnl >= 0 ? "text-gain" : "text-loss"}`}>
                             {pnl >= 0 ? "+" : ""}{inr(pnl)}
                           </td>
-                          <td className="p-2.5 text-center text-muted-foreground">—</td>
+                          <td className="p-2.5 text-center">
+                            <button
+                              onClick={() => handleExit(`local_${pos.symbol}`, pos.symbol, pos.price, pos.qty)}
+                              className="rounded bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-rose-400 hover:bg-destructive/20"
+                            >
+                              Exit
+                            </button>
+                          </td>
                         </tr>
                       );
                     })}
@@ -283,7 +437,7 @@ function Trade() {
           )}
         </div>
 
-        {/* Order History */}
+        {/* Audited Order Trail */}
         <div className="rounded-xl border border-border/80 bg-card shadow-sm">
           <p className="border-b border-border/40 p-3 text-xs font-semibold text-muted-foreground uppercase">
             AUDITED ORDER TRAIL
@@ -429,12 +583,20 @@ function Trade() {
 
           <Button
             className={`mt-4 w-full font-bold uppercase tracking-wider ${
-              side === "BUY" ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "bg-rose-600 hover:bg-rose-500 text-white"
+              isCoolDownActive
+                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                : side === "BUY"
+                ? "bg-emerald-600 hover:bg-emerald-500 text-white"
+                : "bg-rose-600 hover:bg-rose-500 text-white"
             }`}
             onClick={place}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isCoolDownActive}
           >
-            {isSubmitting ? "Executing Order..." : `${side} ${qty} ${sym}`}
+            {isCoolDownActive
+              ? `Cool-Down Active (${formatTime(coolDownRemaining)})`
+              : isSubmitting
+              ? "Executing Order..."
+              : `${side} ${qty} ${sym}`}
           </Button>
         </div>
 
@@ -469,6 +631,13 @@ function Trade() {
           </div>
         </div>
       </div>
+
+      {/* Post-Mortem Diagnostics Modal */}
+      <PostMortemModal
+        isOpen={isPostMortemOpen}
+        onClose={() => setIsPostMortemOpen(false)}
+        data={postMortemData}
+      />
     </div>
   );
 }

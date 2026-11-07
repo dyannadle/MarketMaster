@@ -275,3 +275,25 @@
   5. Verified 100% test pass rate across Vitest and Vite production builds.
 * **Why Taken**: Directly fulfills user requests to wire live execution, deliver candlestick charting with Level-2 depth, expand visualizers across all course modules, and activate the Strategy Lab backtester.
 * **Impact**: Full end-to-end institutional trading simulation, rigorous analytical financial modeling, algorithmic backtesting tearsheets, and seamless zero-cost execution.
+
+---
+
+### Record: ADR-023 — Blind Replay Gym, Automated Post-Mortem Diagnostics & Live Options Chain Matrix
+* **Date & Timestamp**: 2026-11-07 14:55:00 UTC (Local: 2026-11-07 20:25:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Engineered the Historical Candle Replay & Blind Practice Gym in `frontend/src/routes/challenges.tsx`:
+     - Masked ticker identity (`ASSET_X`) and relative timeline (`T+00:01` to `T+06:15`) to completely eliminate hindsight bias.
+     - Interactive playback controls: Play/Pause, Step Forward (`▶|`), speed multipliers (`1x`, `2x`, `5x`, `10x`), and session reset.
+     - Live in-replay paper execution with dynamic position tracking, unrealized P&L, and session scorecard (P&L, trades, win rate %).
+  2. Engineered the Automated Trade Post-Mortem Modal (`frontend/src/components/trading/PostMortemModal.tsx`):
+     - Triggered automatically on position exit in `trade.tsx`.
+     - Detects psychological patterns (`#NoStopLoss`, `#ControlledRisk`, `#RevengeRisk`, `#TargetAchieved`).
+     - Tracks Discipline Score (0–100) and triggers a mandatory 3-minute Cool-Down Breathing Mode when score drops below 70, locking trade buttons to prevent revenge trading.
+  3. Integrated the Live Options Chain Matrix (`frontend/src/components/trading/OptionsChainMatrix.tsx`):
+     - Strike ladder centered around ATM with In-The-Money (ITM) yellow shading.
+     - Calls (CE) and Puts (PE) displaying OI, Volume, IV %, and LTP.
+     - One-click strike selection immediately populating the order ticket and Option Greeks visualizer.
+  4. Verified 100% test pass rate across Vitest and Nitro production builds.
+* **Why Taken**: Completes the core trader psychology, microstructure execution, and deliberate practice loops requested by the user.
+* **Impact**: World-class deliberate practice gym, institutional emotional risk management, and professional options derivatives trading workflow.
