@@ -392,3 +392,31 @@
 * **Detailed Description**:
   * Implemented both Visual No-Code Builder (intuitive drag-and-drop conditions, stop-loss models, and R:R ratios) and Python Quant Pro Mode (in-browser code inspection and editing synced with FastAPI Polars runtime).
   * 100% test pass rate across Vitest (5/5) and Nitro production builds.
+
+---
+
+### [v1.0.23-INSTITUTIONAL-SCENARIOS-YAHOO-FINANCE-NEWS-WIRE] — 2026-11-07 17:22:00 UTC (Local: 2026-11-07 22:52:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Historical Practice Scenarios, Yahoo Finance Live Quotes & 10-Minute Market News Wire (`Gym`, `Replay`, `YahooFinance`, `NewsFeed`, `FullStack`)
+* **Files Created & Modified**:
+  * `backend/app/services/market_data_service.py` (Real-time Yahoo Finance quote & candlestick engine with 10s TTL caching and high-fidelity simulated fallback)
+  * `backend/app/services/news_service.py` (Live Indian financial news aggregator with sentiment classification and 10-minute automated cache)
+  * `backend/app/services/replay_service.py` (Enhanced with 5 seminal historical market event presets: Covid Crash 2020, Election Day 2024, RBI Rate Hike 2022, Adani Shock 2023, Budget Rally 2021)
+  * `backend/app/api/v1/market.py` (`GET /api/v1/market/quotes` and `GET /api/v1/market/candles`)
+  * `backend/app/api/v1/news.py` (`GET /api/v1/news/feed` with 10-min countdown telemetry)
+  * `backend/app/api/v1/replay.py` (`GET /api/v1/replay/presets` and preset selection)
+  * `backend/app/api/v1/api.py` (Registered market and news routers)
+  * `backend/tests/test_api_endpoints.py` (Added tests for presets, quotes, candles, and news feed - 8/8 passing)
+  * `frontend/src/components/trading/LiveNewsFeed.tsx` (Component with live 10-minute countdown, category filters, sentiment pills, and manual refresh)
+  * `frontend/src/routes/challenges.tsx` (Engineered preset selector grid, scenario briefing cards, replay controls, and in-replay trade execution)
+  * `frontend/src/routes/trade.tsx` (Added live Yahoo Finance ticker tape header, 3-way view switcher with News Wire, and embedded news feed)
+  * `frontend/src/lib/api.ts` (API methods for presets, quotes, candles, and live news)
+  * `docs/decision.md` (Recorded ADR-025)
+  * `docs/changes.md` (Logged v1.0.23 release entry)
+* **Detailed Description**:
+  * Completed Milestone 7 and full live data integration requested by the user:
+  * Deliberate Practice Gym now features 5 real historical Indian market crises with macro driver briefs and institutional trading lessons.
+  * Live trading terminal streams real Yahoo Finance prices for Indian indices and equities with an interactive ticker tape.
+  * Platform features a live breaking financial news wire auto-refreshed every 10 minutes with sentiment classification (Bullish, Bearish, Neutral).
+  * 100% test pass rate across Vitest (5/5) and pytest (8/8) with clean Nitro production build.
+

@@ -151,3 +151,62 @@ async def test_replay_session_and_polars_slice(async_client: AsyncClient):
     assert slice_data["current_index"] == 25
     assert slice_data["has_more"] is True
 
+@pytest.mark.asyncio
+async def test_replay_presets_catalog(async_client: AsyncClient):
+    """Verify historical market event presets catalog and preset session generation."""
+    res = await async_client.get("/api/v1/replay/presets")
+    assert res.status_code == 200
+    data = res.json()
+    assert "presets" in data
+    presets = data["presets"]
+    assert len(presets) >= 5
+    ids = [p["id"] for p in presets]
+    assert "COVID_CRASH_2020" in ids
+    assert "ELECTION_DAY_2024" in ids
+    assert "RBI_RATE_HIKE_2022" in ids
+
+    # Test COVID crash preset session
+    covid_res = await async_client.get("/api/v1/replay/session?preset_id=COVID_CRASH_2020&bars=120")
+    assert covid_res.status_code == 200
+    covid_data = covid_res.json()
+    assert "March 2020" in covid_data["preset_name"]
+    assert len(covid_data["candles"]) == 120
+
+@pytest.mark.asyncio
+async def test_market_data_quotes_and_candles(async_client: AsyncClient):
+    """Verify live Yahoo Finance market quotes and candlestick endpoint with fallback."""
+    q_res = await async_client.get("/api/v1/market/quotes?symbols=^NSEI,RELIANCE.NS")
+    assert q_res.status_code == 200
+    q_data = q_res.json()
+    assert "quotes" in q_data
+    assert len(q_data["quotes"]) >= 2
+    symbols = [q["symbol"] for q in q_data["quotes"]]
+    assert "^NSEI" in symbols
+    assert "RELIANCE.NS" in symbols
+    for q in q_data["quotes"]:
+        assert q["price"] > 0
+        assert "change" in q
+        assert "volume" in q
+
+    # Test candles
+    c_res = await async_client.get("/api/v1/market/candles?symbol=^NSEI&timeframe=1m&range_param=1d")
+    assert c_res.status_code == 200
+    c_data = c_res.json()
+    assert c_data["symbol"] == "^NSEI"
+    assert len(c_data["candles"]) > 0
+
+@pytest.mark.asyncio
+async def test_news_feed_refresh(async_client: AsyncClient):
+    """Verify live financial news feed with 10-minute refresh cadence."""
+    news_res = await async_client.get("/api/v1/news/feed")
+    assert news_res.status_code == 200
+    news_data = news_res.json()
+    assert "items" in news_data
+    assert news_data["count"] > 0
+    assert news_data["refresh_interval_minutes"] == 10
+    first = news_data["items"][0]
+    assert "title" in first
+    assert "sentiment" in first
+    assert first["sentiment"] in ["BULLISH", "BEARISH", "NEUTRAL"]
+
+

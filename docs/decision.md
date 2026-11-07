@@ -311,3 +311,25 @@
   3. Verified 100% test pass rate across Vitest and Nitro production builds.
 * **Why Taken**: Fulfills the user's directive to "implement both", ensuring accessibility for novice traders while retaining institutional code inspection for quant developers.
 * **Impact**: Optimal pedagogical flexibility, accommodating both visual retail learners and advanced algorithmic traders.
+
+---
+
+### Record: ADR-025 — Institutional Practice Scenarios, Yahoo Finance Live Quotes & 10-Minute Market News Wire
+* **Date & Timestamp**: 2026-11-07 17:20:00 UTC (Local: 2026-11-07 22:50:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Engineered Historical Market Event Presets in the Practice Gym (`challenges.tsx` & `replay_service.py`):
+     - Added 5 seminal Indian crises and volatility shocks: *March 2020 Covid Crash & Circuit Breaker*, *June 2024 Lok Sabha Counting Day Shock*, *RBI Surprise 40 bps Off-Cycle Repo Rate Hike*, *Adani Hindenburg Shockwave & Margin Unwind*, and *Union Budget 2021 Capex Euphoria Rally*, alongside random blind asset practice (`ASSET_X`).
+     - Added historical scenario briefings detailing the macro catalyst, volatility profile (India VIX), and institutional trading lessons.
+  2. Implemented Real-Time Yahoo Finance Market Quotes & Candles Engine (`market_data_service.py` & `api/v1/market.py`):
+     - Endpoints `GET /api/v1/market/quotes` and `GET /api/v1/market/candles` querying live market quotes for `^NSEI`, `^NSEBANK`, `RELIANCE.NS`, `HDFCBANK.NS`, `TCS.NS`, `INFY.NS`, `ICICIBANK.NS`, and `GC=F`.
+     - Incorporated 10s TTL in-memory caching and resilient synthetic fallback so quotes never fail.
+     - Embedded a live Yahoo Finance ticker tape across the top of `trade.tsx` with instant 1-click instrument switching.
+  3. Engineered the Live Indian Market News Wire (`news_service.py`, `api/v1/news.py` & `LiveNewsFeed.tsx`):
+     - Connects to Google News India and Yahoo Finance RSS feeds with automated 10-minute (600 seconds) refresh countdown telemetry and manual refresh overrides.
+     - Categorizes news into `RBI POLICY`, `DERIVATIVES`, `BANKING`, `IT`, and `MACRO` with automated sentiment classification (`BULLISH`, `BEARISH`, `NEUTRAL`).
+     - Embedded inside `trade.tsx` as a dedicated view mode and collapsible live wire pane.
+  4. Verified 100% test pass rate across Vitest (5/5) and pytest (8/8) with clean Nitro production build.
+* **Why Taken**: Fulfills the user's directive to provide historical market event presets for deliberate gym practice, live real Yahoo Finance prices, and an automated 10-minute refreshed financial news feed on the platform.
+* **Impact**: Delivers institutional crisis simulations, live pricing realism, and real-time news telemetry directly into the trader's workflow.
+

@@ -140,9 +140,35 @@ export const backendApi = {
     });
   },
 
-  // Market Replay
-  async getReplaySession(symbol = "NIFTY_FUT", bars = 375, blindMode = false) {
-    return request<any>(`/replay/session?symbol=${symbol}&bars=${bars}&blind_mode=${blindMode}`);
+  // Market Replay & Historical Presets
+  async getReplayPresets() {
+    return request<{ presets: any[] }>("/replay/presets");
+  },
+
+  async getReplaySession(symbol = "NIFTY_FUT", bars = 375, blindMode = false, presetId?: string) {
+    const params = new URLSearchParams({
+      symbol,
+      bars: bars.toString(),
+      blind_mode: blindMode.toString(),
+    });
+    if (presetId) params.append("preset_id", presetId);
+    return request<any>(`/replay/session?${params.toString()}`);
+  },
+
+  // Live Yahoo Finance Market Quotes & Candles
+  async getMarketQuotes(symbols?: string[]) {
+    const query = symbols && symbols.length > 0 ? `?symbols=${symbols.join(",")}` : "";
+    return request<{ quotes: any[]; count: number; source: string }>(`/market/quotes${query}`);
+  },
+
+  async getMarketCandles(symbol = "^NSEI", timeframe = "1m", rangeParam = "1d") {
+    return request<any>(`/market/candles?symbol=${encodeURIComponent(symbol)}&timeframe=${timeframe}&range_param=${rangeParam}`);
+  },
+
+  // Live 10-Minute Market News Feed
+  async getLiveNewsFeed(forceRefresh = false) {
+    return request<any>(`/news/feed?force_refresh=${forceRefresh}`);
   },
 };
+
 
