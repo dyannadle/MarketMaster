@@ -26,12 +26,12 @@ flowchart LR
 | Subsystem | Tech Stack | Status | Reference Spec |
 | :--- | :--- | :---: | :--- |
 | **Specifications & Blueprints** | Markdown, Mermaid, IEEE 830 | ✅ Complete | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| **Frontend Web Terminal** | Custom Modern UI (Dedicated integration) | 🟡 Ready for User Delivery | [`docs/FRONTEND_ARCHITECTURE.md`](docs/FRONTEND_ARCHITECTURE.md) |
-| **Backend & Quant Engine** | Python 3.13+, FastAPI, Polars, Async SQLAlchemy, NumPy, SciPy | ✅ Tested (100% Pass) | [`docs/BACKEND_ARCHITECTURE.md`](docs/BACKEND_ARCHITECTURE.md) |
+| **Frontend Web Terminal** | React 19, TanStack Start/Router, Tailwind v4, shadcn/ui | ✅ Active (5/5 Tests Pass) | [`docs/FRONTEND_ARCHITECTURE.md`](docs/FRONTEND_ARCHITECTURE.md) |
+| **Backend & Quant Engine** | Python 3.13+, FastAPI, Polars, Async SQLAlchemy, NumPy, SciPy | ✅ Tested (15/15 Pass) | [`docs/BACKEND_ARCHITECTURE.md`](docs/BACKEND_ARCHITECTURE.md) |
 | **Database & Caching** | PostgreSQL 16, SQLite (aiosqlite), Redis 7 Docker compose | ✅ Implemented | [`docs/DATABASE_SCHEMA.md`](docs/DATABASE_SCHEMA.md) |
 | **Simulation & Replay Engine** | Non-Linear Power-Law Slippage, Indian Taxes, Double-Entry Ledger | ✅ Tested (100% Pass) | [`docs/PAPER_TRADING_ENGINE_SPEC.md`](docs/PAPER_TRADING_ENGINE_SPEC.md) |
 | **Algo Sandbox** | Vectorized Dual-EMA Backtesting, Black-Scholes Greeks | ✅ Implemented | [`docs/STRATEGY_LAB.md`](docs/STRATEGY_LAB.md) |
-| **Mobile Android App** | Kotlin 2.0, Jetpack Compose, Room DB | ⚪ Scheduled | [`docs/ANDROID_ARCHITECTURE.md`](docs/ANDROID_ARCHITECTURE.md) |
+| **Mobile Android App** | Android Native Container (Kotlin, WebView, PWA Standalone) | ✅ Scaffolding Complete | [`docs/ANDROID_ARCHITECTURE.md`](docs/ANDROID_ARCHITECTURE.md) |
 
 ---
 

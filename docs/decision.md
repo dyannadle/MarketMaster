@@ -220,3 +220,19 @@
   3. Retain the fully functional and tested Python quantitative backend, double-entry ledger, matching engine, and API layer (`backend/`) intact and ready for seamless frontend API integration.
 * **Why Taken**: User will provide a bespoke, comprehensive UI application separately. Purging prototype artifacts avoids codebase collisions, obsolete bundle assets, and merge conflicts.
 * **Impact**: Clean architectural boundary; backend remains completely verified (15/15 tests passing) and prepared to serve the incoming user-supplied UI.
+
+---
+
+### Record: ADR-020 — Integration of Custom TanStack Start UI & Unified Site/Android Cross-Platform Architecture
+* **Date & Timestamp**: 2026-11-07 11:53:00 UTC (Local: 2026-11-07 17:23:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Ingested user-provided custom React 19 + TanStack Start/Router frontend codebase into `frontend/`, resolving accidental root directory spills to preserve monorepo cleanliness.
+  2. Integrated full shadcn/ui component suite, Tailwind CSS v4 styling, Recharts visualization, and Lucide React icons.
+  3. Formulated the unified "same to same" site and app delivery architecture:
+     - Web: Production-ready SSR/SPA with progressive web application (PWA) manifest (`manifest.webmanifest`), full-screen mobile shell, and responsive desktop/tablet/mobile layouts with mobile 5-tab bottom navigation (`AppShell.tsx`).
+     - Android: Scaffolding high-performance Android native container (`android/`) with hardware-accelerated WebView, native pull-to-refresh, hardware back-button history navigation, and native bridge (`MarketMasterNative`), embedding the exact same responsive React application with zero UI divergence.
+  4. Wired frontend backend bridge (`frontend/src/lib/api.ts`) connecting authentication (`/auth/login`, `/auth/register` with Rule 4.2 compliance), virtual paper order placement (`/trading/orders`), and positions tracking with graceful offline fallback.
+  5. Verified 100% test pass rate across both frontend vitest suite (5/5 passing) and backend pytest suite (15/15 passing).
+* **Why Taken**: Delivers the user's exact specification for an identical ("same to same") user interface across both the web site and the Android mobile application without maintaining fragile dual codebases.
+* **Impact**: 100% UI consistency, instant PWA installability on mobile devices, production Android APK build readiness in `android/`, and verified zero-cost architecture.

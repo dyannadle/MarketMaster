@@ -1,0 +1,18 @@
+{
+  "name": "MarketMaster Academy & Terminal",
+  "short_name": "MarketMaster",
+  "description": "Institutional-grade paper trading simulator and 6-level financial academy.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0f19",
+  "theme_color": "#0b0f19",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["finance", "education", "productivity"]
+}

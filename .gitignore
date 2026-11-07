@@ -36,8 +36,16 @@ htmlcov/
 node_modules/
 .next/
 out/
+.output/
+.wrangler/
 .vercel
 dist/
+
+# Android
+.gradle/
+**/build/
+*.apk
+*.aab
 
 # IDE & OS
 .vscode/
@@ -45,3 +53,4 @@ dist/
 .DS_Store
 Thumbs.db
 *.log
+

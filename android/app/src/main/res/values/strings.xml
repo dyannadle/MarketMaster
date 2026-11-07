@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MarketMaster</string>
+    <string name="offline_message">No internet connection. Please check your network.</string>
+</resources>

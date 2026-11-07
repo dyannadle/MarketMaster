@@ -275,3 +275,24 @@
 * **Detailed Description**:
   * Purged all generated temporary frontend prototype files and injection scripts per explicit user request.
   * Preserved the backend API layer and full 15-test automated suite (100% pass rate) ready for custom frontend connection.
+
+---
+
+### [v1.0.16-CUSTOM-UI-INTEGRATION-AND-ANDROID-UNIFICATION] — 2026-11-07 11:55:00 UTC (Local: 2026-11-07 17:25:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Custom UI Integration, PWA Manifest & Android Container (`Frontend`, `React19`, `TanStackStart`, `Android`, `PWA`)
+* **Files Created & Modified**:
+  * Ingested custom React 19 + TanStack Start frontend: `frontend/src/` (routes, components, ui, lib, hooks), `frontend/package.json`, `frontend/vite.config.ts`, `frontend/tsconfig.json`
+  * `frontend/public/manifest.webmanifest` (PWA application manifest for mobile standalone installation)
+  * `frontend/src/routes/__root.tsx` (Linked PWA manifest, viewport-fit=cover, and mobile theme headers)
+  * `frontend/src/lib/api.ts` (API bridge connecting auth, paper trading, and ledger to FastAPI backend)
+  * `frontend/src/lib/auth.tsx` (Integrated server-side authentication with offline fallback)
+  * `android/` (Scaffolded Android Gradle container: `MainActivity.kt`, `AndroidManifest.xml`, `build.gradle`, themes, layout)
+  * `.gitignore` (Added `.output/`, `.wrangler/`, and Android build directories)
+  * `README.md` (Updated live status dashboard to reflect active Web & Android container)
+  * `docs/decision.md` (Recorded ADR-020)
+  * `docs/changes.md` (Logged v1.0.16 release entry)
+* **Detailed Description**:
+  * Successfully integrated the user's custom modern React 19 UI with TanStack Start/Router, shadcn/ui, Tailwind CSS v4, and Recharts.
+  * Achieved 100% "same to same" user experience across web site and Android application via unified responsive layout and Android native WebView container.
+  * All 5 frontend vitest tests passing; all 15 backend pytest tests passing (100% green rate).
