@@ -236,3 +236,25 @@
   5. Verified 100% test pass rate across both frontend vitest suite (5/5 passing) and backend pytest suite (15/15 passing).
 * **Why Taken**: Delivers the user's exact specification for an identical ("same to same") user interface across both the web site and the Android mobile application without maintaining fragile dual codebases.
 * **Impact**: 100% UI consistency, instant PWA installability on mobile devices, production Android APK build readiness in `android/`, and verified zero-cost architecture.
+
+---
+
+### Record: ADR-021 — Interactive Financial Visualizers & Deep Pedagogical Content Engine
+* **Date & Timestamp**: 2026-11-07 12:35:00 UTC (Local: 2026-11-07 18:05:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Replaced placeholder/boilerplate curriculum strings (`Concept for {topic} within {course}...`) with a comprehensive institutional curriculum database (`frontend/src/lib/lesson-data.tsx`).
+  2. Engineered custom interactive visualizers in Recharts and Radix UI:
+     - `InflationVisualizer.tsx`: Dynamic purchasing power erosion area chart with live sliders for inflation rate (3%–12%) and time horizon (1–30 years), calculating halving time via Rule of 72 and highlighting real vs nominal value decay on ₹1,00,000.
+     - `CompoundingVisualizer.tsx`: Dual-series growth bar chart comparing Simple vs Compound interest across customizable CAGR rates (4%–25%) and time spans, displaying the total wealth multiplier ($W = P \times (1 + r)^t$).
+  3. Structured every lesson into a rigorous 6-tier institutional learning theater:
+     - Tier 1: Core Concept ($R_{\text{real}} \approx R_{\text{nominal}} - \pi - \text{Taxes}$) with mathematical rigor and real-world asset class comparison tables (Savings, Fixed Deposit, Gold, Nifty 50 Index).
+     - Tier 2: Interactive Dynamic Visualizer (live sliders, reactive chart updates, key metrics).
+     - Tier 3: Why It Matters & Institutional Reality (RBI inflation targeting, tax drag, real return deficit).
+     - Tier 4: Step-by-Step Worked Numerical Case Study with Indian Rupee figures.
+     - Tier 5: Common Retail Mistakes & Antidotes.
+     - Tier 6: Simulator Drills & Concept Mastery Quiz with immediate feedback and explanation pills.
+  4. Corrected `.gitignore` rule (`lib/` -> `/lib/`) to ensure `frontend/src/lib/` domain assets, API clients, and auth providers are tracked cleanly in version control.
+  5. Created root launcher aliases (`startui.bat`, `startall.bat`) with multi-package-manager fallback (`pnpm` -> `npx pnpm` -> `npm`) to eliminate terminal command not found errors.
+* **Why Taken**: Fulfills the user's explicit directive to provide deep, detailed, and visual educational modules rather than short, generic overview snippets.
+* **Impact**: Dramatically elevated pedagogical depth and user engagement; institutional-grade financial modeling directly inside the browser; seamless one-click local launching.

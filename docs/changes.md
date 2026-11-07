@@ -296,3 +296,24 @@
   * Successfully integrated the user's custom modern React 19 UI with TanStack Start/Router, shadcn/ui, Tailwind CSS v4, and Recharts.
   * Achieved 100% "same to same" user experience across web site and Android application via unified responsive layout and Android native WebView container.
   * All 5 frontend vitest tests passing; all 15 backend pytest tests passing (100% green rate).
+
+---
+
+### [v1.0.17-DEEP-CURRICULUM-AND-FINANCIAL-VISUALIZERS] — 2026-11-07 12:38:00 UTC (Local: 2026-11-07 18:08:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Deep Financial Visualizers & Curriculum Engine (`Frontend`, `Recharts`, `Interactive`, `Pedagogy`, `Vitest`)
+* **Files Created & Modified**:
+  * `frontend/src/components/visualizers/InflationVisualizer.tsx` (Interactive purchasing power erosion area chart with live sliders for inflation rate and time horizon, Rule of 72 halving time calculations, and Indian rupee metrics)
+  * `frontend/src/components/visualizers/CompoundingVisualizer.tsx` (Dual-series bar chart comparing Simple vs Compound interest growth across customizable CAGR rates and time horizons)
+  * `frontend/src/lib/lesson-data.tsx` (Comprehensive institutional curriculum database with formulas, asset class comparison tables, worked case studies, retail traps, simulator drills, and interactive mastery quizzes)
+  * `frontend/src/routes/learn.$courseId.tsx` (Refactored lesson view into 6-section educational theater embedding live visualizers, formula callouts, and mastery quizzes)
+  * `frontend/public/index.html` (Enhanced fallback screen directing users to launch via `.\startui.bat` or `pnpm dev` for full SSR routing)
+  * `startui.bat` & `startall.bat` (Added dual launch scripts with automatic package manager detection `pnpm` -> `npx pnpm` -> `npm`)
+  * `.gitignore` (Corrected `lib/` to `/lib/` to track `frontend/src/lib/` assets in git)
+  * `docs/decision.md` (Recorded ADR-021)
+  * `docs/changes.md` (Logged v1.0.17 release entry)
+* **Detailed Description**:
+  * Replaced short placeholder lesson text with deep, mathematically rigorous, and interactive visual financial models.
+  * Users can manipulate inflation rates and watch real purchasing power erode in real time on an interactive area chart.
+  * Embedded interactive quizzes with instant feedback, worked numerical Indian market examples, and asset comparison tables.
+  * All 5 frontend vitest tests and Vite build passing cleanly (100% green rate).
