@@ -6,6 +6,9 @@ import { allCourses } from "@/lib/data";
 import { getLessonDetails } from "@/lib/lesson-data";
 import { InflationVisualizer } from "@/components/visualizers/InflationVisualizer";
 import { CompoundingVisualizer } from "@/components/visualizers/CompoundingVisualizer";
+import { PositionSizingVisualizer } from "@/components/visualizers/PositionSizingVisualizer";
+import { OptionGreeksVisualizer } from "@/components/visualizers/OptionGreeksVisualizer";
+import { OrderFlowSlippageVisualizer } from "@/components/visualizers/OrderFlowSlippageVisualizer";
 
 export const Route = createFileRoute("/learn/$courseId")({
   loader: ({ params }) => {
@@ -191,8 +194,11 @@ function CoursePage() {
           </div>
 
           {/* Interactive Visualizer Integration */}
-          {topic === "Inflation" && <InflationVisualizer />}
-          {topic === "Compounding" && <CompoundingVisualizer />}
+          {(lesson.workedExample.hasVisualizer === "inflation" || topic === "Inflation") && <InflationVisualizer />}
+          {(lesson.workedExample.hasVisualizer === "compounding" || topic === "Compounding") && <CompoundingVisualizer />}
+          {lesson.workedExample.hasVisualizer === "position_sizing" && <PositionSizingVisualizer />}
+          {lesson.workedExample.hasVisualizer === "option_greeks" && <OptionGreeksVisualizer />}
+          {lesson.workedExample.hasVisualizer === "order_flow" && <OrderFlowSlippageVisualizer />}
 
           {/* Step-by-step breakdown */}
           <div className="grid gap-3 sm:grid-cols-2">

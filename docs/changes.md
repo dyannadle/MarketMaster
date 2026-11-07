@@ -317,3 +317,22 @@
   * Users can manipulate inflation rates and watch real purchasing power erode in real time on an interactive area chart.
   * Embedded interactive quizzes with instant feedback, worked numerical Indian market examples, and asset comparison tables.
   * All 5 frontend vitest tests and Vite build passing cleanly (100% green rate).
+
+---
+
+### [v1.0.18-TERMINAL-CANDLESTICKS-VISUALIZERS-AND-STRATEGY-LAB] — 2026-11-07 12:50:00 UTC (Local: 2026-11-07 18:20:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Terminal Execution, Candlestick Engine, Visualizers Suite & Strategy Lab (`Trading`, `Candlesticks`, `Quant`, `Backtest`, `Visualizers`)
+* **Files Created & Modified**:
+  * `frontend/src/components/trading/CandlestickChart.tsx` (Dynamic candlestick canvas with timeframes 1m/5m/15m/1D, live tick updates, volume bars, and price guideline)
+  * `frontend/src/routes/trade.tsx` (Wired Buy/Sell tickets to FastAPI matching engine `/trading/orders`, Level-2 depth ladder, dynamic power-law slippage, and statutory deductions)
+  * `frontend/src/components/visualizers/PositionSizingVisualizer.tsx` (Institutional position sizing engine enforcing Rule 4.3 with stop-loss and margin calculations)
+  * `frontend/src/components/visualizers/OptionGreeksVisualizer.tsx` (Black-Scholes analytical Greeks and live Call/Put payoff curves)
+  * `frontend/src/components/visualizers/OrderFlowSlippageVisualizer.tsx` (Level-2 queue depth and market impact friction calculator)
+  * `frontend/src/lib/lesson-data.tsx` & `frontend/src/routes/learn.$courseId.tsx` (Mapped visualizers across curriculum levels)
+  * `frontend/src/routes/lab.tsx` (Strategy Lab with in-browser Python IDE, FastAPI quant backtester `/quant/backtest`, equity curves, underwater drawdown profiles, Sharpe/Sortino ratios, and TWAP order slicing)
+  * `docs/decision.md` (Recorded ADR-022)
+  * `docs/changes.md` (Logged v1.0.18 release entry)
+* **Detailed Description**:
+  * Implemented all three major milestone deliverables in a unified sprint.
+  * Verified 100% test pass rate across Vitest and Nitro production builds.

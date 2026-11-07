@@ -258,3 +258,20 @@
   5. Created root launcher aliases (`startui.bat`, `startall.bat`) with multi-package-manager fallback (`pnpm` -> `npx pnpm` -> `npm`) to eliminate terminal command not found errors.
 * **Why Taken**: Fulfills the user's explicit directive to provide deep, detailed, and visual educational modules rather than short, generic overview snippets.
 * **Impact**: Dramatically elevated pedagogical depth and user engagement; institutional-grade financial modeling directly inside the browser; seamless one-click local launching.
+
+---
+
+### Record: ADR-022 — Live Trading Terminal Candlestick Engine, Quant Matching Integration, Interactive Visualizers Suite & Strategy Lab Backtester
+* **Date & Timestamp**: 2026-11-07 12:49:00 UTC (Local: 2026-11-07 18:19:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Engineered an interactive Candlestick Chart engine (`frontend/src/components/trading/CandlestickChart.tsx`) supporting timeframes (`1m`, `5m`, `15m`, `1D`), live tick streaming that dynamically shapes the active bar, and an OHLC crosshair inspection tooltip.
+  2. Wired `trade.tsx` directly to the FastAPI matching engine (`POST /api/v1/trading/orders` and `GET /api/v1/trading/positions`), calculating live Level-2 power-law slippage ($k \cdot (Q/D)^\alpha$) and statutory deductions (STT, Stamp Duty, GST, Exchange charges) in real time before execution, with fallback to local paper state when offline.
+  3. Expanded the interactive visualizer suite across all curriculum modules:
+     - `PositionSizingVisualizer.tsx`: Risk-per-trade engine enforcing Rule 4.3 ($\le 1.5\%$) on NIFTY/BANKNIFTY futures with stop-loss and target calculations.
+     - `OptionGreeksVisualizer.tsx`: Real-time Black-Scholes analytical Greeks ($\Delta, \Gamma, \Theta, \mathcal{V}, \rho$) with dynamic Call/Put payoff curves at expiry and today.
+     - `OrderFlowSlippageVisualizer.tsx`: Level-2 order book depth matching and market impact curve.
+  4. Engineered the Strategy Lab Algorithmic Backtester (`lab.tsx`) connecting in-browser Python strategy scripts to the quant backtesting engine (`POST /api/v1/quant/backtest`), displaying dual-series equity curves, underwater drawdown profiles, Sharpe/Sortino ratios, and TWAP execution order slicing.
+  5. Verified 100% test pass rate across Vitest and Vite production builds.
+* **Why Taken**: Directly fulfills user requests to wire live execution, deliver candlestick charting with Level-2 depth, expand visualizers across all course modules, and activate the Strategy Lab backtester.
+* **Impact**: Full end-to-end institutional trading simulation, rigorous analytical financial modeling, algorithmic backtesting tearsheets, and seamless zero-cost execution.

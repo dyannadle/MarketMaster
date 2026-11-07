@@ -19,7 +19,7 @@ export type DetailedLesson = {
     scenario: string;
     steps: { step: string; detail: string }[];
     takeaway: string;
-    hasVisualizer?: "inflation" | "compounding" | "tvm";
+    hasVisualizer?: "inflation" | "compounding" | "tvm" | "position_sizing" | "option_greeks" | "order_flow";
   };
   commonMistakes: {
     mistake: string;
@@ -193,6 +193,14 @@ export function getLessonDetails(topic: string, courseTitle: string, level: numb
     return richLessons[topic];
   }
 
+  const lower = topic.toLowerCase();
+  let vizType: DetailedLesson["workedExample"]["hasVisualizer"] = undefined;
+  if (lower.includes("inflat") || lower.includes("purchas")) vizType = "inflation";
+  else if (lower.includes("compound") || lower.includes("interest") || lower.includes("time value")) vizType = "compounding";
+  else if (lower.includes("risk") || lower.includes("size") || lower.includes("position") || lower.includes("capital")) vizType = "position_sizing";
+  else if (lower.includes("option") || lower.includes("greek") || lower.includes("derivative") || lower.includes("call") || lower.includes("put")) vizType = "option_greeks";
+  else if (lower.includes("order") || lower.includes("slip") || lower.includes("depth") || lower.includes("book") || lower.includes("execut")) vizType = "order_flow";
+
   // Generates intelligent, comprehensive domain content for all other topics
   return {
     title: topic,
@@ -226,6 +234,7 @@ export function getLessonDetails(topic: string, courseTitle: string, level: numb
         { step: "4. Post-Trade Review", detail: "Log fill price, slippage cost, and emotional discipline score in your trading journal." },
       ],
       takeaway: `Consistent process always beats random outcomes. Focus on rigorous adherence to ${topic.toLowerCase()} principles.`,
+      hasVisualizer: vizType,
     },
     commonMistakes: [
       {
@@ -265,3 +274,4 @@ export function getLessonDetails(topic: string, courseTitle: string, level: numb
     },
   };
 }
+

@@ -1,14 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Line, LineChart, ResponsiveContainer, YAxis } from "recharts";
+import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
+import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change } from "@/components/AppShell";
 import { inr, instruments } from "@/lib/data";
 import { applyOrder, useAccount, useLivePrices } from "@/lib/paper";
+import { backendApi } from "@/lib/api";
+import { CandlestickChart } from "@/components/trading/CandlestickChart";
 
 export const Route = createFileRoute("/trade")({
-  validateSearch: (s: Record<string, unknown>): { s?: string | undefined } => ({ s: typeof s["s"] === "string" ? s["s"] : undefined }),
+  validateSearch: (s: Record<string, unknown>): { s?: string | undefined } => ({
+    s: typeof s["s"] === "string" ? s["s"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Paper Trading Terminal — MarketMaster" },
@@ -31,36 +35,138 @@ function Trade() {
   const [type, setType] = useState<"MARKET" | "LIMIT">("MARKET");
   const [lots, setLots] = useState(1);
   const [limit, setLimit] = useState("");
-  const [hist, setHist] = useState<{ t: number; v: number }[]>([]);
-  const inst = tradable.find((t) => t.symbol === sym)!;
-  const q = prices[sym]!;
+  const [stopLoss, setStopLoss] = useState("");
+  const [targetPrice, setTargetPrice] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [backendPositions, setBackendPositions] = useState<any[]>([]);
 
-  useEffect(() => setHist([]), [sym]);
-  useEffect(() => setHist((h) => [...h.slice(-80), { t: Date.now(), v: q.p }]), [q.p]);
+  const inst = tradable.find((t) => t.symbol === sym) || tradable[0]!;
+  const q = prices[sym] || { p: 24500, base: 24450 };
+
+  // Fetch backend positions if user is authenticated
+  const refreshPositions = async () => {
+    try {
+      const pos = await backendApi.getPositions();
+      if (Array.isArray(pos)) setBackendPositions(pos.filter((p) => p.is_open));
+    } catch {
+      // Local mode fallback
+    }
+  };
+
+  useEffect(() => {
+    refreshPositions();
+  }, []);
 
   const qty = lots * inst.lot;
   const px = type === "LIMIT" && Number(limit) > 0 ? Number(limit) : q.p;
-  const book = Array.from({ length: 5 }, (_, i) => ({ bid: q.p * (1 - 0.0004 * (i + 1)), ask: q.p * (1 + 0.0004 * (i + 1)), qb: 100 + ((i * 37) % 90) * 7, qa: 120 + ((i * 53) % 80) * 6 }));
 
-  const place = () => {
-    const r = applyOrder(acc, { symbol: sym, side, qty, price: px, type });
-    if (typeof r === "string") { toast.error(r); return; }
-    save(r);
-    toast.success(`${side} ${qty} ${sym} @ ${px.toFixed(2)} filled`);
+  // Real-time Level-2 Microstructure and Power-Law Slippage Calculations
+  const { slippagePts, estimatedFillPrice, marginRequired, taxes } = useMemo(() => {
+    const baseDepth = 2500.0;
+    const ratio = Math.max(qty / baseDepth, 0.001);
+    const slipPct = 0.0005 * Math.pow(ratio, 0.6);
+    const pts = Math.round(q.p * slipPct * 100) / 100;
+    const estFill = side === "BUY" ? q.p + pts : q.p - pts;
+
+    const turnover = qty * estFill;
+    const margin = Math.round(turnover * 0.10); // 10% Initial Margin
+    const stt = side === "SELL" ? turnover * 0.000125 : 0.0;
+    const stampDuty = side === "BUY" ? turnover * 0.00002 : 0.0;
+    const exchangeCharge = turnover * 0.000019;
+    const gst = exchangeCharge * 0.18;
+    const totalTax = stt + stampDuty + exchangeCharge + gst;
+
+    return {
+      slippagePts: pts,
+      estimatedFillPrice: estFill,
+      marginRequired: margin,
+      taxes: { stt, stampDuty, exchangeCharge, gst, totalTax },
+    };
+  }, [qty, side, q.p]);
+
+  // Level-2 simulated depth ladder
+  const book = useMemo(() => {
+    return Array.from({ length: 5 }, (_, i) => ({
+      bid: q.p * (1 - 0.0003 * (i + 1)),
+      ask: q.p * (1 + 0.0003 * (i + 1)),
+      qb: 100 + ((i * 37) % 90) * 7,
+      qa: 120 + ((i * 53) % 80) * 6,
+    }));
+  }, [q.p]);
+
+  // Execute Order: Dispatches to FastAPI Matching Engine with local fallback
+  const place = async () => {
+    setIsSubmitting(true);
+    try {
+      const backendRes = await backendApi.placeOrder({
+        symbol: sym,
+        side,
+        quantity: qty,
+        orderType: type,
+        limitPrice: type === "LIMIT" && Number(limit) > 0 ? Number(limit) : undefined,
+        stopLoss: Number(stopLoss) > 0 ? Number(stopLoss) : undefined,
+        targetPrice: Number(targetPrice) > 0 ? Number(targetPrice) : undefined,
+      });
+
+      toast.success(
+        `${side} ${qty} ${sym} filled @ ₹${backendRes.fill_price.toFixed(2)} (Slippage: ₹${backendRes.slippage.toFixed(2)})`
+      );
+      await refreshPositions();
+    } catch {
+      // Offline fallback: Use local paper engine
+      const r = applyOrder(acc, { symbol: sym, side, qty, price: estimatedFillPrice, type });
+      if (typeof r === "string") {
+        toast.error(r);
+      } else {
+        save(r);
+        toast.success(
+          `${side} ${qty} ${sym} @ ₹${estimatedFillPrice.toFixed(2)} executed (Simulated matching engine)`
+        );
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Exit Open Position
+  const handleExit = async (posId: string) => {
+    try {
+      await backendApi.exitPosition(posId, q.p);
+      toast.success("Position closed at market price.");
+      await refreshPositions();
+    } catch {
+      toast.error("Could not close position via backend.");
+    }
   };
 
   return (
-    <div className="grid gap-4 p-4 lg:grid-cols-[220px_1fr_320px] md:p-6">
-      <div className="rounded-xl border bg-card">
-        <p className="border-b p-3 text-xs font-medium text-muted-foreground">WATCHLIST</p>
-        <ul className="max-h-[70vh] overflow-y-auto">
+    <div className="grid gap-4 p-4 lg:grid-cols-[240px_1fr_340px] md:p-6">
+      {/* 1. Watchlist */}
+      <div className="rounded-xl border border-border/80 bg-card shadow-sm">
+        <div className="flex items-center justify-between border-b border-border/40 p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <span>MARKET WATCH</span>
+          <span className="text-[10px] text-primary">{tradable.length} ASSETS</span>
+        </div>
+        <ul className="max-h-[75vh] overflow-y-auto divide-y divide-border/30">
           {tradable.map((t) => {
-            const p = prices[t.symbol]!;
+            const p = prices[t.symbol] || { p: 0, base: 1 };
+            const chg = ((p.p - p.base) / p.base) * 100;
             return (
               <li key={t.symbol}>
-                <button onClick={() => setSym(t.symbol)} className={`flex w-full justify-between px-3 py-2.5 text-left text-sm ${t.symbol === sym ? "bg-accent" : "hover:bg-accent/50"}`}>
-                  <span>{t.symbol}<span className="block text-[10px] text-muted-foreground">{t.segment}</span></span>
-                  <span className="text-right"><span className="num block">{p.p.toLocaleString("en-IN")}</span><Change v={((p.p - p.base) / p.base) * 100} /></span>
+                <button
+                  onClick={() => setSym(t.symbol)}
+                  className={`flex w-full justify-between px-3 py-2.5 text-left text-sm transition-colors ${
+                    t.symbol === sym ? "bg-accent font-semibold" : "hover:bg-accent/40"
+                  }`}
+                >
+                  <div>
+                    <span className="block text-foreground">{t.symbol}</span>
+                    <span className="text-[10px] text-muted-foreground">{t.name}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="num block font-mono text-xs">{p.p.toLocaleString("en-IN")}</span>
+                    <Change v={chg} />
+                  </div>
                 </button>
               </li>
             );
@@ -68,67 +174,296 @@ function Trade() {
         </ul>
       </div>
 
+      {/* 2. Main Stage: Candlestick Chart, Positions & Order History */}
       <div className="space-y-4">
-        <div className="rounded-xl border bg-card p-4">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <div><h1 className="text-xl font-bold">{sym}</h1><p className="text-xs text-muted-foreground">{inst.name} · {inst.exchange} · Lot {inst.lot}</p></div>
-            <p className="num text-2xl">{q.p.toLocaleString("en-IN")} <Change v={((q.p - q.base) / q.base) * 100} /></p>
+        {/* Instrument Title & Candlestick Canvas */}
+        <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-black tracking-tight">{sym}</h1>
+                <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary uppercase">
+                  {inst.segment}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {inst.name} · {inst.exchange} · Lot Size: {inst.lot}
+              </p>
+            </div>
+            <div className="text-right">
+              <span className="num text-2xl font-black text-foreground">{q.p.toLocaleString("en-IN")}</span>
+              <div className="mt-0.5">
+                <Change v={((q.p - q.base) / q.base) * 100} />
+              </div>
+            </div>
           </div>
-          <div className="mt-4 h-64">
-            <ResponsiveContainer>
-              <LineChart data={hist}><YAxis domain={["auto", "auto"]} hide /><Line dataKey="v" dot={false} stroke="var(--primary)" strokeWidth={2} isAnimationActive={false} /></LineChart>
-            </ResponsiveContainer>
-          </div>
+
+          {/* Interactive Candlestick Chart */}
+          <CandlestickChart symbol={sym} currentPrice={q.p} basePrice={q.base} />
         </div>
-        <div className="rounded-xl border bg-card">
-          <p className="border-b p-3 text-xs font-medium text-muted-foreground">ORDER HISTORY</p>
-          {acc.orders.length === 0 ? <p className="p-4 text-sm text-muted-foreground">No orders yet.</p> : (
-            <table className="w-full text-sm"><tbody>
-              {acc.orders.slice(0, 8).map((o) => (
-                <tr key={o.id} className="border-t">
-                  <td className={`p-3 font-medium ${o.side === "BUY" ? "text-gain" : "text-loss"}`}>{o.side}</td>
-                  <td className="p-3">{o.symbol}</td><td className="num p-3">{o.qty}</td><td className="num p-3">{o.price.toFixed(2)}</td>
-                  <td className="p-3 text-xs text-muted-foreground">{o.type}</td><td className="p-3 text-xs text-gain">FILLED</td>
-                </tr>
-              ))}
-            </tbody></table>
+
+        {/* Live Positions Telemetry */}
+        <div className="rounded-xl border border-border/80 bg-card shadow-sm">
+          <div className="flex items-center justify-between border-b border-border/40 p-3 text-xs font-semibold text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <Zap className="h-3.5 w-3.5 text-amber-400" /> OPEN POSITIONS
+            </span>
+            <button onClick={refreshPositions} className="hover:text-foreground">
+              <RefreshCw className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          {backendPositions.length === 0 && acc.positions.length === 0 ? (
+            <p className="p-4 text-xs text-muted-foreground">No active positions. Place a trade to open a simulated position.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-border/40 text-muted-foreground">
+                    <th className="p-2.5 text-left">Symbol</th>
+                    <th className="p-2.5 text-left">Side</th>
+                    <th className="p-2.5 text-right">Qty</th>
+                    <th className="p-2.5 text-right">Avg Price</th>
+                    <th className="p-2.5 text-right">LTP</th>
+                    <th className="p-2.5 text-right">P&L</th>
+                    <th className="p-2.5 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/20 font-mono">
+                  {/* Backend Open Positions */}
+                  {backendPositions.map((pos) => {
+                    const ltp = prices[pos.symbol]?.p || pos.avg_entry_price;
+                    const pnl = pos.side === "LONG"
+                      ? (ltp - pos.avg_entry_price) * pos.quantity
+                      : (pos.avg_entry_price - ltp) * pos.quantity;
+                    return (
+                      <tr key={pos.id} className="hover:bg-accent/30">
+                        <td className="p-2.5 font-sans font-bold">{pos.symbol}</td>
+                        <td className={`p-2.5 font-bold ${pos.side === "LONG" ? "text-gain" : "text-loss"}`}>{pos.side}</td>
+                        <td className="p-2.5 text-right">{pos.quantity}</td>
+                        <td className="p-2.5 text-right">₹{pos.avg_entry_price.toFixed(2)}</td>
+                        <td className="p-2.5 text-right">₹{ltp.toFixed(2)}</td>
+                        <td className={`p-2.5 text-right font-bold ${pnl >= 0 ? "text-gain" : "text-loss"}`}>
+                          {pnl >= 0 ? "+" : ""}{inr(pnl)}
+                        </td>
+                        <td className="p-2.5 text-center">
+                          <button
+                            onClick={() => handleExit(pos.id)}
+                            className="rounded bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-rose-400 hover:bg-destructive/20"
+                          >
+                            Exit
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+
+                  {/* Local Paper Fallback Positions */}
+                  {backendPositions.length === 0 &&
+                    acc.positions.map((pos) => {
+                      const ltp = prices[pos.symbol]?.p || pos.price;
+                      const pnl = (ltp - pos.price) * pos.qty;
+                      return (
+                        <tr key={pos.symbol} className="hover:bg-accent/30">
+                          <td className="p-2.5 font-sans font-bold">{pos.symbol}</td>
+                          <td className="p-2.5 font-bold text-gain">BUY</td>
+                          <td className="p-2.5 text-right">{pos.qty}</td>
+                          <td className="p-2.5 text-right">₹{pos.price.toFixed(2)}</td>
+                          <td className="p-2.5 text-right">₹{ltp.toFixed(2)}</td>
+                          <td className={`p-2.5 text-right font-bold ${pnl >= 0 ? "text-gain" : "text-loss"}`}>
+                            {pnl >= 0 ? "+" : ""}{inr(pnl)}
+                          </td>
+                          <td className="p-2.5 text-center text-muted-foreground">—</td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Order History */}
+        <div className="rounded-xl border border-border/80 bg-card shadow-sm">
+          <p className="border-b border-border/40 p-3 text-xs font-semibold text-muted-foreground uppercase">
+            AUDITED ORDER TRAIL
+          </p>
+          {acc.orders.length === 0 ? (
+            <p className="p-4 text-xs text-muted-foreground">No recent orders recorded.</p>
+          ) : (
+            <table className="w-full text-xs">
+              <tbody className="divide-y divide-border/20 font-mono">
+                {acc.orders.slice(0, 6).map((o) => (
+                  <tr key={o.id} className="hover:bg-accent/20">
+                    <td className={`p-2.5 font-bold ${o.side === "BUY" ? "text-gain" : "text-loss"}`}>{o.side}</td>
+                    <td className="p-2.5 font-sans">{o.symbol}</td>
+                    <td className="p-2.5 text-right">{o.qty}</td>
+                    <td className="p-2.5 text-right">₹{o.price.toFixed(2)}</td>
+                    <td className="p-2.5 text-xs text-muted-foreground">{o.type}</td>
+                    <td className="p-2.5 text-xs text-gain text-right font-semibold">FILLED</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </div>
 
+      {/* 3. Right: Order Ticket & Market Depth Ladder */}
       <div className="space-y-4">
-        <div className="rounded-xl border bg-card p-4">
+        {/* Order Entry Form */}
+        <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm">
+          {/* Side Tabs */}
           <div className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1">
-            {(["BUY", "SELL"] as const).map((x) => (
-              <button key={x} onClick={() => setSide(x)} className={`rounded-md py-2 text-sm font-semibold ${side === x ? (x === "BUY" ? "bg-gain text-primary-foreground" : "bg-loss text-destructive-foreground") : "text-muted-foreground"}`}>{x}</button>
-            ))}
+            <button
+              onClick={() => setSide("BUY")}
+              className={`rounded-md py-2 text-xs font-bold transition-all ${
+                side === "BUY" ? "bg-emerald-500 text-white shadow-md" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              BUY / LONG
+            </button>
+            <button
+              onClick={() => setSide("SELL")}
+              className={`rounded-md py-2 text-xs font-bold transition-all ${
+                side === "SELL" ? "bg-rose-500 text-white shadow-md" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              SELL / SHORT
+            </button>
           </div>
-          <div className="mt-4 flex gap-2 text-sm">
+
+          {/* Order Type Tabs */}
+          <div className="mt-3 flex gap-2 text-xs">
             {(["MARKET", "LIMIT"] as const).map((x) => (
-              <button key={x} onClick={() => setType(x)} className={`rounded-md border px-3 py-1 ${type === x ? "border-primary text-primary" : "text-muted-foreground"}`}>{x}</button>
+              <button
+                key={x}
+                onClick={() => setType(x)}
+                className={`rounded-md border px-3 py-1 font-semibold transition-colors ${
+                  type === x ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"
+                }`}
+              >
+                {x}
+              </button>
             ))}
           </div>
-          <label className="mt-4 block text-xs text-muted-foreground">Lots (qty {qty})
-            <input type="number" min={1} value={lots} onChange={(e) => setLots(Math.max(1, Number(e.target.value)))} className="num mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm text-foreground" />
-          </label>
-          {type === "LIMIT" && (
-            <label className="mt-3 block text-xs text-muted-foreground">Limit price
-              <input type="number" value={limit} placeholder={q.p.toFixed(2)} onChange={(e) => setLimit(e.target.value)} className="num mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm text-foreground" />
+
+          {/* Lots Input */}
+          <div className="mt-4">
+            <label className="flex justify-between text-xs text-muted-foreground">
+              <span>Quantity ({lots} Lots)</span>
+              <span className="font-mono text-foreground">{qty} contracts</span>
             </label>
-          )}
-          <div className="mt-4 space-y-1 text-xs text-muted-foreground">
-            <p className="flex justify-between">Order value <span className="num text-foreground">{inr(qty * px)}</span></p>
-            <p className="flex justify-between">Available cash <span className="num text-foreground">{inr(acc.cash)}</span></p>
+            <input
+              type="number"
+              min={1}
+              value={lots}
+              onChange={(e) => setLots(Math.max(1, Number(e.target.value)))}
+              className="num mt-1 w-full rounded-md border border-border bg-background px-3 py-1.5 text-sm font-semibold text-foreground"
+            />
           </div>
-          <Button className="mt-4 w-full" onClick={place}>{side} {sym}</Button>
+
+          {/* Limit Price */}
+          {type === "LIMIT" && (
+            <div className="mt-3">
+              <label className="block text-xs text-muted-foreground">Limit Price (₹)</label>
+              <input
+                type="number"
+                value={limit}
+                placeholder={q.p.toFixed(2)}
+                onChange={(e) => setLimit(e.target.value)}
+                className="num mt-1 w-full rounded-md border border-border bg-background px-3 py-1.5 text-sm font-semibold text-foreground"
+              />
+            </div>
+          )}
+
+          {/* Stop Loss (Rule 4.3) */}
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-[11px] text-muted-foreground">Stop Loss (SL)</label>
+              <input
+                type="number"
+                value={stopLoss}
+                placeholder={side === "BUY" ? (q.p - 100).toFixed(0) : (q.p + 100).toFixed(0)}
+                onChange={(e) => setStopLoss(e.target.value)}
+                className="num mt-1 w-full rounded-md border border-rose-500/30 bg-background px-2.5 py-1.5 text-xs text-rose-400 font-mono"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] text-muted-foreground">Target Price (TP)</label>
+              <input
+                type="number"
+                value={targetPrice}
+                placeholder={side === "BUY" ? (q.p + 200).toFixed(0) : (q.p - 200).toFixed(0)}
+                onChange={(e) => setTargetPrice(e.target.value)}
+                className="num mt-1 w-full rounded-md border border-emerald-500/30 bg-background px-2.5 py-1.5 text-xs text-emerald-400 font-mono"
+              />
+            </div>
+          </div>
+
+          {/* Live Microstructure & Fee Calculations */}
+          <div className="mt-4 space-y-1.5 rounded-lg border border-border/50 bg-secondary/20 p-2.5 text-xs">
+            <div className="flex justify-between text-muted-foreground">
+              <span>Order Value</span>
+              <span className="num font-bold text-foreground">{inr(qty * px)}</span>
+            </div>
+            <div className="flex justify-between text-muted-foreground">
+              <span>Margin Required (10%)</span>
+              <span className="num font-semibold text-foreground">{inr(marginRequired)}</span>
+            </div>
+            <div className="flex justify-between text-muted-foreground">
+              <span>Expected Slippage</span>
+              <span className="num font-mono text-amber-400">
+                {side === "BUY" ? "+" : "-"}₹{slippagePts.toFixed(2)} pts
+              </span>
+            </div>
+            <div className="flex justify-between text-muted-foreground">
+              <span>Statutory Taxes (STT/GST)</span>
+              <span className="num font-mono text-muted-foreground">₹{taxes.totalTax.toFixed(2)}</span>
+            </div>
+            <div className="border-t border-border/40 pt-1 flex justify-between text-muted-foreground">
+              <span>Est. Fill Price</span>
+              <span className="num font-bold text-primary">₹{estimatedFillPrice.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <Button
+            className={`mt-4 w-full font-bold uppercase tracking-wider ${
+              side === "BUY" ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "bg-rose-600 hover:bg-rose-500 text-white"
+            }`}
+            onClick={place}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Executing Order..." : `${side} ${qty} ${sym}`}
+          </Button>
         </div>
-        <div className="rounded-xl border bg-card p-4">
-          <p className="mb-2 text-xs font-medium text-muted-foreground">MARKET DEPTH</p>
-          <div className="num grid grid-cols-2 gap-x-3 text-xs">
+
+        {/* Level-2 Order Book Depth */}
+        <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+              <ArrowDownUp className="h-3.5 w-3.5 text-primary" /> LEVEL-2 DEPTH
+            </span>
+            <span className="text-[10px] text-muted-foreground">NSE L2 Queue</span>
+          </div>
+
+          <div className="num grid grid-cols-2 gap-x-2 text-xs font-mono">
+            <div className="border-b border-border/30 pb-1 flex justify-between text-[10px] text-muted-foreground">
+              <span>QTY</span><span>BID</span>
+            </div>
+            <div className="border-b border-border/30 pb-1 flex justify-between text-[10px] text-muted-foreground">
+              <span>ASK</span><span>QTY</span>
+            </div>
             {book.map((b, i) => (
               <div key={i} className="contents">
-                <p className="flex justify-between py-0.5 text-gain"><span>{b.qb}</span><span>{b.bid.toFixed(2)}</span></p>
-                <p className="flex justify-between py-0.5 text-loss"><span>{b.ask.toFixed(2)}</span><span>{b.qa}</span></p>
+                <p className="flex justify-between py-1 px-1.5 rounded bg-emerald-500/5 text-emerald-400">
+                  <span className="text-muted-foreground">{b.qb}</span>
+                  <span className="font-bold">₹{b.bid.toFixed(1)}</span>
+                </p>
+                <p className="flex justify-between py-1 px-1.5 rounded bg-rose-500/5 text-rose-400">
+                  <span className="font-bold">₹{b.ask.toFixed(1)}</span>
+                  <span className="text-muted-foreground">{b.qa}</span>
+                </p>
               </div>
             ))}
           </div>
