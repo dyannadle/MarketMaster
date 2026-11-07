@@ -354,3 +354,15 @@
   * Embedded automated trade post-mortem and behavioral tagging to discipline trader psychology.
   * Delivered professional derivative options chain matrix for high-speed strike selection.
   * All Vitest tests (5/5) and Nitro production builds passing cleanly (100% green rate).
+
+---
+
+### [v1.0.20-HOTFIX-TRADE-POSITION-PROPERTY-DEFENSE] — 2026-11-07 15:12:00 UTC (Local: 2026-11-07 20:42:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Bug Fix & Defensive Property Mapping (`BugFix`, `Trading`, `ErrorHandling`)
+* **Files Modified**:
+  * `frontend/src/routes/trade.tsx` (Patched paper position property mapping `pos.avg` vs `pos.price`, added safe null fallbacks on `.toFixed` across order and position tables, and synced local paper cash credit on position exit)
+  * `docs/changes.md` (Logged v1.0.20 release entry)
+* **Detailed Description**:
+  * Resolved the runtime error where accessing `pos.price.toFixed(2)` on local paper positions (which use `pos.avg`) triggered the TanStack root error boundary.
+  * Verified 100% clean render of `/trade` with 0 console errors.

@@ -143,8 +143,10 @@ function Trade() {
         targetPrice: Number(targetPrice) > 0 ? Number(targetPrice) : undefined,
       });
 
+      const fill = backendRes?.fill_price != null ? backendRes.fill_price : estimatedFillPrice;
+      const slip = backendRes?.slippage != null ? backendRes.slippage : slippagePts;
       toast.success(
-        `${side} ${qty} ${sym} filled @ ₹${backendRes.fill_price.toFixed(2)} (Slippage: ₹${backendRes.slippage.toFixed(2)})`
+        `${side} ${qty} ${sym} filled @ ₹${Number(fill).toFixed(2)} (Slippage: ₹${Number(slip).toFixed(2)})`
       );
       await refreshPositions();
     } catch {
@@ -175,12 +177,22 @@ function Trade() {
       await refreshPositions();
     } catch {
       // Local fallback calculation
-      const avg = posAvgPrice || q.base;
-      const quantity = posQty || inst.lot;
+      const avg = posAvgPrice || q.base || 24500;
+      const quantity = posQty || inst.lot || 50;
       const pnl = (currentLtp - avg) * quantity;
+
+      // Update local paper account to remove closed position and credit cash
+      const targetSymbol = posSymbol || sym;
+      const updatedPositions = acc.positions.filter((p) => p.symbol !== targetSymbol);
+      save({
+        ...acc,
+        positions: updatedPositions,
+        cash: acc.cash + (currentLtp * quantity),
+      });
+
       exitData = {
         position_id: posId,
-        symbol: posSymbol || sym,
+        symbol: targetSymbol,
         exit_price: currentLtp,
         realized_pnl: pnl,
         discipline_score: pnl < 0 && !stopLoss ? Math.max(0, disciplineScore - 10) : Math.min(100, disciplineScore + 3),
@@ -408,21 +420,22 @@ function Trade() {
                   {/* Local Paper Fallback Positions */}
                   {backendPositions.length === 0 &&
                     acc.positions.map((pos) => {
-                      const ltp = prices[pos.symbol]?.p || pos.price;
-                      const pnl = (ltp - pos.price) * pos.qty;
+                      const avg = pos.avg ?? (pos as any).price ?? (prices[pos.symbol]?.base || 24500);
+                      const ltp = prices[pos.symbol]?.p ?? avg;
+                      const pnl = (ltp - avg) * (pos.qty || 0);
                       return (
                         <tr key={pos.symbol} className="hover:bg-accent/30">
                           <td className="p-2.5 font-sans font-bold">{pos.symbol}</td>
                           <td className="p-2.5 font-bold text-gain">BUY</td>
                           <td className="p-2.5 text-right">{pos.qty}</td>
-                          <td className="p-2.5 text-right">₹{pos.price.toFixed(2)}</td>
+                          <td className="p-2.5 text-right">₹{avg.toFixed(2)}</td>
                           <td className="p-2.5 text-right">₹{ltp.toFixed(2)}</td>
                           <td className={`p-2.5 text-right font-bold ${pnl >= 0 ? "text-gain" : "text-loss"}`}>
                             {pnl >= 0 ? "+" : ""}{inr(pnl)}
                           </td>
                           <td className="p-2.5 text-center">
                             <button
-                              onClick={() => handleExit(`local_${pos.symbol}`, pos.symbol, pos.price, pos.qty)}
+                              onClick={() => handleExit(`local_${pos.symbol}`, pos.symbol, avg, pos.qty)}
                               className="rounded bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-rose-400 hover:bg-destructive/20"
                             >
                               Exit
