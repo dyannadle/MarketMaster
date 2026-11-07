@@ -12,3 +12,4 @@ start "MarketMaster Frontend" cmd /k "cd frontend && pnpm run dev --port 3000 --
 echo.
 echo Both services launched! Terminal opening in your default browser.
 echo ===================================================
+
