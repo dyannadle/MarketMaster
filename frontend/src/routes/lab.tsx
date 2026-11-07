@@ -14,7 +14,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { toast } from "sonner";
-import { Play, Code, Cpu, TrendingUp, ShieldAlert, CheckCircle2, Sliders } from "lucide-react";
+import { Play, Cpu, TrendingUp, ShieldAlert, CheckCircle2, Sliders } from "lucide-react";
 import { PageHeader } from "@/components/AppShell";
 import { inr, instruments, seededSeries, strategies } from "@/lib/data";
 import { backendApi } from "@/lib/api";
@@ -31,29 +31,12 @@ export const Route = createFileRoute("/lab")({
   component: Lab,
 });
 
-const DEFAULT_PYTHON_CODE = `import numpy as np
-import polars as pl
-
-def dual_ema_strategy(prices: pl.Series, fast: int = 9, slow: int = 21):
-    """
-    Vectorized Dual Exponential Moving Average Crossover Strategy.
-    Enforces Rule 4.3 with mandatory stop-loss and zero lookahead bias.
-    """
-    fast_ema = prices.ewm_mean(span=fast, adjust=False)
-    slow_ema = prices.ewm_mean(span=slow, adjust=False)
-    
-    # +1 for Long, -1 for Short
-    signals = pl.when(fast_ema > slow_ema).then(1.0).otherwise(-1.0)
-    return signals
-`;
-
 function Lab() {
   const [strategy, setStrategy] = useState("Dual_EMA_Crossover");
   const [symbol, setSymbol] = useState("NIFTY_FUT");
   const [fast, setFast] = useState(9);
   const [slow, setSlow] = useState(21);
   const [riskPerTrade, setRiskPerTrade] = useState(1.0);
-  const [pythonCode, setPythonCode] = useState(DEFAULT_PYTHON_CODE);
   const [isRunning, setIsRunning] = useState(false);
 
   // Execution slicing state
@@ -399,25 +382,86 @@ function Lab() {
           </div>
         </div>
 
-        {/* Lower Row: In-Browser Python Code Preview & Execution Slicing Simulator */}
+        {/* Lower Row: Visual Strategy Logic Matrix & Execution Slicing Simulator */}
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* In-Browser Python Code Editor / Preview */}
-          <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm">
-            <div className="flex items-center justify-between border-b border-border/40 pb-2 mb-3">
+          {/* Visual Strategy Rules & Execution Logic */}
+          <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-border/40 pb-2">
               <div className="flex items-center gap-2 text-xs font-bold text-foreground">
-                <Code className="h-4 w-4 text-primary" /> Python Quantitative Strategy Script
+                <Cpu className="h-4 w-4 text-primary" /> Strategy Signal Logic & Execution Rules
               </div>
-              <span className="text-[10px] font-mono text-muted-foreground">FastAPI Polars Runtime</span>
+              <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                Backend Quant Engine
+              </span>
             </div>
-            <textarea
-              value={pythonCode}
-              onChange={(e) => setPythonCode(e.target.value)}
-              className="h-56 w-full rounded-lg border border-border/60 bg-background/80 p-3 font-mono text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary leading-relaxed resize-none"
-              spellCheck={false}
-            />
-            <p className="mt-2 text-[11px] text-muted-foreground">
-              Directly vectorized using NumPy arrays and Polars DataFrame expressions with zero Python for-loop latency.
-            </p>
+
+            {/* Visual Signal Rules */}
+            <div className="space-y-2 text-xs">
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-emerald-400">LONG ENTRY SIGNAL</span>
+                  <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">BUY</span>
+                </div>
+                <p className="mt-1 text-muted-foreground text-[11px]">
+                  Triggered when <span className="font-semibold text-foreground">Fast EMA ({fast})</span> crosses above <span className="font-semibold text-foreground">Slow EMA ({slow})</span> on 5-minute candle close.
+                </p>
+              </div>
+
+              <div className="rounded-lg border border-rose-500/30 bg-rose-500/5 p-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-rose-400">SHORT / EXIT SIGNAL</span>
+                  <span className="rounded bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold text-rose-400">SELL</span>
+                </div>
+                <p className="mt-1 text-muted-foreground text-[11px]">
+                  Triggered when <span className="font-semibold text-foreground">Fast EMA ({fast})</span> crosses below <span className="font-semibold text-foreground">Slow EMA ({slow})</span> or trailing ATR stop is hit.
+                </p>
+              </div>
+
+              <div className="rounded-lg border border-border/60 bg-secondary/20 p-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-foreground">RISK MANAGEMENT INVARIANT</span>
+                  <span className="rounded bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary">Rule 4.3</span>
+                </div>
+                <p className="mt-1 text-muted-foreground text-[11px]">
+                  Fixed fraction position sizing: maximum risk capped at <span className="font-semibold text-primary">1.5% account capital</span> per trade with zero lookahead bias.
+                </p>
+              </div>
+            </div>
+
+            {/* Trade Log Snapshot */}
+            {backtestResult?.trades_list && backtestResult.trades_list.length > 0 && (
+              <div className="border-t border-border/40 pt-3">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                  Recent Signal Executions
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[11px] font-mono">
+                    <thead>
+                      <tr className="border-b border-border/30 text-muted-foreground text-[10px]">
+                        <th className="p-1 text-left">#</th>
+                        <th className="p-1 text-left">Signal</th>
+                        <th className="p-1 text-right">Entry</th>
+                        <th className="p-1 text-right">Exit</th>
+                        <th className="p-1 text-right">Return</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/20">
+                      {backtestResult.trades_list.map((tr) => (
+                        <tr key={tr.id} className="hover:bg-accent/20">
+                          <td className="p-1 text-muted-foreground">T{tr.id}</td>
+                          <td className={`p-1 font-bold ${tr.type === "LONG" ? "text-gain" : "text-loss"}`}>{tr.type}</td>
+                          <td className="p-1 text-right font-sans">₹{tr.entry.toLocaleString()}</td>
+                          <td className="p-1 text-right font-sans">₹{tr.exit.toLocaleString()}</td>
+                          <td className={`p-1 text-right font-bold ${tr.win ? "text-gain" : "text-loss"}`}>
+                            {tr.ret >= 0 ? "+" : ""}{tr.ret}%
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* TWAP/VWAP Slicing Simulator */}

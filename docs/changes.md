@@ -366,3 +366,16 @@
 * **Detailed Description**:
   * Resolved the runtime error where accessing `pos.price.toFixed(2)` on local paper positions (which use `pos.avg`) triggered the TanStack root error boundary.
   * Verified 100% clean render of `/trade` with 0 console errors.
+
+---
+
+### [v1.0.21-LAB-NO-CODE-STRATEGY-RULES-REFACTOR] — 2026-11-07 15:58:00 UTC (Local: 2026-11-07 21:28:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: UI/UX Refactor & Separation of Concerns (`Frontend`, `StrategyLab`, `UIUX`, `Architecture`)
+* **Files Modified**:
+  * `frontend/src/routes/lab.tsx` (Replaced the raw in-browser Python code textarea with a modern no-code Strategy Signal & Rule Matrix, visual Long/Short signal triggers, Rule 4.3 risk invariant badges, and live trade log execution table)
+  * `docs/changes.md` (Logged v1.0.21 release entry)
+* **Detailed Description**:
+  * Fixed architectural leakage where raw backend Python code scripts were being rendered directly on the frontend UI.
+  * Python execution remains 100% encapsulated on the backend FastAPI quantitative engine (`POST /api/v1/quant/backtest`).
+  * Rebuilt the frontend Strategy Lab viewport into an institutional-grade visual rule builder matching modern platforms like TradingView and Zerodha Streak.
