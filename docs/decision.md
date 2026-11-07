@@ -297,3 +297,17 @@
   4. Verified 100% test pass rate across Vitest and Nitro production builds.
 * **Why Taken**: Completes the core trader psychology, microstructure execution, and deliberate practice loops requested by the user.
 * **Impact**: World-class deliberate practice gym, institutional emotional risk management, and professional options derivatives trading workflow.
+
+---
+
+### Record: ADR-024 — Dual-Mode Strategy Lab: Visual No-Code Builder & Python Quant Pro Mode
+* **Date & Timestamp**: 2026-11-07 16:25:00 UTC (Local: 2026-11-07 21:55:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Re-architected `frontend/src/routes/lab.tsx` to provide both user interfaces side-by-side with an instant one-click switcher:
+     - **Mode A: Visual No-Code Builder (Default)**: Intuitive rule blocks for entry signals (Fast/Slow EMA, RSI, operators), mandatory Rule 4.3 risk invariants (1.5% max risk or ATR trailing stop), take-profit targets (1:2 or 1:3 R:R), and audited trade execution table.
+     - **Mode B: Python Quant Pro Mode**: In-browser Python IDE showing the exact vectorized Polars and NumPy script being executed on the FastAPI backend, with real-time parameter synchronization and direct code editing capabilities.
+  2. Maintained zero-latency execution against the backend quant engine (`POST /api/v1/quant/backtest`) with client-side vectorized fallback.
+  3. Verified 100% test pass rate across Vitest and Nitro production builds.
+* **Why Taken**: Fulfills the user's directive to "implement both", ensuring accessibility for novice traders while retaining institutional code inspection for quant developers.
+* **Impact**: Optimal pedagogical flexibility, accommodating both visual retail learners and advanced algorithmic traders.

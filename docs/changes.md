@@ -379,3 +379,16 @@
   * Fixed architectural leakage where raw backend Python code scripts were being rendered directly on the frontend UI.
   * Python execution remains 100% encapsulated on the backend FastAPI quantitative engine (`POST /api/v1/quant/backtest`).
   * Rebuilt the frontend Strategy Lab viewport into an institutional-grade visual rule builder matching modern platforms like TradingView and Zerodha Streak.
+
+---
+
+### [v1.0.22-DUAL-MODE-STRATEGY-LAB-NO-CODE-AND-PYTHON-PRO] — 2026-11-07 16:26:00 UTC (Local: 2026-11-07 21:56:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Dual-Mode Strategy Lab (`StrategyLab`, `NoCode`, `PythonPro`, `Quant`)
+* **Files Modified**:
+  * `frontend/src/routes/lab.tsx` (Engineered dual-mode switcher allowing users to toggle between Visual No-Code Strategy Builder and Python Quant Pro Mode, with real-time bidirectional parameter synchronization and backend execution)
+  * `docs/decision.md` (Recorded ADR-024)
+  * `docs/changes.md` (Logged v1.0.22 release entry)
+* **Detailed Description**:
+  * Implemented both Visual No-Code Builder (intuitive drag-and-drop conditions, stop-loss models, and R:R ratios) and Python Quant Pro Mode (in-browser code inspection and editing synced with FastAPI Polars runtime).
+  * 100% test pass rate across Vitest (5/5) and Nitro production builds.

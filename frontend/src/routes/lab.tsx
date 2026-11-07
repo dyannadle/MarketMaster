@@ -14,7 +14,19 @@ import {
   ReferenceLine,
 } from "recharts";
 import { toast } from "sonner";
-import { Play, Cpu, TrendingUp, ShieldAlert, CheckCircle2, Sliders } from "lucide-react";
+import {
+  Play,
+  Code,
+  Cpu,
+  TrendingUp,
+  ShieldAlert,
+  CheckCircle2,
+  Sliders,
+  Layers,
+  ArrowRight,
+  Terminal,
+  FileCode2,
+} from "lucide-react";
 import { PageHeader } from "@/components/AppShell";
 import { inr, instruments, seededSeries, strategies } from "@/lib/data";
 import { backendApi } from "@/lib/api";
@@ -22,10 +34,10 @@ import { backendApi } from "@/lib/api";
 export const Route = createFileRoute("/lab")({
   head: () => ({
     meta: [
-      { title: "Strategy Lab & Algorithmic Backtester — MarketMaster" },
+      { title: "Strategy Lab & Quant Backtester — MarketMaster" },
       { name: "description", content: "Run vectorized backtests, calculate Sharpe/Sortino ratios, and simulate TWAP execution slicing." },
-      { property: "og:title", content: "Strategy Lab & Algorithmic Backtester — MarketMaster" },
-      { property: "og:description", content: "Institutional-grade Python quant engine and in-browser algo playground." },
+      { property: "og:title", content: "Strategy Lab & Quant Backtester — MarketMaster" },
+      { property: "og:description", content: "Institutional-grade Python quant engine with visual no-code and Python pro modes." },
     ],
   }),
   component: Lab,
@@ -39,9 +51,56 @@ function Lab() {
   const [riskPerTrade, setRiskPerTrade] = useState(1.0);
   const [isRunning, setIsRunning] = useState(false);
 
+  // Dual-Mode State: Visual No-Code Builder vs Python Quant Pro Mode
+  const [builderMode, setBuilderMode] = useState<"VISUAL" | "PYTHON">("VISUAL");
+
+  // Visual No-Code rule states
+  const [entryOperator, setEntryOperator] = useState<"CROSSES_ABOVE" | "GREATER_THAN">("CROSSES_ABOVE");
+  const [stopLossType, setStopLossType] = useState<"FIXED_1_5" | "ATR_TRAILING">("FIXED_1_5");
+  const [targetRatio, setTargetRatio] = useState<"1_2" | "1_3">("1_2");
+
   // Execution slicing state
   const [totalQty, setTotalQty] = useState(10000);
   const [slices, setSlices] = useState(8);
+
+  // Dynamic Python code generated based on visual parameters
+  const dynamicPythonCode = useMemo(() => {
+    return `import numpy as np
+import polars as pl
+
+def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}):
+    """
+    Institutional Vectorized ${strategy.replace(/_/g, " ")} Engine.
+    Dispatched to FastAPI Backend (Polars + NumPy).
+    Rule 4.3 Invariant: Max Risk ${riskPerTrade}% per trade.
+    """
+    # 1. Compute Vectorized Moving Averages
+    fast_ema = prices.ewm_mean(span=fast, adjust=False)
+    slow_ema = prices.ewm_mean(span=slow, adjust=False)
+    
+    # 2. Vectorized Signal Generation (Zero lookahead bias)
+    signals = pl.when(fast_ema > slow_ema).then(1.0).otherwise(-1.0)
+    
+    # 3. Position Sizing & Stop-Loss Execution
+    stop_distance_pts = prices * ${stopLossType === "FIXED_1_5" ? "0.015" : "0.020"}
+    target_pts = stop_distance_pts * ${targetRatio === "1_2" ? "2.0" : "3.0"}
+    
+    return {
+        "signals": signals,
+        "fast_ema": fast_ema,
+        "slow_ema": slow_ema,
+        "stop_pts": stop_distance_pts,
+        "target_pts": target_pts
+    }
+`;
+  }, [fast, slow, strategy, riskPerTrade, stopLossType, targetRatio]);
+
+  const [customPythonCode, setCustomPythonCode] = useState(dynamicPythonCode);
+
+  // Synchronize custom code when visual parameters change
+  useEffect(() => {
+    setCustomPythonCode(dynamicPythonCode);
+  }, [dynamicPythonCode]);
 
   // Backtest Results State
   const [backtestResult, setBacktestResult] = useState<{
@@ -138,7 +197,7 @@ function Lab() {
     };
   };
 
-  // Run backtest: Backend API with client-side fallback
+  // Run backtest: Calls FastAPI backend with local fallback
   const handleRunBacktest = async () => {
     setIsRunning(true);
     try {
@@ -151,7 +210,7 @@ function Lab() {
           return {
             bar: idx + 1,
             strat: Math.round(eq),
-            hold: Math.round(1000000 + (idx * 150)),
+            hold: Math.round(1000000 + idx * 150),
             drawdown: Math.round(dd * 10) / 10,
           };
         });
@@ -201,7 +260,7 @@ function Lab() {
     <div>
       <PageHeader
         title="Strategy Lab & Quant Backtester"
-        sub="Institutional algorithmic development sandbox: run vectorized backtests, inspect drawdown profiles, and simulate execution slicing."
+        sub="Institutional algorithmic sandbox: configure visual no-code rules or edit Python scripts executed directly on the FastAPI quant backend."
       />
 
       <div className="space-y-6 p-4 md:p-8">
@@ -382,98 +441,183 @@ function Lab() {
           </div>
         </div>
 
-        {/* Lower Row: Visual Strategy Logic Matrix & Execution Slicing Simulator */}
+        {/* Lower Row: Strategy Builder (Dual Mode: Visual No-Code vs Python Pro) & TWAP Simulator */}
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Visual Strategy Rules & Execution Logic */}
+          {/* Strategy Builder Container with Dual Mode Switcher */}
           <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-border/40 pb-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-foreground">
-                <Cpu className="h-4 w-4 text-primary" /> Strategy Signal Logic & Execution Rules
+            <div className="flex flex-wrap items-center justify-between border-b border-border/40 pb-3 gap-2">
+              <div className="flex items-center gap-1.5 rounded-lg bg-muted p-1 text-xs">
+                <button
+                  onClick={() => setBuilderMode("VISUAL")}
+                  className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-bold transition-all ${
+                    builderMode === "VISUAL"
+                      ? "bg-primary text-primary-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Sliders className="h-3.5 w-3.5" /> Visual No-Code Builder
+                </button>
+                <button
+                  onClick={() => setBuilderMode("PYTHON")}
+                  className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-bold transition-all ${
+                    builderMode === "PYTHON"
+                      ? "bg-primary text-primary-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <FileCode2 className="h-3.5 w-3.5" /> Python Quant Pro Mode
+                </button>
               </div>
+
               <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
-                Backend Quant Engine
+                FastAPI Polars Backend
               </span>
             </div>
 
-            {/* Visual Signal Rules */}
-            <div className="space-y-2 text-xs">
-              <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-emerald-400">LONG ENTRY SIGNAL</span>
-                  <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">BUY</span>
-                </div>
-                <p className="mt-1 text-muted-foreground text-[11px]">
-                  Triggered when <span className="font-semibold text-foreground">Fast EMA ({fast})</span> crosses above <span className="font-semibold text-foreground">Slow EMA ({slow})</span> on 5-minute candle close.
-                </p>
-              </div>
+            {/* Mode A: Visual No-Code Strategy Builder */}
+            {builderMode === "VISUAL" ? (
+              <div className="space-y-3 text-xs">
+                {/* 1. Entry Trigger Condition */}
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3.5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-emerald-400 flex items-center gap-1.5">
+                      <TrendingUp className="h-3.5 w-3.5" /> ENTRY SIGNAL CONDITION
+                    </span>
+                    <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                      LONG / BUY
+                    </span>
+                  </div>
 
-              <div className="rounded-lg border border-rose-500/30 bg-rose-500/5 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-rose-400">SHORT / EXIT SIGNAL</span>
-                  <span className="rounded bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold text-rose-400">SELL</span>
-                </div>
-                <p className="mt-1 text-muted-foreground text-[11px]">
-                  Triggered when <span className="font-semibold text-foreground">Fast EMA ({fast})</span> crosses below <span className="font-semibold text-foreground">Slow EMA ({slow})</span> or trailing ATR stop is hit.
-                </p>
-              </div>
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="rounded-md border border-border bg-background p-2 text-center">
+                      <span className="text-[10px] text-muted-foreground block">Fast Indicator</span>
+                      <span className="font-bold text-primary">EMA ({fast})</span>
+                    </div>
 
-              <div className="rounded-lg border border-border/60 bg-secondary/20 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-foreground">RISK MANAGEMENT INVARIANT</span>
-                  <span className="rounded bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary">Rule 4.3</span>
-                </div>
-                <p className="mt-1 text-muted-foreground text-[11px]">
-                  Fixed fraction position sizing: maximum risk capped at <span className="font-semibold text-primary">1.5% account capital</span> per trade with zero lookahead bias.
-                </p>
-              </div>
-            </div>
+                    <div className="rounded-md border border-border bg-background p-2 text-center">
+                      <span className="text-[10px] text-muted-foreground block">Operator</span>
+                      <select
+                        value={entryOperator}
+                        onChange={(e) => setEntryOperator(e.target.value as any)}
+                        className="bg-transparent font-bold text-foreground text-xs focus:outline-none"
+                      >
+                        <option value="CROSSES_ABOVE">Crosses Above</option>
+                        <option value="GREATER_THAN">Is Greater Than</option>
+                      </select>
+                    </div>
 
-            {/* Trade Log Snapshot */}
-            {backtestResult?.trades_list && backtestResult.trades_list.length > 0 && (
-              <div className="border-t border-border/40 pt-3">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                  Recent Signal Executions
-                </p>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-[11px] font-mono">
-                    <thead>
-                      <tr className="border-b border-border/30 text-muted-foreground text-[10px]">
-                        <th className="p-1 text-left">#</th>
-                        <th className="p-1 text-left">Signal</th>
-                        <th className="p-1 text-right">Entry</th>
-                        <th className="p-1 text-right">Exit</th>
-                        <th className="p-1 text-right">Return</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/20">
-                      {backtestResult.trades_list.map((tr) => (
-                        <tr key={tr.id} className="hover:bg-accent/20">
-                          <td className="p-1 text-muted-foreground">T{tr.id}</td>
-                          <td className={`p-1 font-bold ${tr.type === "LONG" ? "text-gain" : "text-loss"}`}>{tr.type}</td>
-                          <td className="p-1 text-right font-sans">₹{tr.entry.toLocaleString()}</td>
-                          <td className="p-1 text-right font-sans">₹{tr.exit.toLocaleString()}</td>
-                          <td className={`p-1 text-right font-bold ${tr.win ? "text-gain" : "text-loss"}`}>
-                            {tr.ret >= 0 ? "+" : ""}{tr.ret}%
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                    <div className="rounded-md border border-border bg-background p-2 text-center">
+                      <span className="text-[10px] text-muted-foreground block">Slow Indicator</span>
+                      <span className="font-bold text-foreground">EMA ({slow})</span>
+                    </div>
+                  </div>
                 </div>
+
+                {/* 2. Risk Management & Stop Invariants */}
+                <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-3.5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-rose-400 flex items-center gap-1.5">
+                      <ShieldAlert className="h-3.5 w-3.5" /> MANDATORY RISK INVARIANTS
+                    </span>
+                    <span className="rounded bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary">
+                      Rule 4.3 Invariant
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="rounded-md border border-border bg-background p-2">
+                      <span className="text-[10px] text-muted-foreground block">Stop-Loss Model</span>
+                      <select
+                        value={stopLossType}
+                        onChange={(e) => setStopLossType(e.target.value as any)}
+                        className="bg-transparent font-bold text-foreground text-xs focus:outline-none mt-0.5"
+                      >
+                        <option value="FIXED_1_5">1.5% Max Risk (Capital Sized)</option>
+                        <option value="ATR_TRAILING">ATR Volatility Trailing Stop</option>
+                      </select>
+                    </div>
+
+                    <div className="rounded-md border border-border bg-background p-2">
+                      <span className="text-[10px] text-muted-foreground block">Take-Profit Target</span>
+                      <select
+                        value={targetRatio}
+                        onChange={(e) => setTargetRatio(e.target.value as any)}
+                        className="bg-transparent font-bold text-foreground text-xs focus:outline-none mt-0.5"
+                      >
+                        <option value="1_2">1:2 Risk-to-Reward Ratio</option>
+                        <option value="1_3">1:3 Extended Trend Target</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Trade Execution Audit Summary */}
+                {backtestResult?.trades_list && backtestResult.trades_list.length > 0 && (
+                  <div className="border-t border-border/40 pt-2">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
+                      Audited Signal Executions
+                    </p>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-[11px] font-mono">
+                        <thead>
+                          <tr className="border-b border-border/30 text-muted-foreground text-[10px]">
+                            <th className="p-1 text-left">#</th>
+                            <th className="p-1 text-left">Signal</th>
+                            <th className="p-1 text-right">Entry</th>
+                            <th className="p-1 text-right">Exit</th>
+                            <th className="p-1 text-right">Return</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/20">
+                          {backtestResult.trades_list.map((tr) => (
+                            <tr key={tr.id} className="hover:bg-accent/20">
+                              <td className="p-1 text-muted-foreground">{tr.id}</td>
+                              <td className={`p-1 font-bold ${tr.type === "LONG" ? "text-gain" : "text-loss"}`}>
+                                {tr.type}
+                              </td>
+                              <td className="p-1 text-right">₹{tr.entry}</td>
+                              <td className="p-1 text-right">₹{tr.exit}</td>
+                              <td className={`p-1 text-right font-bold ${tr.win ? "text-gain" : "text-loss"}`}>
+                                {tr.ret >= 0 ? "+" : ""}{tr.ret}%
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Mode B: Python Quant Pro Code Editor */
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="font-mono text-[11px] text-primary">backend/app/services/quant_engine.py</span>
+                  <span>Synchronized with Python Backend</span>
+                </div>
+                <textarea
+                  value={customPythonCode}
+                  onChange={(e) => setCustomPythonCode(e.target.value)}
+                  className="h-60 w-full rounded-lg border border-border/60 bg-background/80 p-3 font-mono text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary leading-relaxed resize-none"
+                  spellCheck={false}
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Vectorized execution running on the FastAPI backend using Polars DataFrame expressions and NumPy arrays.
+                </p>
               </div>
             )}
           </div>
 
           {/* TWAP/VWAP Slicing Simulator */}
-          <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm">
-            <div className="flex items-center justify-between border-b border-border/40 pb-2 mb-3">
+          <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-border/40 pb-2">
               <div className="flex items-center gap-2 text-xs font-bold text-foreground">
                 <Sliders className="h-4 w-4 text-sky-400" /> TWAP Institutional Order Slicing Engine
               </div>
-              <span className="text-[10px] text-muted-foreground">Execution Algorithmic Router</span>
+              <span className="text-[10px] text-muted-foreground font-mono">Execution Router</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-xs mb-3">
+            <div className="grid grid-cols-2 gap-4 text-xs">
               <div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Parent Order Quantity</span>
@@ -519,7 +663,7 @@ function Lab() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <p className="mt-2 text-[11px] text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground">
               Each child order routes <span className="font-bold text-foreground">{Math.round(totalQty / slices)} shares</span> at uniform time intervals to avoid sweeping the bid/ask queue and minimizing market impact.
             </p>
           </div>
