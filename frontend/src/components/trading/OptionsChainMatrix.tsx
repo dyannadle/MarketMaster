@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ArrowDownUp, Zap, HelpCircle } from "lucide-react";
+import { ArrowDownUp, Zap, HelpCircle, SlidersHorizontal } from "lucide-react";
 import { inr } from "@/lib/data";
 
 export interface SelectedOptionStrike {
@@ -14,9 +14,10 @@ interface OptionsChainMatrixProps {
   underlyingSymbol: string;
   spotPrice: number;
   onSelectOption: (option: SelectedOptionStrike) => void;
+  onOpenStrategyBuilder?: () => void;
 }
 
-export function OptionsChainMatrix({ underlyingSymbol, spotPrice, onSelectOption }: OptionsChainMatrixProps) {
+export function OptionsChainMatrix({ underlyingSymbol, spotPrice, onSelectOption, onOpenStrategyBuilder }: OptionsChainMatrixProps) {
   const [expiry, setExpiry] = useState("CURRENT_WEEK");
 
   // Determine strike step based on underlying
@@ -87,6 +88,14 @@ export function OptionsChainMatrix({ underlyingSymbol, spotPrice, onSelectOption
         </div>
 
         <div className="flex items-center gap-2 text-xs">
+          {onOpenStrategyBuilder && (
+            <button
+              onClick={onOpenStrategyBuilder}
+              className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-all"
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5" /> Strategy Builder & Payoff
+            </button>
+          )}
           <span className="text-muted-foreground">Expiry:</span>
           <select
             value={expiry}

@@ -1,0 +1,43 @@
+services:
+  # =========================================================================
+  # 1. FastAPI 0.115 + Polars Quant Backend (₹0 Free Tier Web Service)
+  # =========================================================================
+  - type: web
+    name: marketmaster-backend
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./marketmaster.db
+      - key: CORS_ORIGINS
+        value: '["https://marketmaster.vercel.app","https://marketmaster-frontend.onrender.com","http://localhost:3000"]'
+
+  # =========================================================================
+  # 2. TanStack Start / Nitro SSR Frontend (₹0 Free Tier Web Service)
+  # =========================================================================
+  - type: web
+    name: marketmaster-frontend
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    rootDir: frontend
+    buildCommand: pnpm install && pnpm build
+    startCommand: node .output/server/index.mjs
+    envVars:
+      - key: NODE_VERSION
+        value: 22.0.0
+      - key: PORT
+        value: 3000
+      - key: VITE_API_BASE_URL
+        value: https://marketmaster-backend.onrender.com

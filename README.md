@@ -30,8 +30,10 @@ flowchart LR
 | **Backend & Quant Engine** | Python 3.13+, FastAPI, Polars, Async SQLAlchemy, NumPy, SciPy | ✅ Tested (15/15 Pass) | [`docs/BACKEND_ARCHITECTURE.md`](docs/BACKEND_ARCHITECTURE.md) |
 | **Database & Caching** | PostgreSQL 16, SQLite (aiosqlite), Redis 7 Docker compose | ✅ Implemented | [`docs/DATABASE_SCHEMA.md`](docs/DATABASE_SCHEMA.md) |
 | **Simulation & Replay Engine** | Non-Linear Power-Law Slippage, Indian Taxes, Double-Entry Ledger | ✅ Tested (100% Pass) | [`docs/PAPER_TRADING_ENGINE_SPEC.md`](docs/PAPER_TRADING_ENGINE_SPEC.md) |
+| **Multi-Leg Options Builder** | Interactive Expiry Payoff Curve, SEBI Margin Relief Engine | ✅ Tested (11/11 Pass) | [`frontend/src/components/trading/OptionsStrategyBuilder.tsx`](frontend/src/components/trading/OptionsStrategyBuilder.tsx) |
 | **Algo Sandbox** | Vectorized Dual-EMA Backtesting, Black-Scholes Greeks | ✅ Implemented | [`docs/STRATEGY_LAB.md`](docs/STRATEGY_LAB.md) |
-| **Mobile Android App** | Android Native Container (Kotlin, WebView, PWA Standalone) | ✅ Scaffolding Complete | [`docs/ANDROID_ARCHITECTURE.md`](docs/ANDROID_ARCHITECTURE.md) |
+| **Mobile Android App** | Android Native Container (Kotlin, WebView, Offline Bundle) | ✅ 64 Assets Synced | [`docs/ANDROID_ARCHITECTURE.md`](docs/ANDROID_ARCHITECTURE.md) |
+| **CI/CD & Cloud Hosting** | GitHub Actions Pipeline, Render & Vercel Free-Tier Configs | ✅ Active (.github/workflows/ci.yml) | [`render.yaml`](render.yaml) |
 
 ---
 

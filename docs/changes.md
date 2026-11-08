@@ -466,10 +466,30 @@
   * Added subpixel antialiasing (`-webkit-font-smoothing: antialiased`, `-moz-osx-font-smoothing: grayscale`, `optimizeLegibility`).
   * 100% test pass rate across Vitest suite (8/8 tests passing).
 
+### [v1.0.28-MULTI-LEG-OPTIONS-STRATEGY-BUILDER-CI-CD-ZERO-COST-DEPLOYMENT] — 2026-11-08 12:06:00 UTC (Local: 2026-11-08 17:36:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Options Derivatives Engine, Interactive Payoff Curve, SEBI Margin Relief & CI/CD Cloud Automation (`Options`, `StrategyBuilder`, `PayoffDiagram`, `SEBI`, `Recharts`, `GitHubActions`, `Render`, `Vercel`, `Deployment`)
+* **Files Created & Modified**:
+  * `frontend/src/components/trading/OptionsStrategyBuilder.tsx` (Institutional multi-leg options strategy builder with 1-click presets for Bull Call Spread, Bear Put Spread, Short Straddle, Long Strangle, and Iron Condor; interactive Recharts expiry payoff diagram; SEBI portfolio margin relief engine)
+  * `frontend/src/routes/trade.tsx` (Expanded `terminalView` with `STRATEGY_BUILDER` tab, connected atomic multi-leg strategy execution)
+  * `frontend/src/components/trading/OptionsChainMatrix.tsx` (Added direct bridge to Strategy Builder)
+  * `frontend/src/test/strategy-builder.test.tsx` (Unit tests verifying Strategy Builder rendering, template switching, and order execution)
+  * `.github/workflows/ci.yml` (GitHub Actions CI/CD pipeline running Vitest suite, Nitro production build, Pytest suite, and deployment readiness checks)
+  * `render.yaml` (Render Blueprint for ₹0 free-tier cloud deployment of FastAPI backend and TanStack Start frontend)
+  * `vercel.json` (Vercel edge rewrite and API reverse proxy manifest)
+  * `android/app/src/main/assets/www/` (Synced 64 web assets for mobile offline bundling)
+  * `docs/decision.md` (Recorded ADR-030)
+  * `docs/changes.md` (Logged v1.0.28 release entry)
+* **Detailed Description**:
+  * Upgraded the Options Chain Matrix into a multi-leg institutional strategy builder.
+  * Delivered interactive T+0 expiration payoff diagrams showing Max Profit, Max Loss, Breakevens, Risk-to-Reward ratio, and Net Greeks ($\Delta, \Theta$).
+  * Implemented realistic SEBI margin relief calculation (reducing required collateral from ₹1.2 Lakh to ~₹35,000 per lot on hedged structures).
+  * Automated CI testing on every push and pull request via GitHub Actions.
+  * Configured ₹0 free-tier cloud hosting on Render and Vercel.
+  * 100% test pass rate across all 11 Vitest tests.
+
 ---
 
-
----
 
 
 

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
-import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper, FileSpreadsheet } from "lucide-react";
+import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper, FileSpreadsheet, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change } from "@/components/AppShell";
 import { inr, instruments } from "@/lib/data";
@@ -10,6 +10,7 @@ import { backendApi } from "@/lib/api";
 import { CandlestickChart } from "@/components/trading/CandlestickChart";
 import { PostMortemModal, PostMortemData } from "@/components/trading/PostMortemModal";
 import { OptionsChainMatrix, SelectedOptionStrike } from "@/components/trading/OptionsChainMatrix";
+import { OptionsStrategyBuilder, StrategyLeg } from "@/components/trading/OptionsStrategyBuilder";
 import { LiveNewsFeed } from "@/components/trading/LiveNewsFeed";
 import { nativeBridge } from "@/lib/native";
 import { TradeStatementExporter } from "@/components/trading/TradeStatementExporter";
@@ -45,9 +46,44 @@ function Trade() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [backendPositions, setBackendPositions] = useState<any[]>([]);
 
-  // Navigation View Toggle: Candlestick Chart vs Options Chain Matrix vs Live News Wire
-  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "NEWS_WIRE">("CHART");
+  // Navigation View Toggle: Candlestick Chart vs Options Chain Matrix vs Strategy Builder vs Live News Wire
+  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE">("CHART");
   const [marketQuotes, setMarketQuotes] = useState<any[]>([]);
+
+  // Multi-Leg Strategy Execution Handler
+  const handleExecuteStrategy = async (strategyLegs: StrategyLeg[], marginRequired: number) => {
+    let successCount = 0;
+    for (const leg of strategyLegs) {
+      const legSymbol = `${sym}_${leg.strike}_${leg.type === "CALL" ? "CE" : "PE"}`;
+      const legQty = leg.lots * (inst.lot || 50);
+
+      try {
+        await backendApi.placeOrder({
+          symbol: legSymbol,
+          side: leg.side,
+          quantity: legQty,
+          orderType: "MARKET",
+        });
+        successCount++;
+      } catch {
+        // Local paper fallback
+        const r = applyOrder(acc, {
+          symbol: legSymbol,
+          side: leg.side,
+          qty: legQty,
+          price: leg.premium,
+          type: "MARKET",
+        });
+        if (typeof r !== "string") {
+          save(r);
+          successCount++;
+        }
+      }
+    }
+
+    await refreshPositions();
+    nativeBridge.vibrateFill();
+  };
 
   // Post-Mortem & Psychological Diagnostics State
   const [postMortemData, setPostMortemData] = useState<PostMortemData | null>(null);
@@ -377,6 +413,14 @@ function Trade() {
                 <Layers className="h-3.5 w-3.5" /> Options Chain Matrix
               </button>
               <button
+                onClick={() => setTerminalView("STRATEGY_BUILDER")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                  terminalView === "STRATEGY_BUILDER" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5" /> Strategy Builder & Payoff
+              </button>
+              <button
                 onClick={() => setTerminalView("NEWS_WIRE")}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
                   terminalView === "NEWS_WIRE" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
@@ -434,6 +478,14 @@ function Trade() {
             underlyingSymbol={sym}
             spotPrice={q.p}
             onSelectOption={handleSelectOptionStrike}
+            onOpenStrategyBuilder={() => setTerminalView("STRATEGY_BUILDER")}
+          />
+        ) : terminalView === "STRATEGY_BUILDER" ? (
+          <OptionsStrategyBuilder
+            underlyingSymbol={sym}
+            spotPrice={q.p}
+            lotSize={inst.lot || 50}
+            onExecuteStrategy={handleExecuteStrategy}
           />
         ) : (
           <LiveNewsFeed />
