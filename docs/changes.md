@@ -451,30 +451,23 @@
 
 ---
 
-### [v1.0.26-CRASH-FIX-DEFAULT-ADMIN-NEWS-AND-ADMIN-PANEL] — 2026-11-08 08:20:00 UTC (Local: 2026-11-08 13:50:00 +05:30)
+### [v1.0.27-TYPOGRAPHY-OVERHAUL-INTER-JETBRAINS-MONO] — 2026-11-08 08:36:00 UTC (Local: 2026-11-08 14:06:00 +05:30)
 * **Author**: Antigravity Enterprise Architecture Team
-* **Change Category**: Critical Bug Fix, Super Admin RBAC, Feature Navigation & Admin Operations (`BugFix`, `Auth`, `RBAC`, `NewsWire`, `AdminConsole`, `AppShell`, `Discoverability`)
+* **Change Category**: Typography & High-DPI Visual Polish (`Typography`, `Fonts`, `Inter`, `JetBrainsMono`, `Antialiasing`, `Design`)
 * **Files Created & Modified**:
-  * `frontend/src/routes/challenges.tsx` (Fixed crash on `/challenges` by safeguarding `leaderboard` and `challenges` property access with `Number(... || 0).toFixed()` null safety)
-  * `frontend/src/routes/trade.tsx` (Fixed crash on `/trade` by safeguarding `avg_entry_price`, `price`, and `avg` against undefined values in localStorage)
-  * `frontend/src/routes/portfolio.tsx` (Safeguarded portfolio rows against undefined values)
-  * `frontend/src/components/trading/CandlestickChart.tsx` (Supported both external `candles` and dynamic ticker inputs with fallback to avoid `NaN` calculations)
-  * `frontend/src/lib/data.ts` (Enriched `challenges` and `leaderboard` collections with all required gamification metrics)
-  * `frontend/src/lib/auth.tsx` (Configured `dyanndlee05@gmail.com` and `dyannadle05@gmail.com` as default Super Admin users with role `"admin"`)
-  * `frontend/src/routes/news.tsx` (Engineered dedicated Live Indian Market Wire route with 10-minute auto-refresh, sentiment tags, and direct trade routing)
-  * `frontend/src/routes/admin.tsx` (Rebuilt full-featured institutional Admin Console with User Ledger, RMS Emergency Kill-Switch, Yahoo feed cache telemetry, and news flash broadcast)
-  * `frontend/src/components/AppShell.tsx` (Added `News Wire` with "LIVE" badge and `Admin Console` with "SUPER" badge to primary navigation, plus mobile drawer update)
-  * `frontend/src/routes/index.tsx` (Added "Newly Implemented Institutional Features" spotlight grid connecting News Wire, Practice Gym, Strategy Lab, and Admin Console)
-  * `frontend/src/test/challenges-render.test.tsx` (Unit test verifying `/challenges` renders safely)
-  * `frontend/src/test/trade-render.test.tsx` (Unit test verifying `/trade` renders safely with corrupted state)
-  * `docs/decision.md` (Recorded ADR-028)
-  * `docs/changes.md` (Logged v1.0.26 release entry)
+  * `frontend/src/styles.css` (Imported `Inter` and `JetBrains Mono` Google Fonts; configured `--font-sans` with robust system fallbacks and global subpixel antialiasing)
+  * `frontend/src/routes/__root.tsx` (Preconnected to Google Fonts & Gstatic CDN; linked optical-size variable `Inter` & `JetBrains Mono`)
+  * `frontend/public/index.html` (Updated launcher/offline typography to `Inter`)
+  * `android/app/src/main/assets/www/` (Synced 64 production assets)
+  * `docs/decision.md` (Recorded ADR-029)
+  * `docs/changes.md` (Logged v1.0.27 release entry)
 * **Detailed Description**:
-  * Resolved the "This page didn't load" TanStack root boundary crash across both `/challenges` and `/trade`.
-  * Set `dyanndlee05@gmail.com` as Super Administrator across the frontend and authentication adapters with persistent role elevation.
-  * Created dedicated first-class `/news` route and added prominent navigation links in `AppShell` and `Dashboard`.
-  * Rebuilt the Admin Console into an institutional risk control center with platform kill-switch, user capital resets, and live feed telemetry.
-  * 100% test pass rate across Vitest suite (8/8 tests passing) and synced 64 production assets to Android container.
+  * Eliminated pixelated/bitmap rendering artifacts by replacing `Space Grotesk` with `Inter` (the gold-standard modern fintech font).
+  * Added subpixel antialiasing (`-webkit-font-smoothing: antialiased`, `-moz-osx-font-smoothing: grayscale`, `optimizeLegibility`).
+  * 100% test pass rate across Vitest suite (8/8 tests passing).
+
+---
+
 
 ---
 

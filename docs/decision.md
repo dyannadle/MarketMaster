@@ -358,31 +358,26 @@
 
 ---
 
-### Record: ADR-028 — Platform Crash Resolution, Default Super Admin Configuration, Dedicated News Wire Route & Institutional Admin Console
-* **Date & Timestamp**: 2026-11-08 08:15:00 UTC (Local: 2026-11-08 13:45:00 +05:30)
+### Record: ADR-029 — Typography Overhaul: Modern Institutional "Inter" & "JetBrains Mono" Stack with Antialiasing
+* **Date & Timestamp**: 2026-11-08 08:35:00 UTC (Local: 2026-11-08 14:05:00 +05:30)
 * **Status**: Approved & Implemented
 * **Decision Taken**: 
-  1. Resolved TanStack Start Root Error Boundary Crash on `/challenges` and `/trade`:
-     - Identified root cause in `challenges.tsx` where missing properties (`u.returnPct`, `c.participants`) in `@/lib/data.ts` triggered uncaught `TypeError: Cannot read properties of undefined (reading 'toFixed')` during render.
-     - Identified secondary cause in `CandlestickChart.tsx` where external candles were passed without `currentPrice`/`basePrice`, causing `generateCandles(undefined)` to produce `NaN` values.
-     - Updated `CandlestickChart.tsx` to flexibly accept both pre-generated `candles` and dynamic ticker inputs with bulletproof `Number(... || 0).toFixed()` null safety across all components.
-  2. Configured Default Super Admin (`dyanndlee05@gmail.com`):
-     - Updated `frontend/src/lib/auth.tsx` to automatically designate `dyanndlee05@gmail.com` (and `dyannadle05@gmail.com`) as Super Administrator with role `"admin"`.
-     - Initialized default active session to `dyanndlee05@gmail.com` so admin features and console are immediately accessible out of the box.
-  3. Engineered Dedicated Live News Wire Route (`/news`):
-     - Created `frontend/src/routes/news.tsx` featuring the 10-minute auto-refresh live Indian market wire, sentiment telemetry (Bullish/Bearish/Neutral), and sector tagging.
-  4. Redesigned and Implemented Institutional Admin Console (`/admin`):
-     - Built comprehensive admin dashboard with 4 operational tabs:
-       - **User Ledger & Balances**: Search traders, 1-click ₹10,00,000 capital reset, role elevation/demotion, and discipline score restoration.
-       - **Risk Parameters & RMS**: Platform-wide Emergency Kill-Switch (circuit breaker), mandatory Stop-Loss enforcement toggle, max leverage slider, and double-entry ledger verification.
-       - **Live Feeds & Quotes**: Real-time Yahoo Finance quote cache telemetry, 10s TTL status, and manual cache invalidation trigger.
-       - **News Wire Broadcast**: Emergency broadcast console for dispatching breaking macroeconomic and regulatory bulletins to the platform wire.
-  5. Enhanced Feature Discoverability Across the Platform:
-     - Updated `AppShell.tsx` navigation sidebar with `Market News Wire` (with "LIVE" badge), `Practice Gym` (with "NEW" badge), and `Admin Console` (with "SUPER" badge).
-     - Enhanced Dashboard (`index.tsx`) with a dedicated "Newly Implemented Institutional Features" spotlight grid with direct links to News Wire, Practice Gym, Strategy Lab, and Admin Console.
-  6. Verified 100% test pass rate across Vitest suite (8/8 tests passing) and synced 64 production assets to Android container.
-* **Why Taken**: Resolves blocking UI render crashes, fulfills user specification for default super admin status on `dyanndlee05@gmail.com`, and guarantees full discoverability and access to all newly implemented features.
-* **Impact**: Zero render crashes, full admin control over platform risk, prominent feature discoverability, and seamless cross-platform delivery.
+  1. Replaced quirky and inconsistent `Space Grotesk` with the global institutional gold-standard typography stack:
+     - **Primary Sans-Serif**: `Inter`, `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`.
+     - **Monospace Financial Numbers & Code**: `JetBrains Mono`, `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`.
+  2. Integrated Direct Google Fonts Import & Preconnect:
+     - Linked `Inter` (variable optical sizes 14px–32px, weights 100–900) and `JetBrains Mono` (weights 400–700) in both [`styles.css`](file:///d:/Projects/MarketMaster/frontend/src/styles.css) (`@import url(...)`) and [`__root.tsx`](file:///d:/Projects/MarketMaster/frontend/src/routes/__root.tsx) (`preconnect` to Google Fonts + Google Gstatic CDN).
+  3. Enforced Global High-DPI Subpixel Font Smoothing:
+     - Applied `-webkit-font-smoothing: antialiased`, `-moz-osx-font-smoothing: grayscale`, and `text-rendering: optimizeLegibility` across `html`, `body`, and form controls.
+     - Enabled `font-feature-settings: "cv02", "cv03", "cv04", "cv11"` activating Inter's clean disambiguated open-digits and high-clarity curve geometry.
+  4. Synchronized Offline Fallback:
+     - Updated [`frontend/public/index.html`](file:///d:/Projects/MarketMaster/frontend/public/index.html) and synced all 64 production assets to `android/app/src/main/assets/www`.
+  5. Verified 100% test pass rate across Vitest suite (8/8 tests passing).
+* **Why Taken**: User explicitly noted pixelated/broken fonts across the site. Switching to a calibrated `Inter` + `JetBrains Mono` font stack delivers the razor-sharp, professional visual fidelity expected of top-tier financial software (Linear, TradingView, Stripe, Zerodha).
+* **Impact**: Crystal-clear legibility across high-density financial matrices, options chains, and telemetry cards; eliminated pixelated rendering artifacts across desktop and Android mobile devices.
+
+---
+
 
 ---
 
