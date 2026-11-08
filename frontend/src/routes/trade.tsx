@@ -469,23 +469,25 @@ function Trade() {
                 <tbody className="divide-y divide-border/20 font-mono">
                   {/* Backend Open Positions */}
                   {backendPositions.map((pos) => {
-                    const ltp = prices[pos.symbol]?.p || pos.avg_entry_price;
+                    const avg = Number(pos.avg_entry_price || 0);
+                    const ltp = Number(prices[pos.symbol]?.p || avg);
+                    const qty = Number(pos.quantity || 0);
                     const pnl = pos.side === "LONG"
-                      ? (ltp - pos.avg_entry_price) * pos.quantity
-                      : (pos.avg_entry_price - ltp) * pos.quantity;
+                      ? (ltp - avg) * qty
+                      : (avg - ltp) * qty;
                     return (
                       <tr key={pos.id} className="hover:bg-accent/30">
                         <td className="p-2.5 font-sans font-bold">{pos.symbol}</td>
                         <td className={`p-2.5 font-bold ${pos.side === "LONG" ? "text-gain" : "text-loss"}`}>{pos.side}</td>
-                        <td className="p-2.5 text-right">{pos.quantity}</td>
-                        <td className="p-2.5 text-right">₹{pos.avg_entry_price.toFixed(2)}</td>
+                        <td className="p-2.5 text-right">{qty}</td>
+                        <td className="p-2.5 text-right">₹{avg.toFixed(2)}</td>
                         <td className="p-2.5 text-right">₹{ltp.toFixed(2)}</td>
                         <td className={`p-2.5 text-right font-bold ${pnl >= 0 ? "text-gain" : "text-loss"}`}>
                           {pnl >= 0 ? "+" : ""}{inr(pnl)}
                         </td>
                         <td className="p-2.5 text-center">
                           <button
-                            onClick={() => handleExit(pos.id, pos.symbol, pos.avg_entry_price, pos.quantity)}
+                            onClick={() => handleExit(pos.id, pos.symbol, avg, qty)}
                             className="rounded bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-rose-400 hover:bg-destructive/20"
                           >
                             Exit
@@ -498,14 +500,15 @@ function Trade() {
                   {/* Local Paper Fallback Positions */}
                   {backendPositions.length === 0 &&
                     acc.positions.map((pos) => {
-                      const avg = pos.avg ?? (pos as any).price ?? (prices[pos.symbol]?.base || 24500);
-                      const ltp = prices[pos.symbol]?.p ?? avg;
-                      const pnl = (ltp - avg) * (pos.qty || 0);
+                      const avg = Number(pos.avg ?? (pos as any).price ?? (prices[pos.symbol]?.base || 24500));
+                      const ltp = Number(prices[pos.symbol]?.p ?? avg);
+                      const qty = Number(pos.qty || 0);
+                      const pnl = (ltp - avg) * qty;
                       return (
                         <tr key={pos.symbol} className="hover:bg-accent/30">
                           <td className="p-2.5 font-sans font-bold">{pos.symbol}</td>
                           <td className="p-2.5 font-bold text-gain">BUY</td>
-                          <td className="p-2.5 text-right">{pos.qty}</td>
+                          <td className="p-2.5 text-right">{qty}</td>
                           <td className="p-2.5 text-right">₹{avg.toFixed(2)}</td>
                           <td className="p-2.5 text-right">₹{ltp.toFixed(2)}</td>
                           <td className={`p-2.5 text-right font-bold ${pnl >= 0 ? "text-gain" : "text-loss"}`}>
@@ -513,7 +516,7 @@ function Trade() {
                           </td>
                           <td className="p-2.5 text-center">
                             <button
-                              onClick={() => handleExit(`local_${pos.symbol}`, pos.symbol, avg, pos.qty)}
+                              onClick={() => handleExit(`local_${pos.symbol}`, pos.symbol, avg, qty)}
                               className="rounded bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-rose-400 hover:bg-destructive/20"
                             >
                               Exit
@@ -544,16 +547,20 @@ function Trade() {
           ) : (
             <table className="w-full text-xs">
               <tbody className="divide-y divide-border/20 font-mono">
-                {acc.orders.slice(0, 6).map((o) => (
-                  <tr key={o.id} className="hover:bg-accent/20">
-                    <td className={`p-2.5 font-bold ${o.side === "BUY" ? "text-gain" : "text-loss"}`}>{o.side}</td>
-                    <td className="p-2.5 font-sans">{o.symbol}</td>
-                    <td className="p-2.5 text-right">{o.qty}</td>
-                    <td className="p-2.5 text-right">₹{o.price.toFixed(2)}</td>
-                    <td className="p-2.5 text-xs text-muted-foreground">{o.type}</td>
-                    <td className="p-2.5 text-xs text-gain text-right font-semibold">FILLED</td>
-                  </tr>
-                ))}
+                {acc.orders.slice(0, 6).map((o) => {
+                  const orderPx = Number(o.price ?? 0);
+                  const orderQty = Number(o.qty ?? 0);
+                  return (
+                    <tr key={o.id} className="hover:bg-accent/20">
+                      <td className={`p-2.5 font-bold ${o.side === "BUY" ? "text-gain" : "text-loss"}`}>{o.side || "BUY"}</td>
+                      <td className="p-2.5 font-sans">{o.symbol}</td>
+                      <td className="p-2.5 text-right">{orderQty}</td>
+                      <td className="p-2.5 text-right">₹{orderPx.toFixed(2)}</td>
+                      <td className="p-2.5 text-xs text-muted-foreground">{o.type || "MARKET"}</td>
+                      <td className="p-2.5 text-xs text-gain text-right font-semibold">FILLED</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}

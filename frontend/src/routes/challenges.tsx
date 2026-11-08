@@ -598,17 +598,17 @@ function ChallengesAndGym() {
           /* Leaderboard Tab */
           <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-3">
-              {challenges.map((c) => (
-                <div key={c.id} className="relative rounded-2xl border bg-card p-5 shadow-sm">
+              {challenges.map((c, idx) => (
+                <div key={c.id || `c-${idx}`} className="relative rounded-2xl border bg-card p-5 shadow-sm">
                   <div className="flex items-center justify-between">
-                    <span className="num text-xs font-semibold text-primary">XP +{c.xp}</span>
+                    <span className="num text-xs font-semibold text-primary">XP +{c.xp || 250}</span>
                     <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-muted-foreground">{c.reward}</span>
                   </div>
                   <h3 className="mt-2 text-base font-bold">{c.title}</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">{c.description}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{c.description || c.desc || ""}</p>
                   <div className="mt-4 flex items-center justify-between border-t pt-3 text-xs text-muted-foreground">
-                    <span>{c.participants.toLocaleString()} traders active</span>
-                    <span className="text-primary font-medium">{c.daysLeft}d left</span>
+                    <span>{Number(c.participants || 1000).toLocaleString()} traders active</span>
+                    <span className="text-primary font-medium">{c.daysLeft || 7}d left</span>
                   </div>
                 </div>
               ))}
@@ -618,26 +618,30 @@ function ChallengesAndGym() {
               <h2 className="text-base font-bold">National Trader Leaderboard</h2>
               <p className="text-xs text-muted-foreground">Ranked by risk-adjusted return and Rule 4.3 discipline score.</p>
               <div className="mt-4 space-y-2">
-                {leaderboard.map((u) => (
-                  <div key={u.rank} className="flex items-center justify-between rounded-xl border p-3 hover:bg-accent/40 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <span className="grid size-7 place-items-center rounded-lg bg-accent text-xs font-bold text-primary">
-                        {u.rank}
-                      </span>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-bold">{u.handle}</span>
-                          <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">{u.badge}</span>
+                {leaderboard.map((u, idx) => {
+                  const retVal = Number(u.returnPct ?? u.ret ?? 0);
+                  const rankVal = u.rank || idx + 1;
+                  return (
+                    <div key={rankVal} className="flex items-center justify-between rounded-xl border p-3 hover:bg-accent/40 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <span className="grid size-7 place-items-center rounded-lg bg-accent text-xs font-bold text-primary">
+                          {rankVal}
+                        </span>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm font-bold">{u.handle || u.name}</span>
+                            <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">{u.badge || "Pro Trader"}</span>
+                          </div>
+                          <span className="text-xs text-muted-foreground">Discipline: {u.disciplineScore || 90}/100</span>
                         </div>
-                        <span className="text-xs text-muted-foreground">Discipline: {u.disciplineScore}/100</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-mono text-sm font-bold text-gain">+{retVal.toFixed(1)}%</p>
+                        <p className="text-[10px] text-muted-foreground">Level {u.level || 3}</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-mono text-sm font-bold text-gain">+{u.returnPct.toFixed(1)}%</p>
-                      <p className="text-[10px] text-muted-foreground">Level {u.level}</p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

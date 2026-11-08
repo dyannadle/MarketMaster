@@ -11,31 +11,45 @@ export interface Candle {
 }
 
 interface CandlestickChartProps {
-  symbol: string;
-  currentPrice: number;
-  basePrice: number;
+  symbol?: string;
+  currentPrice?: number;
+  basePrice?: number;
+  candles?: Candle[];
+  timeframe?: Timeframe;
 }
 
 export type Timeframe = "1m" | "5m" | "15m" | "1D";
 
-export function CandlestickChart({ symbol, currentPrice, basePrice }: CandlestickChartProps) {
-  const [timeframe, setTimeframe] = useState<Timeframe>("5m");
+export function CandlestickChart({
+  symbol = "NIFTY",
+  currentPrice,
+  basePrice = 24500,
+  candles: externalCandles,
+  timeframe: initialTimeframe = "5m"
+}: CandlestickChartProps) {
+  const [timeframe, setTimeframe] = useState<Timeframe>(initialTimeframe);
   const [hoveredCandle, setHoveredCandle] = useState<Candle | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Generate initial historical candles for the symbol and timeframe
-  const [candles, setCandles] = useState<Candle[]>(() => {
-    return generateCandles(basePrice, 50, timeframe);
+  // Generate initial historical candles if external candles not provided
+  const [internalCandles, setInternalCandles] = useState<Candle[]>(() => {
+    if (externalCandles && externalCandles.length > 0) return externalCandles;
+    return generateCandles(basePrice || 24500, 50, timeframe);
   });
 
-  // Reset historical candles when symbol or timeframe changes
+  // Keep internal candles synchronized
   useEffect(() => {
-    setCandles(generateCandles(basePrice, 50, timeframe));
-  }, [symbol, timeframe, basePrice]);
+    if (externalCandles) {
+      setInternalCandles(externalCandles);
+    } else {
+      setInternalCandles(generateCandles(basePrice || 24500, 50, timeframe));
+    }
+  }, [symbol, timeframe, basePrice, externalCandles]);
 
-  // Live tick updater: updates the current forming candle in real-time
+  // Live tick updater: updates current forming candle if currentPrice provided
   useEffect(() => {
-    setCandles((prev) => {
+    if (externalCandles || currentPrice == null) return;
+    setInternalCandles((prev) => {
       if (prev.length === 0) return prev;
       const last = { ...prev[prev.length - 1]! };
       last.close = currentPrice;
@@ -44,7 +58,10 @@ export function CandlestickChart({ symbol, currentPrice, basePrice }: Candlestic
       last.volume += Math.floor(Math.random() * 15) + 5;
       return [...prev.slice(0, -1), last];
     });
-  }, [currentPrice]);
+  }, [currentPrice, externalCandles]);
+
+  const candles = externalCandles || internalCandles;
+  const effectiveCurrentPrice = currentPrice ?? (candles.length > 0 ? candles[candles.length - 1]!.close : basePrice || 24500);
 
   // Dimensions & Scale Math
   const { minPrice, maxPrice, priceRange, maxVol } = useMemo(() => {
@@ -205,7 +222,7 @@ export function CandlestickChart({ symbol, currentPrice, basePrice }: Candlestic
             <g>
               <line
                 x1={0}
-                y1={getY(currentPrice)}
+                y1={getY(effectiveCurrentPrice)}
                 x2={candles.length * 14}
                 stroke="var(--primary)"
                 strokeDasharray="2 2"
@@ -213,7 +230,7 @@ export function CandlestickChart({ symbol, currentPrice, basePrice }: Candlestic
               />
               <rect
                 x={candles.length * 14 + 2}
-                y={getY(currentPrice) - 8}
+                y={getY(effectiveCurrentPrice) - 8}
                 width={54}
                 height={16}
                 fill="var(--primary)"
@@ -221,13 +238,13 @@ export function CandlestickChart({ symbol, currentPrice, basePrice }: Candlestic
               />
               <text
                 x={candles.length * 14 + 6}
-                y={getY(currentPrice) + 4}
+                y={getY(effectiveCurrentPrice) + 4}
                 fill="var(--primary-foreground)"
                 fontSize={9}
                 fontWeight="bold"
                 fontFamily="monospace"
               >
-                {currentPrice.toFixed(1)}
+                {Number(effectiveCurrentPrice || 0).toFixed(1)}
               </text>
             </g>
           )}

@@ -16,6 +16,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as LabRouteImport } from './routes/lab'
 import { Route as MarketsRouteImport } from './routes/markets'
+import { Route as NewsRouteImport } from './routes/news'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -60,6 +61,11 @@ const LabRoute = LabRouteImport.update({
 const MarketsRoute = MarketsRouteImport.update({
   id: '/markets',
   path: '/markets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotificationsRoute = NotificationsRouteImport.update({
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/help': typeof HelpRoute
   '/lab': typeof LabRoute
   '/markets': typeof MarketsRoute
+  '/news': typeof NewsRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/help': typeof HelpRoute
   '/lab': typeof LabRoute
   '/markets': typeof MarketsRoute
+  '/news': typeof NewsRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/help': typeof HelpRoute
   '/lab': typeof LabRoute
   '/markets': typeof MarketsRoute
+  '/news': typeof NewsRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/lab'
     | '/markets'
+    | '/news'
     | '/notifications'
     | '/portfolio'
     | '/privacy'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/lab'
     | '/markets'
+    | '/news'
     | '/notifications'
     | '/portfolio'
     | '/privacy'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/lab'
     | '/markets'
+    | '/news'
     | '/notifications'
     | '/portfolio'
     | '/privacy'
@@ -239,6 +251,7 @@ export interface RootRouteChildren {
   HelpRoute: typeof HelpRoute
   LabRoute: typeof LabRoute
   MarketsRoute: typeof MarketsRoute
+  NewsRoute: typeof NewsRoute
   NotificationsRoute: typeof NotificationsRoute
   PortfolioRoute: typeof PortfolioRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -300,6 +313,13 @@ declare module '@tanstack/react-router' {
       path: '/markets'
       fullPath: '/markets'
       preLoaderRoute: typeof MarketsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notifications': {
@@ -383,6 +403,7 @@ const rootRouteChildren: RootRouteChildren = {
   HelpRoute: HelpRoute,
   LabRoute: LabRoute,
   MarketsRoute: MarketsRoute,
+  NewsRoute: NewsRoute,
   NotificationsRoute: NotificationsRoute,
   PortfolioRoute: PortfolioRoute,
   PrivacyRoute: PrivacyRoute,

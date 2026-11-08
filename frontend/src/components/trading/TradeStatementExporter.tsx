@@ -93,7 +93,9 @@ export function TradeStatementExporter({ isOpen, onClose }: TradeStatementExport
 
       // Local fallback generation based on paper account orders
       const localTrades: TradeItem[] = acc.orders.map((o, idx) => {
-        const turnover = Math.round(o.qty * o.price * 100) / 100;
+        const price = Number(o.price || 0);
+        const qty = Number(o.qty || 0);
+        const turnover = Math.round(qty * price * 100) / 100;
         const stt = o.side === "SELL" ? Math.round(turnover * 0.000125 * 100) / 100 : 0.0;
         const stamp_duty = o.side === "BUY" ? Math.round(turnover * 0.00002 * 100) / 100 : 0.0;
         const exchange_charges = Math.round(turnover * 0.000019 * 100) / 100;
@@ -102,14 +104,14 @@ export function TradeStatementExporter({ isOpen, onClose }: TradeStatementExport
         const net_amount = o.side === "BUY" ? turnover + total_charges : turnover - total_charges;
 
         return {
-          id: `local-exec-${idx}-${o.id.slice(0, 8)}`,
-          order_id: o.id,
-          timestamp: Math.floor(o.time / 1000),
-          datetime_iso: new Date(o.time).toISOString(),
-          symbol: o.symbol,
-          side: o.side,
-          quantity: o.qty,
-          fill_price: o.price,
+          id: `local-exec-${idx}-${(o.id || String(idx)).slice(0, 8)}`,
+          order_id: o.id || `order-${idx}`,
+          timestamp: Math.floor((o.time || Date.now()) / 1000),
+          datetime_iso: new Date(o.time || Date.now()).toISOString(),
+          symbol: o.symbol || "NIFTY",
+          side: o.side || "BUY",
+          quantity: qty,
+          fill_price: price,
           turnover,
           stt,
           stamp_duty,
@@ -133,7 +135,7 @@ export function TradeStatementExporter({ isOpen, onClose }: TradeStatementExport
           user_id: "MM-PAPER-2026",
           display_name: "Virtual Trader",
           email: "trader@marketmaster.in",
-          virtual_equity: acc.cash + acc.positions.reduce((s, p) => s + p.qty * p.avg, 0),
+          virtual_equity: Number(acc.cash || 0) + acc.positions.reduce((s, p) => s + Number(p.qty || 0) * Number(p.avg || 0), 0),
           discipline_score: 88,
           statement_date: new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
         },
@@ -391,13 +393,13 @@ export function TradeStatementExporter({ isOpen, onClose }: TradeStatementExport
                               {t.side}
                             </td>
                             <td className="p-2.5 text-right">{t.quantity}</td>
-                            <td className="p-2.5 text-right">₹{t.fill_price.toFixed(2)}</td>
-                            <td className="p-2.5 text-right text-foreground font-semibold">₹{t.turnover.toFixed(2)}</td>
-                            <td className="p-2.5 text-right text-amber-400">₹{t.stt.toFixed(2)}</td>
-                            <td className="p-2.5 text-right text-amber-400">₹{t.stamp_duty.toFixed(2)}</td>
-                            <td className="p-2.5 text-right text-muted-foreground">₹{(t.gst + t.exchange_charges).toFixed(2)}</td>
-                            <td className="p-2.5 text-right text-loss font-semibold">₹{t.total_charges.toFixed(2)}</td>
-                            <td className="p-2.5 text-right font-bold text-foreground">₹{t.net_amount.toFixed(2)}</td>
+                            <td className="p-2.5 text-right">₹{Number(t.fill_price || 0).toFixed(2)}</td>
+                            <td className="p-2.5 text-right text-foreground font-semibold">₹{Number(t.turnover || 0).toFixed(2)}</td>
+                            <td className="p-2.5 text-right text-amber-400">₹{Number(t.stt || 0).toFixed(2)}</td>
+                            <td className="p-2.5 text-right text-amber-400">₹{Number(t.stamp_duty || 0).toFixed(2)}</td>
+                            <td className="p-2.5 text-right text-muted-foreground">₹{Number((t.gst || 0) + (t.exchange_charges || 0)).toFixed(2)}</td>
+                            <td className="p-2.5 text-right text-loss font-semibold">₹{Number(t.total_charges || 0).toFixed(2)}</td>
+                            <td className="p-2.5 text-right font-bold text-foreground">₹{Number(t.net_amount || 0).toFixed(2)}</td>
                           </tr>
                         ))
                       )}

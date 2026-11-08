@@ -24,14 +24,16 @@ function Portfolio() {
   const prices = useLivePrices();
   const { acc, reset } = useAccount();
   const rows = acc.positions.map((p) => {
-    const ltp = prices[p.symbol]?.p ?? p.avg;
-    return { ...p, ltp, value: ltp * p.qty, pnl: (ltp - p.avg) * p.qty };
+    const avg = Number(p.avg || 0);
+    const qty = Number(p.qty || 0);
+    const ltp = Number(prices[p.symbol]?.p ?? avg);
+    return { ...p, avg, qty, ltp, value: ltp * qty, pnl: (ltp - avg) * qty };
   });
   const invested = rows.reduce((s, r) => s + r.value, 0);
-  const equity = acc.cash + invested;
+  const equity = Number(acc.cash || 0) + invested;
   const pnl = rows.reduce((s, r) => s + r.pnl, 0);
-  const exposure = (invested / equity) * 100;
-  const largest = rows.length ? Math.max(...rows.map((r) => r.value)) / equity * 100 : 0;
+  const exposure = equity > 0 ? (invested / equity) * 100 : 0;
+  const largest = rows.length && equity > 0 ? (Math.max(...rows.map((r) => r.value)) / equity) * 100 : 0;
 
   return (
     <div>
@@ -46,10 +48,10 @@ function Portfolio() {
         </div>
       </PageHeader>
       <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4 md:p-8">
-        <Stat label="Total equity" value={inr(equity)} extra={<Change v={((equity - STARTING_CASH) / STARTING_CASH) * 100} />} />
+        <Stat label="Total equity" value={inr(equity)} extra={<Change v={STARTING_CASH > 0 ? ((equity - STARTING_CASH) / STARTING_CASH) * 100 : 0} />} />
         <Stat label="Unrealised P&L" value={inr(pnl)} tone={pnl >= 0 ? "text-gain" : "text-loss"} />
-        <Stat label="Exposure" value={`${exposure.toFixed(1)}%`} extra={<Bar v={exposure} />} />
-        <Stat label="Largest position" value={`${largest.toFixed(1)}%`} extra={<span className={`text-xs ${largest > 25 ? "text-loss" : "text-gain"}`}>{largest > 25 ? "Concentration risk" : "Within limits"}</span>} />
+        <Stat label="Exposure" value={`${Number(exposure || 0).toFixed(1)}%`} extra={<Bar v={exposure} />} />
+        <Stat label="Largest position" value={`${Number(largest || 0).toFixed(1)}%`} extra={<span className={`text-xs ${largest > 25 ? "text-loss" : "text-gain"}`}>{largest > 25 ? "Concentration risk" : "Within limits"}</span>} />
       </div>
       <div className="mx-5 overflow-x-auto rounded-xl border md:mx-8">
         <table className="w-full text-sm">
@@ -58,7 +60,7 @@ function Portfolio() {
             {rows.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No positions. Place a trade in the terminal.</td></tr>}
             {rows.map((r) => (
               <tr key={r.symbol} className="num border-t">
-                <td className="p-3 font-sans font-medium">{r.symbol}</td><td className="p-3 text-right">{r.qty}</td><td className="p-3 text-right">{r.avg.toFixed(2)}</td><td className="p-3 text-right">{r.ltp.toFixed(2)}</td><td className="p-3 text-right">{inr(r.value)}</td>
+                <td className="p-3 font-sans font-medium">{r.symbol}</td><td className="p-3 text-right">{r.qty}</td><td className="p-3 text-right">{Number(r.avg || 0).toFixed(2)}</td><td className="p-3 text-right">{Number(r.ltp || 0).toFixed(2)}</td><td className="p-3 text-right">{inr(r.value)}</td>
                 <td className={`p-3 text-right ${r.pnl >= 0 ? "text-gain" : "text-loss"}`}>{inr(r.pnl)}</td>
               </tr>
             ))}

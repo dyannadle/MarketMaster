@@ -96,19 +96,43 @@ export const strategies = [
   { name: "Protective Put Hedge", type: "Hedging", desc: "Insure a long portfolio with index puts." },
 ];
 
-export const challenges = [
-  { title: "First 10 Trades", desc: "Place 10 paper trades with stop-losses.", reward: "Rookie badge", progress: 60 },
-  { title: "Risk Discipline", desc: "Never risk more than 1% per trade for a week.", reward: "Risk Guardian", progress: 35 },
-  { title: "Options Explorer", desc: "Build and analyse 3 option spreads.", reward: "Greeks Graduate", progress: 10 },
-  { title: "Level 1 Mastery", desc: "Clear every Level 1 quiz with 80%+.", reward: "Market Insider", progress: 80 },
+export interface ChallengeItem {
+  id?: string;
+  title: string;
+  desc?: string;
+  description?: string;
+  reward: string;
+  progress?: number;
+  xp?: number;
+  participants?: number;
+  daysLeft?: number;
+}
+
+export const challenges: ChallengeItem[] = [
+  { id: "c1", title: "First 10 Trades", desc: "Place 10 paper trades with stop-losses.", description: "Place 10 paper trades with stop-losses.", reward: "Rookie badge", progress: 60, xp: 250, participants: 1420, daysLeft: 5 },
+  { id: "c2", title: "Risk Discipline", desc: "Never risk more than 1% per trade for a week.", description: "Never risk more than 1% per trade for a week.", reward: "Risk Guardian", progress: 35, xp: 500, participants: 890, daysLeft: 12 },
+  { id: "c3", title: "Options Explorer", desc: "Build and analyse 3 option spreads.", description: "Build and analyse 3 option spreads.", reward: "Greeks Graduate", progress: 10, xp: 750, participants: 640, daysLeft: 8 },
+  { id: "c4", title: "Level 1 Mastery", desc: "Clear every Level 1 quiz with 80%+.", description: "Clear every Level 1 quiz with 80%+.", reward: "Market Insider", progress: 80, xp: 1000, participants: 2150, daysLeft: 18 },
 ];
 
-export const leaderboard = [
-  { name: "Aarav S.", ret: 18.4, trades: 142 },
-  { name: "Meera K.", ret: 15.1, trades: 98 },
-  { name: "Rohan P.", ret: 12.7, trades: 211 },
-  { name: "Isha T.", ret: 9.9, trades: 64 },
-  { name: "Kabir M.", ret: 7.3, trades: 120 },
+export interface LeaderboardUser {
+  rank?: number;
+  name: string;
+  handle?: string;
+  ret: number;
+  returnPct?: number;
+  trades: number;
+  disciplineScore?: number;
+  badge?: string;
+  level?: number;
+}
+
+export const leaderboard: LeaderboardUser[] = [
+  { rank: 1, name: "Aarav S.", handle: "aarav_quant", ret: 18.4, returnPct: 18.4, trades: 142, disciplineScore: 96, badge: "Grandmaster", level: 5 },
+  { rank: 2, name: "Meera K.", handle: "meera_trader", ret: 15.1, returnPct: 15.1, trades: 98, disciplineScore: 94, badge: "Alpha Pro", level: 4 },
+  { rank: 3, name: "Rohan P.", handle: "rohan_delta", ret: 12.7, returnPct: 12.7, trades: 211, disciplineScore: 91, badge: "Greeks Lead", level: 4 },
+  { rank: 4, name: "Isha T.", handle: "isha_risk", ret: 9.9, returnPct: 9.9, trades: 64, disciplineScore: 89, badge: "RMS Lead", level: 3 },
+  { rank: 5, name: "Kabir M.", handle: "kabir_flow", ret: 7.3, returnPct: 7.3, trades: 120, disciplineScore: 87, badge: "Quant Fellow", level: 3 },
 ];
 
 export function seededSeries(seed: number, n: number, start: number, vol = 0.012) {

@@ -451,23 +451,33 @@
 
 ---
 
-### [v1.0.25-SEBI-TRADE-STATEMENT-AND-MISTAKE-AUDIT] — 2026-11-08 02:46:00 UTC (Local: 2026-11-08 08:16:00 +05:30)
+### [v1.0.26-CRASH-FIX-DEFAULT-ADMIN-NEWS-AND-ADMIN-PANEL] — 2026-11-08 08:20:00 UTC (Local: 2026-11-08 13:50:00 +05:30)
 * **Author**: Antigravity Enterprise Architecture Team
-* **Change Category**: Regulatory Compliance, Tax Accounting & Behavioral Diagnostics (`SEBI`, `TradeStatement`, `TaxLedger`, `MistakeDistribution`, `CSVExport`, `PDFExport`)
+* **Change Category**: Critical Bug Fix, Super Admin RBAC, Feature Navigation & Admin Operations (`BugFix`, `Auth`, `RBAC`, `NewsWire`, `AdminConsole`, `AppShell`, `Discoverability`)
 * **Files Created & Modified**:
-  * `backend/app/api/v1/trading.py` (Added `GET /api/v1/trading/statement` generating itemized execution ledger with STT, Stamp Duty, GST, Exchange charges, and mistake distribution)
-  * `backend/tests/test_api_endpoints.py` (Added integration tests for trading statement - 8/8 passing)
-  * `frontend/src/lib/api.ts` (Added `getTradingStatement()` API client bridge)
-  * `frontend/src/components/trading/TradeStatementExporter.tsx` (Component featuring SEBI Contract Note view, statutory tax breakdown, CSV file download, printer-ready PDF export, and mistake distribution bar charts)
-  * `frontend/src/routes/portfolio.tsx` (Integrated "Export Statement (CSV / PDF)" action in header)
-  * `frontend/src/routes/trade.tsx` (Integrated "Export Statement" action in Audited Order Trail header)
-  * `docs/decision.md` (Recorded ADR-027)
-  * `docs/changes.md` (Logged v1.0.25 release entry)
+  * `frontend/src/routes/challenges.tsx` (Fixed crash on `/challenges` by safeguarding `leaderboard` and `challenges` property access with `Number(... || 0).toFixed()` null safety)
+  * `frontend/src/routes/trade.tsx` (Fixed crash on `/trade` by safeguarding `avg_entry_price`, `price`, and `avg` against undefined values in localStorage)
+  * `frontend/src/routes/portfolio.tsx` (Safeguarded portfolio rows against undefined values)
+  * `frontend/src/components/trading/CandlestickChart.tsx` (Supported both external `candles` and dynamic ticker inputs with fallback to avoid `NaN` calculations)
+  * `frontend/src/lib/data.ts` (Enriched `challenges` and `leaderboard` collections with all required gamification metrics)
+  * `frontend/src/lib/auth.tsx` (Configured `dyanndlee05@gmail.com` and `dyannadle05@gmail.com` as default Super Admin users with role `"admin"`)
+  * `frontend/src/routes/news.tsx` (Engineered dedicated Live Indian Market Wire route with 10-minute auto-refresh, sentiment tags, and direct trade routing)
+  * `frontend/src/routes/admin.tsx` (Rebuilt full-featured institutional Admin Console with User Ledger, RMS Emergency Kill-Switch, Yahoo feed cache telemetry, and news flash broadcast)
+  * `frontend/src/components/AppShell.tsx` (Added `News Wire` with "LIVE" badge and `Admin Console` with "SUPER" badge to primary navigation, plus mobile drawer update)
+  * `frontend/src/routes/index.tsx` (Added "Newly Implemented Institutional Features" spotlight grid connecting News Wire, Practice Gym, Strategy Lab, and Admin Console)
+  * `frontend/src/test/challenges-render.test.tsx` (Unit test verifying `/challenges` renders safely)
+  * `frontend/src/test/trade-render.test.tsx` (Unit test verifying `/trade` renders safely with corrupted state)
+  * `docs/decision.md` (Recorded ADR-028)
+  * `docs/changes.md` (Logged v1.0.26 release entry)
 * **Detailed Description**:
-  * Added itemized statutory tax accounting: Securities Transaction Tax (STT), Stamp Duty, Exchange Charges, and 18% GST.
-  * Implemented one-click CSV file export with RFC 4180 escaping and printer-ready PDF layout.
-  * Added visual psychological mistake distribution bar charts with severity tags and institutional risk remedies.
-  * 100% test pass rate across Vitest (5/5) and pytest (8/8) with clean Nitro production build.
+  * Resolved the "This page didn't load" TanStack root boundary crash across both `/challenges` and `/trade`.
+  * Set `dyanndlee05@gmail.com` as Super Administrator across the frontend and authentication adapters with persistent role elevation.
+  * Created dedicated first-class `/news` route and added prominent navigation links in `AppShell` and `Dashboard`.
+  * Rebuilt the Admin Console into an institutional risk control center with platform kill-switch, user capital resets, and live feed telemetry.
+  * 100% test pass rate across Vitest suite (8/8 tests passing) and synced 64 production assets to Android container.
+
+---
+
 
 
 
