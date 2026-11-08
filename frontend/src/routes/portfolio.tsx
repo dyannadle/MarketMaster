@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change, PageHeader } from "@/components/AppShell";
 import { inr } from "@/lib/data";
 import { STARTING_CASH, useAccount, useLivePrices } from "@/lib/paper";
+import { TradeStatementExporter } from "@/components/trading/TradeStatementExporter";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -17,6 +20,7 @@ export const Route = createFileRoute("/portfolio")({
 });
 
 function Portfolio() {
+  const [isExporterOpen, setIsExporterOpen] = useState(false);
   const prices = useLivePrices();
   const { acc, reset } = useAccount();
   const rows = acc.positions.map((p) => {
@@ -32,7 +36,14 @@ function Portfolio() {
   return (
     <div>
       <PageHeader title="Portfolio & Risk" sub="Your virtual account, positions and RMS checks.">
-        <Button variant="outline" onClick={() => confirm("Reset paper account to ₹10,00,000?") && reset()}>Reset account</Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setIsExporterOpen(true)} className="gap-2 font-bold text-xs">
+            <FileSpreadsheet className="size-4" /> Export Statement (CSV / PDF)
+          </Button>
+          <Button variant="outline" onClick={() => confirm("Reset paper account to ₹10,00,000?") && reset()}>
+            Reset account
+          </Button>
+        </div>
       </PageHeader>
       <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4 md:p-8">
         <Stat label="Total equity" value={inr(equity)} extra={<Change v={((equity - STARTING_CASH) / STARTING_CASH) * 100} />} />
@@ -54,6 +65,11 @@ function Portfolio() {
           </tbody>
         </table>
       </div>
+
+      <TradeStatementExporter
+        isOpen={isExporterOpen}
+        onClose={() => setIsExporterOpen(false)}
+      />
     </div>
   );
 }

@@ -356,4 +356,26 @@
 * **Why Taken**: Completes mobile native readiness, offline practice independence, hardware sensory feedback, and zero-cost cloud containerization.
 * **Impact**: Zero-compromise institutional trading experience on both web and Android mobile APK, with single-command Docker deployment.
 
+---
+
+### Record: ADR-027 — SEBI-Compliant Trade Statement Exporter, Statutory Deductions Audit & Mistake Distribution Engine
+* **Date & Timestamp**: 2026-11-08 02:45:00 UTC (Local: 2026-11-08 08:15:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Engineered Backend Trade Statement Endpoint (`GET /api/v1/trading/statement`):
+     - Aggregates all `TradeExecution` and `Position` records for the authenticated user.
+     - Calculates itemized turnover and statutory Indian regulatory deductions: Securities Transaction Tax (STT), Stamp Duty, Exchange Transaction Charges, and Goods & Services Tax (GST 18%).
+     - Calculates behavioral mistake tag counts and percentages (`#NoStopLoss`, `#RevengeRisk`, `#Overleveraged`, `#CutWinnerEarly`, `#ControlledRisk`, `#ProfitableExit`).
+  2. Engineered Frontend Statement Exporter Component (`TradeStatementExporter.tsx`):
+     - Interactive modal supporting dual views:
+       - **SEBI Contract Note & Tax Statement**: Itemized execution table with client code, virtual equity, statutory deductions breakdown, gross & net realized P&L, instant CSV file download, and printer-ready PDF export styling.
+       - **Psychological Mistake Audit & Distribution**: Visual distribution bar charts, severity classification (Critical vs Healthy), and institutional risk remedies.
+  3. Integrated Exporter into Core Platform Routes:
+     - Prominently wired into `/portfolio` ([`portfolio.tsx`](file:///d:/Projects/MarketMaster/frontend/src/routes/portfolio.tsx)) header.
+     - Embedded into `/trade` ([`trade.tsx`](file:///d:/Projects/MarketMaster/frontend/src/routes/trade.tsx)) Audited Order Trail header.
+  4. Verified 100% test pass rate across Vitest (5/5), pytest (8/8), and clean Nitro production build.
+* **Why Taken**: Fulfills the user's explicit request to provide an itemized trade ledger statement with turnover, statutory deductions (STT, Stamp Duty, GST, Exchange charges), CSV/PDF export, and mistake distribution charts.
+* **Impact**: Delivers institutional tax audit realism, transparent transaction fee accounting, and deliberate behavioral reflection for active traders.
+
+
 

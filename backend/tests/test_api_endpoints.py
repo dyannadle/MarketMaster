@@ -102,6 +102,18 @@ async def test_trading_order_flow_and_position_exit(async_client: AsyncClient):
     assert audit_res.json()["status"] == "HEALTHY"
     assert audit_res.json()["reconciled"] is True
 
+    # Verify SEBI-Compliant Statement Export
+    stmt_res = await async_client.get("/api/v1/trading/statement", headers=headers)
+    assert stmt_res.status_code == 200
+    stmt_data = stmt_res.json()
+    assert "account" in stmt_data
+    assert "financial_summary" in stmt_data
+    assert "mistake_distribution" in stmt_data
+    assert "trades" in stmt_data
+    assert len(stmt_data["trades"]) >= 1
+    assert stmt_data["financial_summary"]["total_statutory_charges"] >= 0
+    assert any(m["tag"] == "#NoStopLoss" for m in stmt_data["mistake_distribution"])
+
 @pytest.mark.asyncio
 async def test_dpdp_erasure_endpoint(async_client: AsyncClient):
     """Verify Rule 4.3: DPDP Right to Erasure completely purges account."""

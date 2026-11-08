@@ -112,6 +112,10 @@ export const backendApi = {
     return request<any>("/trading/ledger/audit");
   },
 
+  async getTradingStatement() {
+    return request<any>("/trading/statement");
+  },
+
   // Quant Derivatives
   async calculateBlackScholes(spot: number, strike: number, days: number, vol: number, rate = 0.065) {
     return request<any>("/quant/black-scholes", {

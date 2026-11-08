@@ -449,4 +449,25 @@
   * Delivered production Docker Compose stack for instant local and cloud deployment.
   * 100% test pass rate across Vitest (5/5) and pytest (8/8).
 
+---
+
+### [v1.0.25-SEBI-TRADE-STATEMENT-AND-MISTAKE-AUDIT] — 2026-11-08 02:46:00 UTC (Local: 2026-11-08 08:16:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Regulatory Compliance, Tax Accounting & Behavioral Diagnostics (`SEBI`, `TradeStatement`, `TaxLedger`, `MistakeDistribution`, `CSVExport`, `PDFExport`)
+* **Files Created & Modified**:
+  * `backend/app/api/v1/trading.py` (Added `GET /api/v1/trading/statement` generating itemized execution ledger with STT, Stamp Duty, GST, Exchange charges, and mistake distribution)
+  * `backend/tests/test_api_endpoints.py` (Added integration tests for trading statement - 8/8 passing)
+  * `frontend/src/lib/api.ts` (Added `getTradingStatement()` API client bridge)
+  * `frontend/src/components/trading/TradeStatementExporter.tsx` (Component featuring SEBI Contract Note view, statutory tax breakdown, CSV file download, printer-ready PDF export, and mistake distribution bar charts)
+  * `frontend/src/routes/portfolio.tsx` (Integrated "Export Statement (CSV / PDF)" action in header)
+  * `frontend/src/routes/trade.tsx` (Integrated "Export Statement" action in Audited Order Trail header)
+  * `docs/decision.md` (Recorded ADR-027)
+  * `docs/changes.md` (Logged v1.0.25 release entry)
+* **Detailed Description**:
+  * Added itemized statutory tax accounting: Securities Transaction Tax (STT), Stamp Duty, Exchange Charges, and 18% GST.
+  * Implemented one-click CSV file export with RFC 4180 escaping and printer-ready PDF layout.
+  * Added visual psychological mistake distribution bar charts with severity tags and institutional risk remedies.
+  * 100% test pass rate across Vitest (5/5) and pytest (8/8) with clean Nitro production build.
+
+
 

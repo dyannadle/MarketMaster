@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
-import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper } from "lucide-react";
+import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change } from "@/components/AppShell";
 import { inr, instruments } from "@/lib/data";
@@ -12,6 +12,7 @@ import { PostMortemModal, PostMortemData } from "@/components/trading/PostMortem
 import { OptionsChainMatrix, SelectedOptionStrike } from "@/components/trading/OptionsChainMatrix";
 import { LiveNewsFeed } from "@/components/trading/LiveNewsFeed";
 import { nativeBridge } from "@/lib/native";
+import { TradeStatementExporter } from "@/components/trading/TradeStatementExporter";
 
 export const Route = createFileRoute("/trade")({
   validateSearch: (s: Record<string, unknown>): { s?: string | undefined } => ({
@@ -51,6 +52,7 @@ function Trade() {
   // Post-Mortem & Psychological Diagnostics State
   const [postMortemData, setPostMortemData] = useState<PostMortemData | null>(null);
   const [isPostMortemOpen, setIsPostMortemOpen] = useState(false);
+  const [isStatementOpen, setIsStatementOpen] = useState(false);
   const [disciplineScore, setDisciplineScore] = useState(85);
 
   // Cool-Down Breathing Mode (Discipline < 70)
@@ -528,9 +530,15 @@ function Trade() {
 
         {/* Audited Order Trail */}
         <div className="rounded-xl border border-border/80 bg-card shadow-sm">
-          <p className="border-b border-border/40 p-3 text-xs font-semibold text-muted-foreground uppercase">
-            AUDITED ORDER TRAIL
-          </p>
+          <div className="flex items-center justify-between border-b border-border/40 p-3 text-xs font-semibold text-muted-foreground">
+            <span className="uppercase tracking-wider">AUDITED ORDER TRAIL</span>
+            <button
+              onClick={() => setIsStatementOpen(true)}
+              className="flex items-center gap-1.5 text-xs text-primary hover:underline font-bold transition-all"
+            >
+              <FileSpreadsheet className="size-3.5" /> Export Statement
+            </button>
+          </div>
           {acc.orders.length === 0 ? (
             <p className="p-4 text-xs text-muted-foreground">No recent orders recorded.</p>
           ) : (
@@ -731,6 +739,12 @@ function Trade() {
         isOpen={isPostMortemOpen}
         onClose={() => setIsPostMortemOpen(false)}
         data={postMortemData}
+      />
+
+      {/* SEBI-Compliant Trade Statement & Risk Audit Exporter Modal */}
+      <TradeStatementExporter
+        isOpen={isStatementOpen}
+        onClose={() => setIsStatementOpen(false)}
       />
       </div>
     </div>

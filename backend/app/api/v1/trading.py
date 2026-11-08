@@ -9,6 +9,7 @@ from app.api.v1.deps import get_current_user
 from app.models.user import User
 from app.models.order import Order
 from app.models.position import Position
+from app.models.execution import TradeExecution
 from app.schemas.order import OrderCreate, OrderResponse, OrderExecutionResponse
 from app.schemas.position import PositionResponse, PositionExitResponse
 from app.services.matching_engine import MatchingEngine
@@ -193,3 +194,115 @@ async def verify_ledger(
         "audited_balance": balance,
         "reconciled": is_valid
     }
+
+@router.get("/statement")
+async def get_trading_statement(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Generates a SEBI-compliant itemized trade ledger statement with statutory deductions
+    (STT, GST, Stamp Duty, Exchange Charges) and psychological mistake distribution.
+    """
+    # 1. Fetch trade executions
+    exec_stmt = select(TradeExecution).where(TradeExecution.user_id == current_user.id).order_by(TradeExecution.executed_at.desc())
+    exec_res = await db.execute(exec_stmt)
+    executions = exec_res.scalars().all()
+
+    # 2. Fetch positions for realized P&L and behavioral stats
+    pos_stmt = select(Position).where(Position.user_id == current_user.id).order_by(Position.updated_at.desc())
+    pos_res = await db.execute(pos_stmt)
+    positions = pos_res.scalars().all()
+
+    items = []
+    total_turnover = 0.0
+    total_stt = 0.0
+    total_stamp = 0.0
+    total_exchange = 0.0
+    total_gst = 0.0
+    total_realized_pnl = 0.0
+
+    # Mistake distribution tracking
+    mistake_counts = {
+        "#NoStopLoss": 0,
+        "#RevengeRisk": 0,
+        "#Overleveraged": 0,
+        "#CutWinnerEarly": 0,
+        "#ControlledRisk": 0,
+        "#ProfitableExit": 0
+    }
+
+    for pos in positions:
+        total_realized_pnl += pos.realized_pnl
+        if not pos.stop_loss:
+            mistake_counts["#NoStopLoss"] += 1
+        if pos.realized_pnl > 0:
+            mistake_counts["#ProfitableExit"] += 1
+        else:
+            mistake_counts["#ControlledRisk"] += 1
+
+    for e in executions:
+        turnover = round(e.fill_price * e.fill_quantity, 2)
+        total_charges = round(e.stt_tax + e.stamp_duty + e.exchange_charges + e.gst_tax, 2)
+        
+        total_turnover += turnover
+        total_stt += e.stt_tax
+        total_stamp += e.stamp_duty
+        total_exchange += e.exchange_charges
+        total_gst += e.gst_tax
+
+        items.append({
+            "id": e.id,
+            "order_id": e.order_id,
+            "timestamp": int(e.executed_at.timestamp()),
+            "datetime_iso": e.executed_at.isoformat(),
+            "symbol": e.symbol,
+            "side": e.side,
+            "quantity": e.fill_quantity,
+            "fill_price": e.fill_price,
+            "turnover": turnover,
+            "stt": round(e.stt_tax, 2),
+            "stamp_duty": round(e.stamp_duty, 2),
+            "exchange_charges": round(e.exchange_charges, 2),
+            "gst": round(e.gst_tax, 2),
+            "total_charges": total_charges,
+            "slippage": e.slippage,
+            "net_amount": round(turnover + total_charges if e.side == "BUY" else turnover - total_charges, 2)
+        })
+
+    # Calculate mistake distribution percentages
+    total_evaluated = sum(mistake_counts.values()) or 1
+    mistake_distribution = [
+        {
+            "tag": tag,
+            "count": count,
+            "percentage": round((count / total_evaluated) * 100, 1),
+            "severity": "CRITICAL" if tag in ["#NoStopLoss", "#RevengeRisk", "#Overleveraged"] else "HEALTHY"
+        }
+        for tag, count in mistake_counts.items()
+    ]
+
+    return {
+        "account": {
+            "user_id": current_user.id,
+            "display_name": current_user.display_name,
+            "email": current_user.email,
+            "virtual_equity": current_user.virtual_equity,
+            "discipline_score": current_user.discipline_score,
+            "statement_date": datetime.now(timezone.utc).strftime("%d-%b-%Y")
+        },
+        "financial_summary": {
+            "total_trades": len(items),
+            "total_turnover": round(total_turnover, 2),
+            "total_stt": round(total_stt, 2),
+            "total_stamp_duty": round(total_stamp, 2),
+            "total_exchange_charges": round(total_exchange, 2),
+            "total_gst": round(total_gst, 2),
+            "total_statutory_charges": round(total_stt + total_stamp + total_exchange + total_gst, 2),
+            "gross_realized_pnl": round(total_realized_pnl, 2),
+            "net_realized_pnl": round(total_realized_pnl - (total_stt + total_stamp + total_exchange + total_gst), 2)
+        },
+        "mistake_distribution": mistake_distribution,
+        "trades": items
+    }
+
