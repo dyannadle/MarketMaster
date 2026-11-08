@@ -19,7 +19,7 @@ export type DetailedLesson = {
     scenario: string;
     steps: { step: string; detail: string }[];
     takeaway: string;
-    hasVisualizer?: "inflation" | "compounding" | "tvm" | "position_sizing" | "option_greeks" | "order_flow";
+    hasVisualizer?: "inflation" | "compounding" | "tvm" | "position_sizing" | "option_greeks" | "order_flow" | undefined;
   };
   commonMistakes: {
     mistake: string;

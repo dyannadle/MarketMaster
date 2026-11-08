@@ -65,7 +65,7 @@ export function PositionSizingVisualizer() {
             Institutional Position Sizing & 1.5% Risk Engine
           </h3>
           <p className="text-xs text-muted-foreground">
-            Strict capital preservation model enforcing Rule 4.3 ($R_{trade} \le 1.5\%$) on Indian Derivative Contracts.
+            Strict capital preservation model enforcing Rule 4.3 (R_trade ≤ 1.5%) on Indian Derivative Contracts.
           </p>
         </div>
         {isRuleViolated ? (

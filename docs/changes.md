@@ -490,7 +490,25 @@
 
 ---
 
+### [v1.0.29-RATED-GYM-GLICKO2-INSTITUTIONAL-EXEC-ALGORITHMS] — 2026-11-08 12:35:00 UTC (Local: 2026-11-08 18:05:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Rated Replay Gym, Glicko-2 Elo Engine, Institutional Order Slicing Suite & Route Stability (`Gym`, `Glicko-2`, `TWAP`, `VWAP`, `Iceberg`, `Arbitrage`, `RiskManagement`, `Vitest`)
+* **Files Created & Modified**:
+  * `frontend/src/lib/glicko2.ts` (Full Glicko-2 dynamic trader rating engine with skill rating $R$, rating deviation $RD$, volatility $\sigma$, rank tiers, and localStorage persistence)
+  * `frontend/src/components/trading/InstitutionalExecutionAlgorithms.tsx` (TWAP micro-slicer with anti-HFT jitter, VWAP U-curve allocator, Iceberg visible/reserve queue, Cash-Futures cash-and-carry basis arbitrage engine)
+  * `frontend/src/routes/challenges.tsx` (Dual Casual/Rated mode, Rule 4.3 mandatory stop-loss invariant check, live SL/TP hit detection during replay, daily challenge 3-setup rotation, celebration modal, resolved missing `ArrowRight` icon import)
+  * `frontend/src/routes/lab.tsx` (Integrated Institutional Execution Algorithms suite into Strategy Lab)
+  * `frontend/src/components/visualizers/PositionSizingVisualizer.tsx` (Fixed JSX unescaped curly brace evaluation)
+  * `frontend/src/lib/lesson-data.tsx` & `frontend/src/lib/api.ts` (Fixed exact optional property typing compatibility)
+  * `frontend/src/test/challenges-render.test.tsx` (Unit tests verifying Challenges & Gym rendering and tab switching)
+  * `frontend/src/test/glicko-and-execution-algorithms.test.tsx` (Comprehensive unit tests for Glicko-2 calculation and execution algorithm tabs)
+  * `android/app/src/main/assets/www/` (Synced 67 production assets)
+  * `docs/decision.md` (Recorded ADR-031)
+  * `docs/changes.md` (Logged v1.0.29 release entry)
+* **Detailed Description**:
+  * Fixed `/challenges` crash caused by missing `ArrowRight` icon import and strict optional property mismatches.
+  * Delivered Rated Gym with Glicko-2 Elo skill ranking and mandatory Stop-Loss enforcement (Rule 4.3: $R \le 1.5\%$).
+  * Built complete Institutional Execution Algorithms Suite (TWAP, VWAP, Iceberg, and Cash-and-Carry Arbitrage) in `/lab`.
+  * Passed 100% of Vitest tests (15/15 tests passing across 6 test suites) and full TypeScript check.
 
-
-
-
+---

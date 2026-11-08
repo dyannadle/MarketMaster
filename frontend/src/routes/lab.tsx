@@ -30,6 +30,7 @@ import {
 import { PageHeader } from "@/components/AppShell";
 import { inr, instruments, seededSeries, strategies } from "@/lib/data";
 import { backendApi } from "@/lib/api";
+import { InstitutionalExecutionAlgorithms } from "@/components/trading/InstitutionalExecutionAlgorithms";
 
 export const Route = createFileRoute("/lab")({
   head: () => ({
@@ -608,65 +609,8 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
             )}
           </div>
 
-          {/* TWAP/VWAP Slicing Simulator */}
-          <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-border/40 pb-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-foreground">
-                <Sliders className="h-4 w-4 text-sky-400" /> TWAP Institutional Order Slicing Engine
-              </div>
-              <span className="text-[10px] text-muted-foreground font-mono">Execution Router</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 text-xs">
-              <div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Parent Order Quantity</span>
-                  <span className="num font-bold text-foreground">{totalQty.toLocaleString()}</span>
-                </div>
-                <input
-                  type="range"
-                  min={1000}
-                  max={50000}
-                  step={1000}
-                  value={totalQty}
-                  onChange={(e) => setTotalQty(Number(e.target.value))}
-                  className="mt-2 w-full accent-primary"
-                />
-              </div>
-
-              <div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Time Slices</span>
-                  <span className="num font-bold text-foreground">{slices} Child Orders</span>
-                </div>
-                <input
-                  type="range"
-                  min={2}
-                  max={20}
-                  value={slices}
-                  onChange={(e) => setSlices(Number(e.target.value))}
-                  className="mt-2 w-full accent-primary"
-                />
-              </div>
-            </div>
-
-            <div className="h-44">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={twap}>
-                  <XAxis dataKey="slice" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} />
-                  <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} />
-                  <Tooltip
-                    contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: "11px" }}
-                    formatter={(val: any) => [`${val} contracts`, "Slice Size"]}
-                  />
-                  <Bar dataKey="qty" fill="#38bdf8" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <p className="text-[11px] text-muted-foreground">
-              Each child order routes <span className="font-bold text-foreground">{Math.round(totalQty / slices)} shares</span> at uniform time intervals to avoid sweeping the bid/ask queue and minimizing market impact.
-            </p>
-          </div>
+          {/* Institutional Execution Algorithms Suite (TWAP, VWAP, Iceberg, Arbitrage) */}
+          <InstitutionalExecutionAlgorithms />
         </div>
 
         {/* Strategy Library Grid */}

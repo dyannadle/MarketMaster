@@ -78,11 +78,11 @@ export const backendApi = {
   async placeOrder(params: {
     symbol: string;
     side: "BUY" | "SELL";
-    orderType?: string;
+    orderType?: string | undefined;
     quantity: number;
-    limitPrice?: number;
-    stopLoss?: number;
-    targetPrice?: number;
+    limitPrice?: number | undefined;
+    stopLoss?: number | undefined;
+    targetPrice?: number | undefined;
   }) {
     return request<any>("/trading/orders", {
       method: "POST",

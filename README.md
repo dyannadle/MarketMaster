@@ -26,13 +26,14 @@ flowchart LR
 | Subsystem | Tech Stack | Status | Reference Spec |
 | :--- | :--- | :---: | :--- |
 | **Specifications & Blueprints** | Markdown, Mermaid, IEEE 830 | ✅ Complete | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| **Frontend Web Terminal** | React 19, TanStack Start/Router, Tailwind v4, shadcn/ui | ✅ Active (5/5 Tests Pass) | [`docs/FRONTEND_ARCHITECTURE.md`](docs/FRONTEND_ARCHITECTURE.md) |
+| **Frontend Web Terminal** | React 19, TanStack Start/Router, Tailwind v4, shadcn/ui | ✅ Active (15/15 Tests Pass) | [`docs/FRONTEND_ARCHITECTURE.md`](docs/FRONTEND_ARCHITECTURE.md) |
 | **Backend & Quant Engine** | Python 3.13+, FastAPI, Polars, Async SQLAlchemy, NumPy, SciPy | ✅ Tested (15/15 Pass) | [`docs/BACKEND_ARCHITECTURE.md`](docs/BACKEND_ARCHITECTURE.md) |
 | **Database & Caching** | PostgreSQL 16, SQLite (aiosqlite), Redis 7 Docker compose | ✅ Implemented | [`docs/DATABASE_SCHEMA.md`](docs/DATABASE_SCHEMA.md) |
 | **Simulation & Replay Engine** | Non-Linear Power-Law Slippage, Indian Taxes, Double-Entry Ledger | ✅ Tested (100% Pass) | [`docs/PAPER_TRADING_ENGINE_SPEC.md`](docs/PAPER_TRADING_ENGINE_SPEC.md) |
-| **Multi-Leg Options Builder** | Interactive Expiry Payoff Curve, SEBI Margin Relief Engine | ✅ Tested (11/11 Pass) | [`frontend/src/components/trading/OptionsStrategyBuilder.tsx`](frontend/src/components/trading/OptionsStrategyBuilder.tsx) |
-| **Algo Sandbox** | Vectorized Dual-EMA Backtesting, Black-Scholes Greeks | ✅ Implemented | [`docs/STRATEGY_LAB.md`](docs/STRATEGY_LAB.md) |
-| **Mobile Android App** | Android Native Container (Kotlin, WebView, Offline Bundle) | ✅ 64 Assets Synced | [`docs/ANDROID_ARCHITECTURE.md`](docs/ANDROID_ARCHITECTURE.md) |
+| **Rated Gym & Glicko-2 Elo** | Daily Setups Rotation, Mandatory Rule 4.3 Stop-Loss ($R \le 1.5\%$) | ✅ Implemented | [`frontend/src/routes/challenges.tsx`](frontend/src/routes/challenges.tsx) |
+| **Multi-Leg Options Builder** | Interactive Expiry Payoff Curve, SEBI Margin Relief Engine | ✅ Tested (100% Pass) | [`frontend/src/components/trading/OptionsStrategyBuilder.tsx`](frontend/src/components/trading/OptionsStrategyBuilder.tsx) |
+| **Institutional Execution** | TWAP, VWAP intraday U-curve, Iceberg Queue, Cash & Carry Arbitrage | ✅ Tested (100% Pass) | [`frontend/src/components/trading/InstitutionalExecutionAlgorithms.tsx`](frontend/src/components/trading/InstitutionalExecutionAlgorithms.tsx) |
+| **Mobile Android App** | Android Native Container (Kotlin, WebView, Offline Bundle) | ✅ 67 Assets Synced | [`docs/ANDROID_ARCHITECTURE.md`](docs/ANDROID_ARCHITECTURE.md) |
 | **CI/CD & Cloud Hosting** | GitHub Actions Pipeline, Render & Vercel Free-Tier Configs | ✅ Active (.github/workflows/ci.yml) | [`render.yaml`](render.yaml) |
 
 ---

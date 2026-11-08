@@ -96,7 +96,7 @@ export function CompoundingVisualizer() {
             />
             <Tooltip
               content={({ active, payload }) => {
-                if (active && payload && payload.length) {
+                if (active && payload && payload.length && payload[0]?.payload) {
                   const d = payload[0].payload;
                   return (
                     <div className="rounded-lg border border-border bg-popover/95 p-3 text-xs shadow-xl backdrop-blur-md">

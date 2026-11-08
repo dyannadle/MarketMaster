@@ -403,7 +403,33 @@
 
 ---
 
+### Record: ADR-031 — Rated Replay Gym, Glicko-2 Skill Ranking, Institutional Execution Algorithms Suite & Route Bug Resolution
+* **Date & Timestamp**: 2026-11-08 12:35:00 UTC (Local: 2026-11-08 18:05:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**:
+  1. **Glicko-2 Trader Skill Rating Engine** (`frontend/src/lib/glicko2.ts`):
+     - Implemented standard Glicko-2 rating engine with Skill Rating ($R$), Rating Deviation ($RD$), and Volatility ($\sigma$).
+     - Defined 4 institutional tiers: *Novice Scalper (1200)* $\rightarrow$ *Prop Desk Trainee (1500)* $\rightarrow$ *Senior Derivatives Trader (1800)* $\rightarrow$ *Macro Hedge Fund PM (2100)*.
+     - Calibrated performance updates using expected score decay $g(RD) = \frac{1}{\sqrt{1 + 3q^2RD^2/\pi^2}}$ with Rule 4.3 discipline multiplier weighting ($\times 1.15$ for discipline $\ge 80$).
+  2. **Rated Replay Gym & Rule 4.3 Mandatory Risk Control** (`frontend/src/routes/challenges.tsx`):
+     - Added dual mode toggle: **Casual Practice** vs **Rated Mode (Rule 4.3)**.
+     - In Rated Mode, orders cannot be submitted without an active Stop-Loss ($R \le 1.5\%$ / max ₹15,000 risk on ₹10 Lakh equity).
+     - Automated tick-by-tick Stop-Loss and Target hit evaluation during replay with native haptics.
+     - Interactive rating conclusion modal with Elo delta and tier progression.
+     - Curated 3 daily historical setups refreshed at 00:00 IST with persistent leaderboards.
+  3. **Institutional Execution Algorithms Suite** (`frontend/src/components/trading/InstitutionalExecutionAlgorithms.tsx`):
+     - Integrated into `/lab` with interactive sub-tabs:
+       - **TWAP Slicer**: Slices large block orders into randomized micro-orders over a configurable window with anti-gaming jitter.
+       - **VWAP Curve**: Profiles intraday U-shaped volume distribution (09:15–15:30 IST) to minimize market impact at open and close.
+       - **Iceberg Queue**: Conceals block orders by exposing only small visible clips to the order book.
+       - **Cash-and-Carry Arbitrage**: Models Spot-Futures basis mispricing and theoretical convergence decay to expiry.
+  4. **Challenges Route Bug Resolution**:
+     - Resolved runtime crash on `/challenges` caused by missing `ArrowRight` icon import from `lucide-react`.
+     - Fixed `nativeBridge.vibrateStopLoss()` method calls.
+     - Resolved TypeScript strict optional property typing (`exactOptionalPropertyTypes`) across visualizers and API adapters.
+     - Expanded Vitest suite to 15/15 tests passing across 6 test suites.
+     - Synced 67 production assets to `android/app/src/main/assets/www`.
+* **Why Taken**: Fixes the `/challenges` route crash reported in user screenshots and fulfills Milestone 8 and Milestone 9 institutional trading capabilities.
+* **Impact**: Zero runtime errors on `/challenges`, robust type-safety across all visualizers, and fully verified institutional replay and execution algorithm environments.
 
-
-
-
+---

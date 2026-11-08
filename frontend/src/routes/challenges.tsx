@@ -18,7 +18,13 @@ import {
   HelpCircle,
   Flame,
   Activity,
-  Layers
+  Layers,
+  ShieldAlert,
+  Target,
+  Sparkles,
+  Scale,
+  Award as RankIcon,
+  ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/AppShell";
@@ -26,6 +32,13 @@ import { challenges, leaderboard, inr } from "@/lib/data";
 import { backendApi } from "@/lib/api";
 import { CandlestickChart, Candle } from "@/components/trading/CandlestickChart";
 import { Button } from "@/components/ui/button";
+import {
+  getSavedTraderProfile,
+  calculateUpdatedRating,
+  GlickoTrader,
+  getRankFromRating,
+} from "@/lib/glicko2";
+import { nativeBridge } from "@/lib/native";
 
 export const Route = createFileRoute("/challenges")({
   head: () => ({
@@ -113,8 +126,58 @@ const LOCAL_PRESETS: Preset[] = [
   }
 ];
 
+export const DAILY_SETUPS = [
+  {
+    id: "DAILY_1",
+    title: "Morning Volatility Breakout",
+    presetId: "BUDGET_RALLY_2021",
+    timeWindow: "09:15 - 10:30 IST",
+    regime: "Institutional Trend Day",
+    mission: "Trade the one-way breakout with a trailing stop. Minimum ₹10,000 target adherence.",
+    xpBonus: "+50 Elo Bonus",
+    benchmarkRating: 1550,
+  },
+  {
+    id: "DAILY_2",
+    title: "Unscheduled Rate Shock Defense",
+    presetId: "RBI_RATE_HIKE_2022",
+    timeWindow: "13:30 - 15:00 IST",
+    regime: "Flash Macro Disruption",
+    mission: "Survive the sudden 650 pt liquidity drop without exceeding 1.5% capital risk.",
+    xpBonus: "+60 Elo Bonus",
+    benchmarkRating: 1720,
+  },
+  {
+    id: "DAILY_3",
+    title: "Circuit Breaker Capitulation",
+    presetId: "COVID_CRASH_2020",
+    timeWindow: "10:00 - 14:00 IST",
+    regime: "Extreme Volatility (VIX > 80)",
+    mission: "Capture the sharp intraday recovery after the 10% lower circuit breaker freeze.",
+    xpBonus: "+75 Elo Bonus",
+    benchmarkRating: 1850,
+  },
+];
+
 function ChallengesAndGym() {
   const [activeTab, setActiveTab] = useState<"GYM" | "LEADERBOARD">("GYM");
+
+  // Mode: Practice (casual replay) vs Rated (Elo rating at stake + mandatory Rule 4.3 stop-loss)
+  const [gymMode, setGymMode] = useState<"PRACTICE" | "RATED">("RATED");
+  const [traderProfile, setTraderProfile] = useState<GlickoTrader>(getSavedTraderProfile);
+
+  // Stop-Loss & Target for in-replay execution
+  const [stopLossInput, setStopLossInput] = useState<string>("");
+  const [targetInput, setTargetInput] = useState<string>("");
+
+  // Rated Session Result Modal State
+  const [ratingUpdateModal, setRatingUpdateModal] = useState<{
+    oldRating: number;
+    newRating: number;
+    delta: number;
+    pnl: number;
+    rankTitle: string;
+  } | null>(null);
 
   // Selected Historical Preset
   const [selectedPresetId, setSelectedPresetId] = useState<string>("COVID_CRASH_2020");
@@ -133,6 +196,8 @@ function ChallengesAndGym() {
     entryPrice: number;
     qty: number;
     entryBar: number;
+    stopLoss?: number | undefined;
+    target?: number | undefined;
   } | null>(null);
 
   const [sessionTrades, setSessionTrades] = useState<{
@@ -141,6 +206,7 @@ function ChallengesAndGym() {
     entry: number;
     exit: number;
     pnl: number;
+    reason?: string;
   }[]>([]);
 
   const activePreset = LOCAL_PRESETS.find((p) => p.id === selectedPresetId) || LOCAL_PRESETS[1]!;
@@ -151,6 +217,8 @@ function ChallengesAndGym() {
     setIsPlaying(false);
     setActivePosition(null);
     setSessionTrades([]);
+    setStopLossInput("");
+    setTargetInput("");
 
     try {
       const isRandomBlind = presetId === "BLIND_RANDOM" || blind;
@@ -206,10 +274,74 @@ function ChallengesAndGym() {
   const currentCandle = visibleCandles[visibleCandles.length - 1];
   const currentLtp = currentCandle ? currentCandle.close : activePreset.base_price;
 
+  // Check automatic SL and TP triggers on incoming candle
+  const checkTriggers = (candle: Candle, currentPos: typeof activePosition) => {
+    if (!currentPos) return;
+
+    if (currentPos.side === "LONG") {
+      // Check SL hit
+      if (currentPos.stopLoss && candle.low <= currentPos.stopLoss) {
+        const exitPrice = currentPos.stopLoss;
+        const pnl = (exitPrice - currentPos.entryPrice) * currentPos.qty;
+        setSessionTrades((prev) => [
+          ...prev,
+          { id: prev.length + 1, side: "LONG", entry: currentPos.entryPrice, exit: exitPrice, pnl, reason: "STOP_LOSS_HIT" }
+        ]);
+        setActivePosition(null);
+        toast.error(`STOP LOSS HIT: Long closed @ ₹${exitPrice.toFixed(1)} (${inr(pnl)})`);
+        nativeBridge.vibrateStopLoss();
+        return;
+      }
+      // Check Target hit
+      if (currentPos.target && candle.high >= currentPos.target) {
+        const exitPrice = currentPos.target;
+        const pnl = (exitPrice - currentPos.entryPrice) * currentPos.qty;
+        setSessionTrades((prev) => [
+          ...prev,
+          { id: prev.length + 1, side: "LONG", entry: currentPos.entryPrice, exit: exitPrice, pnl, reason: "TARGET_ACHIEVED" }
+        ]);
+        setActivePosition(null);
+        toast.success(`TARGET ACHIEVED: Long closed @ ₹${exitPrice.toFixed(1)} (+${inr(pnl)})`);
+        nativeBridge.vibrateFill();
+        return;
+      }
+    } else {
+      // SHORT side
+      if (currentPos.stopLoss && candle.high >= currentPos.stopLoss) {
+        const exitPrice = currentPos.stopLoss;
+        const pnl = (currentPos.entryPrice - exitPrice) * currentPos.qty;
+        setSessionTrades((prev) => [
+          ...prev,
+          { id: prev.length + 1, side: "SHORT", entry: currentPos.entryPrice, exit: exitPrice, pnl, reason: "STOP_LOSS_HIT" }
+        ]);
+        setActivePosition(null);
+        toast.error(`STOP LOSS HIT: Short closed @ ₹${exitPrice.toFixed(1)} (${inr(pnl)})`);
+        nativeBridge.vibrateStopLoss();
+        return;
+      }
+      if (currentPos.target && candle.low <= currentPos.target) {
+        const exitPrice = currentPos.target;
+        const pnl = (currentPos.entryPrice - exitPrice) * currentPos.qty;
+        setSessionTrades((prev) => [
+          ...prev,
+          { id: prev.length + 1, side: "SHORT", entry: currentPos.entryPrice, exit: exitPrice, pnl, reason: "TARGET_ACHIEVED" }
+        ]);
+        setActivePosition(null);
+        toast.success(`TARGET ACHIEVED: Short closed @ ₹${exitPrice.toFixed(1)} (+${inr(pnl)})`);
+        nativeBridge.vibrateFill();
+        return;
+      }
+    }
+  };
+
   // Step one bar forward
   const stepForward = () => {
     if (currentIndex < sessionCandles.length) {
-      setCurrentIndex((prev) => prev + 1);
+      const nextIdx = currentIndex + 1;
+      setCurrentIndex(nextIdx);
+      if (sessionCandles[nextIdx - 1]) {
+        checkTriggers(sessionCandles[nextIdx - 1]!, activePosition);
+      }
     } else {
       setIsPlaying(false);
       toast.info("Session complete: All 375 historical candles replayed.");
@@ -227,26 +359,63 @@ function ChallengesAndGym() {
           toast.info("Session complete: End of trading day reached.");
           return prev;
         }
-        return prev + 1;
+        const next = prev + 1;
+        if (sessionCandles[next]) {
+          checkTriggers(sessionCandles[next]!, activePosition);
+        }
+        return next;
       });
     }, intervalMs);
 
     return () => clearInterval(timer);
-  }, [isPlaying, playbackSpeed, sessionCandles.length]);
+  }, [isPlaying, playbackSpeed, sessionCandles, activePosition]);
 
-  // Replay Position Execution
+  // Replay Position Execution with Rule 4.3 Validation
   const openReplayPosition = (side: "LONG" | "SHORT") => {
     if (activePosition) {
       toast.error("You already have an active position. Close it before opening another.");
       return;
     }
+
+    const slVal = Number(stopLossInput);
+    const tpVal = Number(targetInput);
+
+    // Rule 4.3 Enforcement in Rated Mode
+    if (gymMode === "RATED") {
+      if (!slVal || slVal <= 0) {
+        toast.error("Rule 4.3 Mandatory Invariant: Rated mode strictly requires an active stop-loss.");
+        return;
+      }
+
+      if (side === "LONG" && slVal >= currentLtp) {
+        toast.error("Long Stop-Loss must be placed strictly below the current entry price.");
+        return;
+      }
+      if (side === "SHORT" && slVal <= currentLtp) {
+        toast.error("Short Stop-Loss must be placed strictly above the current entry price.");
+        return;
+      }
+
+      // Max 1.5% capital risk (₹15,000 on ₹10 Lakh equity)
+      const riskAmount = Math.abs(currentLtp - slVal) * 50;
+      if (riskAmount > 15000) {
+        toast.error(
+          `Rule 4.3 Risk Limit Exceeded: Calculated risk of ₹${riskAmount.toLocaleString("en-IN")} exceeds maximum allowable limit of ₹15,000 (1.5% equity). Tighten your stop-loss.`
+        );
+        return;
+      }
+    }
+
     setActivePosition({
       side,
       entryPrice: currentLtp,
       qty: 50,
       entryBar: currentIndex,
+      stopLoss: slVal > 0 ? slVal : undefined,
+      target: tpVal > 0 ? tpVal : undefined,
     });
-    toast.success(`Opened ${side} 50 units @ ₹${currentLtp.toFixed(1)} (Bar #${currentIndex})`);
+    toast.success(`Opened ${side} 50 units @ ₹${currentLtp.toFixed(1)}${slVal > 0 ? ` (SL: ₹${slVal})` : ""}`);
+    nativeBridge.vibrateFill();
   };
 
   const closeReplayPosition = () => {
@@ -263,10 +432,51 @@ function ChallengesAndGym() {
         entry: activePosition.entryPrice,
         exit: currentLtp,
         pnl,
+        reason: "MANUAL_EXIT",
       },
     ]);
     setActivePosition(null);
     toast.success(`Closed position: ${pnl >= 0 ? "+" : ""}${inr(pnl)}`);
+  };
+
+  // Conclude Rated Session & Calculate Glicko-2 Rating Update
+  const concludeRatedSession = () => {
+    if (sessionTrades.length === 0 && !activePosition) {
+      toast.error("Execute at least one trade to complete a rated session.");
+      return;
+    }
+
+    if (activePosition) {
+      closeReplayPosition();
+    }
+
+    const netPnl = sessionTrades.reduce((sum, t) => sum + t.pnl, 0);
+    const winRateFrac = sessionTrades.length > 0 ? (sessionTrades.filter((t) => t.pnl > 0).length / sessionTrades.length) : 0;
+    const scenarioDifficulty = selectedPresetId === "COVID_CRASH_2020" ? 1800 : selectedPresetId === "ELECTION_DAY_2024" ? 1700 : 1500;
+
+    const { updated, ratingDelta } = calculateUpdatedRating(
+      traderProfile,
+      netPnl,
+      winRateFrac,
+      netPnl >= 0 ? 95 : 75,
+      scenarioDifficulty
+    );
+
+    setTraderProfile(updated);
+    setRatingUpdateModal({
+      oldRating: traderProfile.rating,
+      newRating: updated.rating,
+      delta: ratingDelta,
+      pnl: netPnl,
+      rankTitle: updated.rankTitle,
+    });
+
+    if (ratingDelta >= 0) {
+      toast.success(`Rated Session Complete! Rating Delta: +${ratingDelta} Elo`);
+      nativeBridge.vibrateFill();
+    } else {
+      toast.warning(`Rated Session Complete. Rating Delta: ${ratingDelta} Elo`);
+    }
   };
 
   // Unrealized P&L
@@ -294,24 +504,62 @@ function ChallengesAndGym() {
       />
 
       <div className="space-y-6 p-4 md:p-8">
-        {/* Navigation Tabs */}
-        <div className="flex rounded-xl border border-border/80 bg-card p-1.5 shadow-sm max-w-md">
-          <button
-            onClick={() => setActiveTab("GYM")}
-            className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition-all ${
-              activeTab === "GYM" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Activity className="h-4 w-4" /> Historical Scenarios & Gym
-          </button>
-          <button
-            onClick={() => setActiveTab("LEADERBOARD")}
-            className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition-all ${
-              activeTab === "LEADERBOARD" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Trophy className="h-4 w-4" /> Challenges & Leaderboard
-          </button>
+        {/* Top Control Bar: Mode Switcher & Glicko-2 Trader Profile Banner */}
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border/80 bg-card p-4 shadow-sm">
+          {/* Navigation Tabs */}
+          <div className="flex rounded-xl border border-border/60 bg-muted/50 p-1 text-xs">
+            <button
+              onClick={() => setActiveTab("GYM")}
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 font-bold transition-all ${
+                activeTab === "GYM" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Activity className="h-4 w-4" /> Replay Gym & Simulator
+            </button>
+            <button
+              onClick={() => setActiveTab("LEADERBOARD")}
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 font-bold transition-all ${
+                activeTab === "LEADERBOARD" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Trophy className="h-4 w-4" /> Daily Challenges & Leaderboard
+            </button>
+          </div>
+
+          {/* Glicko-2 Trader Profile Spotlight */}
+          <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
+            {/* Mode Toggle: Practice vs Rated */}
+            <div className="flex items-center rounded-lg border border-border bg-background p-1">
+              <button
+                onClick={() => setGymMode("PRACTICE")}
+                className={`rounded px-2.5 py-1 text-xs font-bold transition-all ${
+                  gymMode === "PRACTICE" ? "bg-secondary text-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Casual Practice
+              </button>
+              <button
+                onClick={() => setGymMode("RATED")}
+                className={`flex items-center gap-1 rounded px-2.5 py-1 text-xs font-bold transition-all ${
+                  gymMode === "RATED" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <RankIcon className="h-3 w-3" /> Rated Mode (Rule 4.3)
+              </button>
+            </div>
+
+            {/* Rank Badge & Elo Stats */}
+            <div className="flex items-center gap-2.5 border-l border-border/60 pl-3">
+              <span className={`rounded-md border px-2 py-0.5 text-xs font-sans font-bold ${getRankFromRating(traderProfile.rating).badgeColor}`}>
+                {traderProfile.rankTitle}
+              </span>
+              <div>
+                <span className="text-[10px] text-muted-foreground block font-sans">Skill Rating</span>
+                <span className="text-sm font-black text-foreground">{traderProfile.rating} Elo</span>
+                <span className="text-[10px] text-muted-foreground ml-1">(±{traderProfile.rd})</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {activeTab === "GYM" ? (
@@ -487,7 +735,14 @@ function ChallengesAndGym() {
             <div className="grid gap-6 md:grid-cols-3">
               {/* Trading Controls */}
               <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm space-y-4">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Replay Execution Ticket</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Replay Execution Ticket</h3>
+                  {gymMode === "RATED" && (
+                    <span className="rounded bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary flex items-center gap-1">
+                      <ShieldCheck className="h-3 w-3" /> Rule 4.3 Mandatory SL
+                    </span>
+                  )}
+                </div>
 
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Current Candle Close:</span>
@@ -499,8 +754,61 @@ function ChallengesAndGym() {
                   <span className="font-mono font-bold text-foreground">50 units</span>
                 </div>
 
+                {/* Stop Loss & Target Inputs */}
+                {!activePosition && (
+                  <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                    <div>
+                      <span className="text-[10px] text-muted-foreground block font-sans">
+                        Stop-Loss {gymMode === "RATED" ? "(Required)" : "(Optional)"}
+                      </span>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <span className="text-muted-foreground">₹</span>
+                        <input
+                          type="number"
+                          placeholder={currentLtp > 1000 ? `${Math.round(currentLtp * 0.99)}` : "980"}
+                          value={stopLossInput}
+                          onChange={(e) => setStopLossInput(e.target.value)}
+                          className="w-full rounded border border-border bg-background px-2 py-1 text-xs font-bold"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] text-muted-foreground block font-sans">Take-Profit Target</span>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <span className="text-muted-foreground">₹</span>
+                        <input
+                          type="number"
+                          placeholder={currentLtp > 1000 ? `${Math.round(currentLtp * 1.02)}` : "1020"}
+                          value={targetInput}
+                          onChange={(e) => setTargetInput(e.target.value)}
+                          className="w-full rounded border border-border bg-background px-2 py-1 text-xs font-bold"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Rule 4.3 Real-Time Capital Risk Calculation */}
+                {!activePosition && stopLossInput && Number(stopLossInput) > 0 && (
+                  <div className="rounded-lg bg-accent/40 p-2 text-[11px] font-mono">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-sans">Calculated Risk:</span>
+                      {(() => {
+                        const riskAmt = Math.abs(currentLtp - Number(stopLossInput)) * 50;
+                        const isUnderRule = riskAmt <= 15000;
+                        return (
+                          <span className={`font-bold ${isUnderRule ? "text-gain" : "text-loss"}`}>
+                            {inr(riskAmt)} ({((riskAmt / 1000000) * 100).toFixed(2)}%)
+                          </span>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                )}
+
                 {!activePosition ? (
-                  <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div className="grid grid-cols-2 gap-3 pt-1">
                     <Button
                       onClick={() => openReplayPosition("LONG")}
                       className="bg-gain hover:bg-gain/90 text-gain-foreground font-bold text-xs"
@@ -523,6 +831,11 @@ function ChallengesAndGym() {
                       </span>
                     </div>
 
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono">
+                      <span>SL: {activePosition.stopLoss ? `₹${activePosition.stopLoss}` : "None"}</span>
+                      <span>TP: {activePosition.target ? `₹${activePosition.target}` : "None"}</span>
+                    </div>
+
                     <Button
                       onClick={closeReplayPosition}
                       variant="destructive"
@@ -535,9 +848,12 @@ function ChallengesAndGym() {
                 )}
               </div>
 
-              {/* Performance Scorecard */}
+              {/* Performance Scorecard & Rated Session Finisher */}
               <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm space-y-4">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Session Performance</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Session Performance</h3>
+                  <span className="text-[10px] font-mono text-muted-foreground">{sessionTrades.length} trades</span>
+                </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-lg bg-accent/40 p-3">
@@ -555,9 +871,9 @@ function ChallengesAndGym() {
                   </div>
 
                   <div className="rounded-lg bg-accent/40 p-3">
-                    <span className="text-[10px] font-semibold text-muted-foreground uppercase">Total Trades</span>
-                    <p className="mt-1 font-mono text-base font-extrabold text-foreground">
-                      {sessionTrades.length}
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase">Discipline Rating</span>
+                    <p className="mt-1 font-mono text-base font-extrabold text-primary">
+                      {traderProfile.rating} Elo
                     </p>
                   </div>
 
@@ -568,21 +884,37 @@ function ChallengesAndGym() {
                     </p>
                   </div>
                 </div>
+
+                {/* Rated Session Finisher Button */}
+                {gymMode === "RATED" && (
+                  <Button
+                    onClick={concludeRatedSession}
+                    disabled={sessionTrades.length === 0 && !activePosition}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-1.5 shadow"
+                  >
+                    <Trophy className="h-3.5 w-3.5" /> Conclude Rated Session & Update Elo
+                  </Button>
+                )}
               </div>
 
               {/* Replay Trade Log */}
               <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm space-y-3">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Executed Replay Trades</h3>
 
-                <div className="space-y-2 max-h-[140px] overflow-y-auto pr-1">
+                <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
                   {sessionTrades.length === 0 ? (
-                    <p className="text-xs text-muted-foreground text-center py-6">
-                      No trades closed in this session yet. Execute orders as you advance the tape.
+                    <p className="text-xs text-muted-foreground text-center py-8">
+                      No trades closed in this session yet. Execute orders with stops as you advance the tape.
                     </p>
                   ) : (
                     sessionTrades.map((t) => (
                       <div key={t.id} className="flex items-center justify-between text-xs rounded border border-border/60 p-2">
-                        <span className="font-bold text-foreground">#{t.id} {t.side}</span>
+                        <div>
+                          <span className="font-bold text-foreground">#{t.id} {t.side}</span>
+                          {t.reason && (
+                            <span className="text-[9px] text-muted-foreground block font-mono">[{t.reason.replace(/_/g, " ")}]</span>
+                          )}
+                        </div>
                         <span className="text-muted-foreground font-mono">₹{t.entry.toFixed(1)} → ₹{t.exit.toFixed(1)}</span>
                         <span className={`font-mono font-bold ${t.pnl >= 0 ? "text-gain" : "text-loss"}`}>
                           {t.pnl >= 0 ? "+" : ""}{inr(t.pnl)}
@@ -593,27 +925,159 @@ function ChallengesAndGym() {
                 </div>
               </div>
             </div>
+
+            {/* Rating Update Celebration Modal */}
+            {ratingUpdateModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+                <div className="w-full max-w-md rounded-2xl border border-primary/40 bg-card p-6 shadow-2xl space-y-4">
+                  <div className="flex items-center justify-between border-b pb-3">
+                    <div className="flex items-center gap-2">
+                      <Trophy className="h-5 w-5 text-amber-400" />
+                      <h3 className="text-base font-bold text-foreground">Rated Session Finalized</h3>
+                    </div>
+                    <button
+                      onClick={() => setRatingUpdateModal(null)}
+                      className="rounded-lg p-1 text-muted-foreground hover:bg-accent"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="text-center space-y-2 py-2">
+                    <span className={`inline-block rounded-full border px-3 py-1 text-xs font-bold ${getRankFromRating(ratingUpdateModal.newRating).badgeColor}`}>
+                      {ratingUpdateModal.rankTitle}
+                    </span>
+                    <div className="flex items-baseline justify-center gap-3">
+                      <span className="text-xl font-mono text-muted-foreground line-through">
+                        {ratingUpdateModal.oldRating}
+                      </span>
+                      <ArrowRight className="h-4 w-4 text-primary" />
+                      <span className="text-3xl font-mono font-black text-foreground">
+                        {ratingUpdateModal.newRating} Elo
+                      </span>
+                    </div>
+                    <p className={`text-sm font-bold font-mono ${ratingUpdateModal.delta >= 0 ? "text-gain" : "text-loss"}`}>
+                      {ratingUpdateModal.delta >= 0 ? `+${ratingUpdateModal.delta}` : ratingUpdateModal.delta} Rating Delta
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-border/60 bg-accent/20 p-3 text-xs space-y-1 font-mono">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Session Realized P&L:</span>
+                      <span className={`font-bold ${ratingUpdateModal.pnl >= 0 ? "text-gain" : "text-loss"}`}>
+                        {ratingUpdateModal.pnl >= 0 ? "+" : ""}{inr(ratingUpdateModal.pnl)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Rule 4.3 Risk Rating:</span>
+                      <span className="text-emerald-400 font-bold">100% Compliant</span>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => setRatingUpdateModal(null)}
+                    className="w-full bg-primary hover:bg-primary/90 font-bold text-xs"
+                  >
+                    Continue Deliberate Practice
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
-          /* Leaderboard Tab */
+          /* Leaderboard & Daily Challenge Rotation Tab */
           <div className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-3">
-              {challenges.map((c, idx) => (
-                <div key={c.id || `c-${idx}`} className="relative rounded-2xl border bg-card p-5 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="num text-xs font-semibold text-primary">XP +{c.xp || 250}</span>
-                    <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-muted-foreground">{c.reward}</span>
-                  </div>
-                  <h3 className="mt-2 text-base font-bold">{c.title}</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">{c.description || c.desc || ""}</p>
-                  <div className="mt-4 flex items-center justify-between border-t pt-3 text-xs text-muted-foreground">
-                    <span>{Number(c.participants || 1000).toLocaleString()} traders active</span>
-                    <span className="text-primary font-medium">{c.daysLeft || 7}d left</span>
-                  </div>
+            {/* 1. Daily 3-Setup Challenge Rotation (Refreshed at 00:00 IST) */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-amber-400" />
+                  <h2 className="text-sm font-bold tracking-tight text-foreground">
+                    Today's Curated Historical Setups (Refreshes at 00:00 IST)
+                  </h2>
                 </div>
-              ))}
+                <span className="rounded bg-amber-500/10 px-2 py-0.5 text-[10px] font-mono font-bold text-amber-400">
+                  3 Active Today
+                </span>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                {DAILY_SETUPS.map((d) => (
+                  <div
+                    key={d.id}
+                    className="relative rounded-2xl border border-border/80 bg-card p-5 shadow-sm hover:border-primary/50 transition-all space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-mono font-bold text-primary">
+                        {d.timeWindow}
+                      </span>
+                      <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-emerald-400 font-mono">
+                        {d.xpBonus}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h3 className="text-base font-bold text-foreground">{d.title}</h3>
+                      <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                        {d.mission}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between border-t border-border/40 pt-3 text-xs">
+                      <span className="text-[10px] text-muted-foreground font-mono">
+                        Benchmark: {d.benchmarkRating} Elo
+                      </span>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setSelectedPresetId(d.presetId);
+                          setGymMode("RATED");
+                          setActiveTab("GYM");
+                          toast.info(`Loaded Daily Challenge: ${d.title} in Rated Mode.`);
+                        }}
+                        className="h-7 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90"
+                      >
+                        Play Challenge
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
+            {/* 2. Personal Glicko Rank Spotlight */}
+            <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="grid size-12 place-items-center rounded-2xl bg-primary/20 text-primary font-black">
+                  #{14}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-foreground text-sm">Your Institutional Standing</span>
+                    <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${getRankFromRating(traderProfile.rating).badgeColor}`}>
+                      {traderProfile.rankTitle}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-mono">
+                    Rating: <strong className="text-foreground">{traderProfile.rating} Elo</strong> (RD: ±{traderProfile.rd}) · Total Rated Sessions: {traderProfile.totalSessions}
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setGymMode("RATED");
+                  setActiveTab("GYM");
+                }}
+                className="text-xs font-bold"
+              >
+                Launch Next Rated Session
+              </Button>
+            </div>
+
+            {/* 3. National Trader Leaderboard */}
             <div className="rounded-2xl border bg-card p-5 shadow-sm">
               <h2 className="text-base font-bold">National Trader Leaderboard</h2>
               <p className="text-xs text-muted-foreground">Ranked by risk-adjusted return and Rule 4.3 discipline score.</p>

@@ -551,7 +551,7 @@ export function OptionsStrategyBuilder({
               />
               <Tooltip
                 content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
+                  if (active && payload && payload.length && payload[0]?.payload) {
                     const data = payload[0].payload;
                     return (
                       <div className="rounded-lg border border-border bg-card p-2 text-xs shadow-lg">
