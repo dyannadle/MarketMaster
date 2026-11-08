@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AlertTriangle, Award, CheckCircle2, ShieldAlert, Sparkles, X, HeartPulse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { inr } from "@/lib/data";
+import { nativeBridge } from "@/lib/native";
 
 export interface PostMortemData {
   symbol: string;
@@ -27,6 +28,15 @@ interface PostMortemModalProps {
 export function PostMortemModal({ isOpen, onClose, data }: PostMortemModalProps) {
   const [journalNote, setJournalNote] = useState("");
   const [coolDownTimer, setCoolDownTimer] = useState(180); // 3-minute cool-down
+
+  useEffect(() => {
+    if (!isOpen || !data) return;
+    if (data.isCoolDownTriggered) {
+      nativeBridge.vibrateBreathingPulse();
+    } else if (data.realizedPnl < 0) {
+      nativeBridge.vibrateStopLoss();
+    }
+  }, [isOpen, data]);
 
   if (!isOpen || !data) return null;
 

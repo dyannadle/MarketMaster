@@ -333,3 +333,27 @@
 * **Why Taken**: Fulfills the user's directive to provide historical market event presets for deliberate gym practice, live real Yahoo Finance prices, and an automated 10-minute refreshed financial news feed on the platform.
 * **Impact**: Delivers institutional crisis simulations, live pricing realism, and real-time news telemetry directly into the trader's workflow.
 
+---
+
+### Record: ADR-026 — Android Offline Asset Bundling, Hardware Haptics & Full-Stack Docker Orchestration
+* **Date & Timestamp**: 2026-11-08 02:20:00 UTC (Local: 2026-11-08 07:50:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**: 
+  1. Engineered Android Native Offline Resilience in `MainActivity.kt`:
+     - Updated default emulator host endpoint to `http://10.0.2.2:3000` matching TanStack Start Nitro server.
+     - Implemented graceful offline fallback: automatically intercepts network errors to load bundled assets (`file:///android_asset/www/index.html`).
+  2. Integrated Native Hardware Haptics Bridge (`MarketMasterNative` & `frontend/src/lib/native.ts`):
+     - Added Android `Vibrator` / `VibratorManager` methods: `vibrateFill()` (40ms fill confirmation), `vibrateStopLoss()` (heavy double pulse warning on stop loss hit), and `vibrateBreathingPulse()` (gentle rhythmic pulse during 3-minute cool-down breathing mode).
+     - Added `<uses-permission android:name="android.permission.VIBRATE" />` to `AndroidManifest.xml`.
+     - Wired haptic triggers directly into `trade.tsx` order execution and `PostMortemModal.tsx`.
+  3. Created Automated Android Asset Sync Pipeline (`scripts/sync_android_assets.py` & `pnpm build:android`):
+     - Automates production build and copies static assets directly into `android/app/src/main/assets/www`.
+  4. Configured Gradle Wrapper (`gradlew.bat`, `gradlew`, `gradle/wrapper/gradle-wrapper.properties` with Gradle 8.7 & AGP 8.3.2).
+  5. Implemented Full-Stack Production Containerization (Milestone 6):
+     - Created multi-stage `backend/Dockerfile` (Python 3.12-slim) and `frontend/Dockerfile` (Node 22-alpine).
+     - Updated `docker/docker-compose.yml` orchestrating PostgreSQL 16, Redis 7, FastAPI backend (port 8000), and Nitro web client (port 3000) with health checks.
+  6. Verified 100% test pass rate across Vitest (5/5) and pytest (8/8).
+* **Why Taken**: Completes mobile native readiness, offline practice independence, hardware sensory feedback, and zero-cost cloud containerization.
+* **Impact**: Zero-compromise institutional trading experience on both web and Android mobile APK, with single-command Docker deployment.
+
+

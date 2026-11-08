@@ -420,3 +420,33 @@
   * Platform features a live breaking financial news wire auto-refreshed every 10 minutes with sentiment classification (Bullish, Bearish, Neutral).
   * 100% test pass rate across Vitest (5/5) and pytest (8/8) with clean Nitro production build.
 
+---
+
+### [v1.0.24-ANDROID-OFFLINE-HAPTICS-DOCKER-ORCHESTRATION] — 2026-11-08 02:22:00 UTC (Local: 2026-11-08 07:52:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Mobile Offline Resilience, Hardware Haptics & Full-Stack Docker Deployment (`Android`, `Haptics`, `OfflinePWA`, `Docker`, `Milestone5`, `Milestone6`)
+* **Files Created & Modified**:
+  * `android/app/src/main/java/in/marketmaster/app/MainActivity.kt` (Updated default URL to port 3000, added offline asset fallback, and built `MarketMasterNative` haptic methods)
+  * `android/app/src/main/AndroidManifest.xml` (Added `android.permission.VIBRATE`)
+  * `android/build.gradle` (Updated AGP to 8.3.2)
+  * `android/gradle/wrapper/gradle-wrapper.properties` (Configured Gradle 8.7 distribution)
+  * `android/gradlew.bat` & `android/gradlew` (Added Gradle wrapper launch scripts)
+  * `scripts/sync_android_assets.py` (Automated asset sync script copying Nitro web build to `android/app/src/main/assets/www`)
+  * `frontend/package.json` (Added `build:android` script)
+  * `frontend/src/lib/native.ts` (Safely wraps `MarketMasterNative` and navigator vibration)
+  * `frontend/src/routes/trade.tsx` (Triggering `nativeBridge.vibrateFill()` on order fills)
+  * `frontend/src/components/trading/PostMortemModal.tsx` (Triggering `vibrateStopLoss()` and `vibrateBreathingPulse()`)
+  * `backend/Dockerfile` (Multi-stage Python 3.12-slim production container with healthcheck probe)
+  * `frontend/Dockerfile` (Multi-stage Node 22-alpine production container with Nitro runner)
+  * `docker/docker-compose.yml` (Orchestrates PostgreSQL 16, Redis 7, FastAPI backend, and Nitro web client)
+  * `docs/decision.md` (Recorded ADR-026)
+  * `docs/changes.md` (Logged v1.0.24 release entry)
+* **Detailed Description**:
+  * Completed Milestones 5 & 6:
+  * Packaged Android WebView with automatic offline fallback to local bundle assets (`file:///android_asset/www/index.html`).
+  * Engineered hardware haptics for trade fills, stop-loss triggers, and cool-down breathing modes.
+  * Generated Gradle 8.7 / AGP 8.3 wrapper scripts for one-command APK building (`./gradlew assembleDebug`).
+  * Delivered production Docker Compose stack for instant local and cloud deployment.
+  * 100% test pass rate across Vitest (5/5) and pytest (8/8).
+
+

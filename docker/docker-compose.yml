@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # 1. PostgreSQL 16: Immutable Double-Entry Cash & Position Ledger
   postgres:
     image: postgres:16-alpine
     container_name: marketmaster-postgres
@@ -19,6 +20,7 @@ services:
       timeout: 5s
       retries: 5
 
+  # 2. Redis 7: Low-Latency L2 Depth & Quote Caching
   redis:
     image: redis:7-alpine
     container_name: marketmaster-redis
@@ -33,7 +35,51 @@ services:
       timeout: 5s
       retries: 5
 
+  # 3. FastAPI Python 0.115+ Quant Derivatives & Matching Core
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: marketmaster-backend
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://marketmaster:marketmaster_password@postgres:5432/marketmaster_db
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: marketmaster-enterprise-secret-key-min-32-chars-2026-v2
+      PYTHONPATH: /app
+      INITIAL_VIRTUAL_CAPITAL: "1000000.0"
+      MAX_RISK_PER_TRADE_PERCENT: "0.015"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # 4. TanStack Start / Nitro SSR Web Production Client
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: marketmaster-frontend
+    restart: always
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      NITRO_HOST: 0.0.0.0
+      NITRO_PORT: "3000"
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+
 volumes:
   postgres_data:
   redis_data:
-

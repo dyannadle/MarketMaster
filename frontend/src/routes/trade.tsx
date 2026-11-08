@@ -11,6 +11,7 @@ import { CandlestickChart } from "@/components/trading/CandlestickChart";
 import { PostMortemModal, PostMortemData } from "@/components/trading/PostMortemModal";
 import { OptionsChainMatrix, SelectedOptionStrike } from "@/components/trading/OptionsChainMatrix";
 import { LiveNewsFeed } from "@/components/trading/LiveNewsFeed";
+import { nativeBridge } from "@/lib/native";
 
 export const Route = createFileRoute("/trade")({
   validateSearch: (s: Record<string, unknown>): { s?: string | undefined } => ({
@@ -168,6 +169,7 @@ function Trade() {
       toast.success(
         `${side} ${qty} ${sym} filled @ ₹${Number(fill).toFixed(2)} (Slippage: ₹${Number(slip).toFixed(2)})`
       );
+      nativeBridge.vibrateFill();
       await refreshPositions();
     } catch {
       // Offline fallback: Use local paper engine
@@ -179,6 +181,7 @@ function Trade() {
         toast.success(
           `${side} ${qty} ${sym} @ ₹${estimatedFillPrice.toFixed(2)} executed (Simulated matching engine)`
         );
+        nativeBridge.vibrateFill();
       }
     } finally {
       setIsSubmitting(false);
