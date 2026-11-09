@@ -12,3 +12,6 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Canonical XML Sitemap
+Sitemap: https://marketmaster.vercel.app/sitemap.xml

@@ -14,6 +14,7 @@ class User(Base):
     # Financial State
     virtual_equity = Column(Float, default=settings.INITIAL_VIRTUAL_CAPITAL, nullable=False)
     reserved_margin = Column(Float, default=0.0, nullable=False)
+    role = Column(String(20), default="TRADER", nullable=False)  # "ADMIN" | "TRADER"
     
     # Gamification & Trader Discipline
     discipline_score = Column(Integer, default=settings.DEFAULT_DISCIPLINE_SCORE, nullable=False)

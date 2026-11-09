@@ -23,6 +23,7 @@ class UserResponse(BaseModel):
     streak_days: int
     xp_points: int
     current_level: int
+    role: str = "TRADER"
     created_at: datetime
 
     class Config:

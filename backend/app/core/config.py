@@ -27,11 +27,21 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     
-    # CORS
+    # CORS & Whitelisted Origins
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://10.0.2.2:3000",
         "https://marketmaster.vercel.app"
+    ]
+
+    # Authorized Platform Administrators (Rule 4.1 RBAC Invariant)
+    ADMIN_EMAILS: List[str] = [
+        "dyanndlee05@gmail.com",
+        "dyannadle05@gmail.com",
+        "admin@marketmaster.in"
     ]
 
     class Config:

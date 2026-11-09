@@ -43,11 +43,13 @@ async def register(
         )
 
     user_id = str(uuid.uuid4())
+    user_role = "ADMIN" if user_in.email in settings.ADMIN_EMAILS else "TRADER"
     user = User(
         id=user_id,
         email=user_in.email,
         hashed_password=get_password_hash(user_in.password),
         display_name=user_in.display_name,
+        role=user_role,
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc)
     )
@@ -59,7 +61,7 @@ async def register(
     await db.commit()
     await db.refresh(user)
 
-    token = create_access_token(data={"sub": user.id, "email": user.email})
+    token = create_access_token(data={"sub": user.id, "email": user.email, "role": user.role})
     return TokenResponse(
         access_token=token,
         token_type="bearer",
@@ -83,7 +85,12 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"}
         )
 
-    token = create_access_token(data={"sub": user.id, "email": user.email})
+    if user.email in settings.ADMIN_EMAILS and user.role != "ADMIN":
+        user.role = "ADMIN"
+        await db.commit()
+        await db.refresh(user)
+
+    token = create_access_token(data={"sub": user.id, "email": user.email, "role": user.role})
     return TokenResponse(
         access_token=token,
         token_type="bearer",

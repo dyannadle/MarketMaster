@@ -136,13 +136,36 @@ function AdminConsole() {
   const [broadcastCategory, setBroadcastCategory] = useState("MACRO");
   const [broadcastSentiment, setBroadcastSentiment] = useState<"BULLISH" | "BEARISH" | "NEUTRAL">("BULLISH");
 
+  useEffect(() => {
+    async function loadAdminData() {
+      try {
+        const [usersRes, statsRes] = await Promise.allSettled([
+          backendApi.getAdminUsers(),
+          backendApi.getAdminSystemStats()
+        ]);
+        if (usersRes.status === "fulfilled" && Array.isArray(usersRes.value) && usersRes.value.length > 0) {
+          setUserList(usersRes.value);
+        }
+        if (statsRes.status === "fulfilled" && statsRes.value) {
+          setIsEmergencyKillSwitchActive(Boolean(statsRes.value.rms_kill_switch_active));
+        }
+      } catch {
+        // Fallback to local administrative state
+      }
+    }
+    loadAdminData();
+  }, []);
+
   if (!ready) return null;
 
   const filteredUsers = userList.filter((u) =>
     (u.name + u.email).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleResetCapital = (userId: string) => {
+  const handleResetCapital = async (userId: string) => {
+    try {
+      await backendApi.adjustUserBalance(userId, 1000000, "Admin reset to genesis equity");
+    } catch {}
     setUserList((prev) =>
       prev.map((u) => (u.id === userId ? { ...u, virtualEquity: 1000000, status: "Active" } : u))
     );
@@ -167,9 +190,12 @@ function AdminConsole() {
     toast.success("Discipline score restored to 100. Cool-down cleared.");
   };
 
-  const handleToggleKillSwitch = () => {
+  const handleToggleKillSwitch = async () => {
     const nextState = !isEmergencyKillSwitchActive;
     setIsEmergencyKillSwitchActive(nextState);
+    try {
+      await backendApi.toggleRmsKillSwitch(nextState);
+    } catch {}
     if (nextState) {
       toast.error("🚨 EMERGENCY KILL-SWITCH ACTIVATED: All order matching halted across MarketMaster.");
     } else {

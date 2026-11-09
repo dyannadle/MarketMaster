@@ -173,6 +173,28 @@ export const backendApi = {
   async getLiveNewsFeed(forceRefresh = false) {
     return request<any>(`/news/feed?force_refresh=${forceRefresh}`);
   },
+
+  // RMS Admin Console (Section 14 & Rule 4.1 RBAC)
+  async getAdminUsers() {
+    return request<any[]>("/admin/users");
+  },
+
+  async getAdminSystemStats() {
+    return request<any>("/admin/system-stats");
+  },
+
+  async adjustUserBalance(userId: string, newEquity: number, reason: string) {
+    return request<any>(`/admin/users/${userId}/adjust-balance`, {
+      method: "POST",
+      body: JSON.stringify({ new_equity: newEquity, reason }),
+    });
+  },
+
+  async toggleRmsKillSwitch(active: boolean) {
+    return request<any>(`/admin/rms-kill-switch?active=${active}`, {
+      method: "POST",
+    });
+  },
 };
 
 

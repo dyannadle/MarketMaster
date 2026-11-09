@@ -5,6 +5,7 @@ from app.api.v1.quant import router as quant_router
 from app.api.v1.replay import router as replay_router
 from app.api.v1.market import router as market_router
 from app.api.v1.news import router as news_router
+from app.api.v1.admin import router as admin_router
 
 api_router = APIRouter()
 
@@ -14,5 +15,7 @@ api_router.include_router(quant_router, prefix="/quant", tags=["Quantitative Mod
 api_router.include_router(replay_router, prefix="/replay", tags=["Market Replay & Gym Engine"])
 api_router.include_router(market_router, prefix="/market", tags=["Live Yahoo Finance Market Data"])
 api_router.include_router(news_router, prefix="/news", tags=["Live Financial News Feed (10-min Refresh)"])
+api_router.include_router(admin_router, prefix="/admin", tags=["RMS Admin Console & Oversight"])
+
 
 

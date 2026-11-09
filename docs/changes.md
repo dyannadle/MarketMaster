@@ -512,3 +512,33 @@
   * Passed 100% of Vitest tests (15/15 tests passing across 6 test suites) and full TypeScript check.
 
 ---
+
+### [v1.0.30-PRODUCTION-READINESS-SECURITY-RBAC-CORS-SEO] — 2026-11-09 17:00:00 UTC (Local: 2026-11-09 22:30:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Production Readiness Hardening, Server-Side RBAC, CORS Lockdown, Rate Limiting & SEO Infrastructure (`Security`, `RBAC`, `CORS`, `RateLimiting`, `SEO`, `Sitemap`, `Admin`, `Audit`)
+* **Files Created & Modified**:
+  * `task-tracker.md` (Created root-level master task tracker covering all 18 dimensions and 75+ checklist items)
+  * `bug-tracker.md` (Created root-level bug tracker documenting BUG-001 through BUG-007 with root causes and verification)
+  * `release-notes.md` (Created root-level release notes documenting v1.0.0 through v1.0.30)
+  * `decision.md` (Created root-level ADR log and recorded ADR-032)
+  * `changes.md` (Created root-level changelog and recorded v1.0.30)
+  * `backend/app/models/user.py` (Added `role` column to `User` model: `ADMIN` vs `TRADER`)
+  * `backend/app/schemas/user.py` (Added `role` attribute to `UserResponse`)
+  * `backend/app/core/config.py` (Configured `ADMIN_EMAILS` whitelist and updated `CORS_ORIGINS`)
+  * `backend/app/api/v1/auth.py` (Assigned default `ADMIN` role to configured admin emails during registration and login)
+  * `backend/app/api/v1/deps.py` (Implemented `require_admin` dependency enforcing server-side HTTP 403 authorization)
+  * `backend/app/api/v1/admin.py` (New administrative router for user management, balance adjustment, platform telemetry, and RMS kill-switch)
+  * `backend/app/api/v1/api.py` (Mounted admin router at `/api/v1/admin`)
+  * `backend/app/main.py` (Restricted CORS to explicit whitelist; added SecurityAndObservabilityMiddleware enforcing CSP, X-Frame-Options, X-Content-Type-Options, nosniff, and sliding-window rate limiting)
+  * `backend/app/core/database.py` (Configured production connection pooling: `pool_pre_ping=True`, `pool_size=10`, `max_overflow=20`)
+  * `frontend/public/sitemap.xml` (Generated XML sitemap mapping all public indexable routes)
+  * `frontend/public/robots.txt` (Updated robots directive with canonical sitemap URL)
+  * `frontend/src/lib/api.ts` (Added admin client methods: `getAdminUsers`, `getAdminSystemStats`, `adjustUserBalance`, `toggleRmsKillSwitch`)
+  * `frontend/src/routes/admin.tsx` (Connected real-time admin telemetry, balance adjustments, and kill-switch to backend API)
+  * `android/app/src/main/assets/www/` (Synced 68 production assets)
+* **Detailed Description**:
+  * Performed deep technical audit across Website Quality, UI/UX, Security, Database, Backend, Caching, SEO, Legal/Privacy, and Deployment.
+  * Hardened backend security: locked down CORS, added sliding-window rate limiting, and enforced server-side RBAC on all admin endpoints.
+  * Verified 100% test pass rate across Vitest suite (15/15 tests passing) and zero TypeScript compilation errors.
+
+---
