@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:all": "python ../scripts/run_all_tests.py"
   },
   "overrides": {
     "rolldown": "1.2.1"

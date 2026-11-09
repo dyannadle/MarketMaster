@@ -29,10 +29,13 @@ def create_access_token(
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
     to_encode: Dict[str, Any] = {}
+    if isinstance(subject, dict):
+        to_encode.update(subject)
+    elif subject is not None:
+        to_encode["sub"] = str(subject)
+
     if data:
         to_encode.update(data)
-    if subject:
-        to_encode["sub"] = str(subject)
     to_encode["exp"] = expire
     to_encode["iat"] = datetime.now(timezone.utc)
 

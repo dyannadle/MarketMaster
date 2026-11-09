@@ -150,9 +150,9 @@
 
 | ID | Requirement | Priority | Status | Verification & Evidence |
 | :--- | :--- | :---: | :---: | :--- |
-| T-9.1.1 | Frontend Unit & Component Tests | P1 | COMPLETED AND VERIFIED | 15 passing tests across paper engine, routing, strategy builder, Glicko-2, and execution algorithms. |
-| T-9.1.2 | Backend API Tests (pytest) | P1 | COMPLETED AND VERIFIED | Automated test suite in `backend/tests/test_api_endpoints.py` covering health, auth, orders, ledger, and replay. |
-| T-9.1.3 | Automated CI/CD Pipeline | P1 | COMPLETED AND VERIFIED | GitHub Actions (`.github/workflows/ci.yml`) triggers Vitest, Pytest, and Nitro build on every push. |
+| T-9.1.1 | Frontend Unit & Component Tests | P1 | COMPLETED AND VERIFIED | 37/37 passing Vitest tests across 13 suites covering paper trading, routing, strategy builder, Glicko-2, order flow, AdminConsole, visualizers, auth, portfolio statement exporter, news/markets, curriculum, and native bridge. |
+| T-9.1.2 | Backend API Tests (pytest) | P1 | COMPLETED AND VERIFIED | 13/13 passing automated test cases in `backend/tests/test_api_endpoints.py` covering health, auth age rule, admin RBAC, double-entry adjustment, kill-switch, order flow, DPDP erasure, replay session, presets catalog, quotes, news feed, Black-Scholes, and margin relief. |
+| T-9.1.3 | Automated CI/CD Pipeline & Master Runner | P1 | COMPLETED AND VERIFIED | GitHub Actions (`.github/workflows/ci.yml`) and unified script `scripts/run_all_tests.py` orchestrating full-spectrum pytest, vitest, tsc type check, and production build in 40 seconds. |
 
 ---
 

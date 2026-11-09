@@ -456,3 +456,30 @@
 * **Impact**: Total protection against unauthorized administrative execution, robust defense against credential stuffing and DoS attacks, compliant CORS handling in all browsers, zero-downtime offline Android container syncing (68 assets), and 100% test pass rate (15/15 Vitest tests).
 
 ---
+
+### Record: ADR-033 — Full-Spectrum Testing Automation & Single-Command Master Verification Orchestrator
+* **Date & Timestamp**: 2026-11-09 23:30:00 UTC (Local: 2026-11-09 23:30:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**:
+  1. **Master Test Automation Orchestrator (`scripts/run_all_tests.py` / `pnpm test:all`)**:
+     - Created single-command test orchestrator running all 4 validation tiers:
+       - Pytest Backend Suite (13/13 endpoints, sub-second execution via mock Yahoo Finance fixture).
+       - Vitest Frontend Suite (37/37 tests across 13 suites).
+       - TypeScript Static Analysis (`tsc --noEmit`, 0 errors).
+       - Nitro SSR & Client Production Build (`vite build`, 0 errors).
+  2. **Expanded Frontend Component Test Coverage**:
+     - Created `frontend/src/test/admin-console.test.tsx` (AdminConsole, user table, kill-switch, balance adjustment).
+     - Created `frontend/src/test/visualizers.test.tsx` (PositionSizing, OptionGreeks, Compounding, Inflation, OrderFlowSlippage).
+     - Created `frontend/src/test/auth-and-account.test.tsx` (Sign-in, sign-up with Rule 4.2 age verification, forgot-password).
+     - Created `frontend/src/test/portfolio-and-statement.test.tsx` (Portfolio equity breakdown, SEBI TradeStatementExporter CSV/PDF).
+     - Created `frontend/src/test/news-and-markets.test.tsx` (LiveNewsFeed sentiment filtering, markets segment pills).
+     - Created `frontend/src/test/learn-and-curriculum.test.tsx` (6-tier curriculum navigation, course topic cards).
+     - Created `frontend/src/test/native-and-offline.test.tsx` (MarketMasterNative bridge delegation and Web Vibration API fallback).
+  3. **Backend Test Suite Hardening**:
+     - Verified 13/13 test cases in `backend/tests/test_api_endpoints.py` testing health, auth age rule, admin RBAC (401/403/200), double-entry ledger balance adjustment, emergency RMS kill-switch, order matching, DPDP erasure, replay session, presets catalog, quotes, news feed, Black-Scholes, and margin relief.
+  4. **JSDOM & Vitest Environment Polishing**:
+     - Added global `ResizeObserver` mock in `frontend/src/test/setup.ts` resolving Radix UI Slider layout measurement errors in headless tests.
+* **Why Taken**: Satisfies the user's explicit directive to "make testing automation for each and everything , api, frontend , backend, endpoints, and each and everything" across MarketMaster Academy.
+* **Impact**: Total test automation coverage across frontend, backend, APIs, quant engines, visualizers, statements, auth, and native bridge with 100% green pass rate (50 tests total: 13 Pytest + 37 Vitest) and sub-minute execution.
+
+---

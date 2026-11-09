@@ -253,6 +253,7 @@ export function TradeStatementExporter({ isOpen, onClose }: TradeStatementExport
             </Button>
             <button
               onClick={onClose}
+              aria-label="Close Statement"
               className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <X className="size-4" />

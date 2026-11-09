@@ -23,10 +23,12 @@ function SignUp() {
   const nav = useNavigate();
   const [f, setF] = useState({ name: "", email: "", password: "" });
   const [agree, setAgree] = useState(false);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [busy, setBusy] = useState(false);
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!agree) { toast.error("Please accept the terms"); return; }
+    if (!agree) { toast.error("Please accept the Terms and Privacy Policy."); return; }
+    if (!ageConfirmed) { toast.error("Rule 4.2: Please confirm you are 18+ or have parental consent."); return; }
     setBusy(true);
     try { const u = await authApi.signUp(f.name, f.email, f.password); setUser(u); toast.success("Account created"); nav({ to: "/learn" }); }
     catch (err) { toast.error((err as Error).message); }
@@ -38,7 +40,8 @@ function SignUp() {
         <div className="space-y-2"><Label htmlFor="n">Full name</Label><Input id="n" required value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></div>
         <div className="space-y-2"><Label htmlFor="e">Email</Label><Input id="e" type="email" required value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></div>
         <div className="space-y-2"><Label htmlFor="p">Password</Label><Input id="p" type="password" required minLength={8} value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} /><p className="text-xs text-muted-foreground">At least 8 characters.</p></div>
-        <label className="flex items-start gap-2 text-sm text-muted-foreground"><Checkbox checked={agree} onCheckedChange={(v) => setAgree(v === true)} className="mt-0.5" />I agree to the <Link to="/terms" className="text-primary">Terms</Link> and <Link to="/privacy" className="text-primary">Privacy Policy</Link></label>
+        <label className="flex items-start gap-2 text-xs text-muted-foreground"><Checkbox checked={ageConfirmed} onCheckedChange={(v) => setAgeConfirmed(v === true)} className="mt-0.5" />Rule 4.2: I confirm I am 18 years of age or older (or have guardian consent)</label>
+        <label className="flex items-start gap-2 text-xs text-muted-foreground"><Checkbox checked={agree} onCheckedChange={(v) => setAgree(v === true)} className="mt-0.5" />I agree to the <Link to="/terms" className="text-primary">Terms</Link> and <Link to="/privacy" className="text-primary">Privacy Policy</Link></label>
         <Button className="w-full" disabled={busy}>{busy ? "Creating…" : "Create account"}</Button>
       </form>
     </AuthLayout>

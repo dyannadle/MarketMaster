@@ -92,3 +92,39 @@
 * **Root Cause**: Security headers middleware was absent from the FastAPI application stack.
 * **Resolution**: Added security headers middleware enforcing `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, and CSP directives.
 * **Verification**: Curl and browser response headers confirm presence of security headers on all endpoints. Status: `RESOLVED AND VERIFIED`.
+
+---
+
+### BUG-008: `NameError: name 'settings' is not defined` in `auth.py`
+* **Date Reported**: 2026-11-09 22:58 IST
+* **Severity**: `HIGH`
+* **Priority**: `P1`
+* **Affected Module**: `backend/app/api/v1/auth.py`
+* **Symptoms**: Registration and role assignment threw HTTP 500 / `NameError: name 'settings' is not defined`.
+* **Root Cause**: `settings.ADMIN_EMAILS` check was added without importing `settings` from `app.core.config`.
+* **Resolution**: Added `from app.core.config import settings` to `backend/app/api/v1/auth.py`.
+* **Verification**: All registration and admin auth tests pass 100%. Status: `RESOLVED AND VERIFIED`.
+
+---
+
+### BUG-009: Positional Dictionary Argument in `create_access_token`
+* **Date Reported**: 2026-11-09 23:03 IST
+* **Severity**: `MEDIUM`
+* **Priority**: `P2`
+* **Affected Module**: `backend/app/core/security.py`
+* **Symptoms**: Calling `create_access_token({"sub": ...})` converted the dictionary into a literal string in the `sub` claim.
+* **Root Cause**: First parameter was named `subject: Optional[Union[str, Any]] = None`, which serialized dicts into `"{'sub': ...}"`.
+* **Resolution**: Made `create_access_token` inspect whether `subject` is an instance of `dict` and merge it into `to_encode`.
+* **Verification**: `test_admin_rbac_and_privilege_enforcement` passes 100%. Status: `RESOLVED AND VERIFIED`.
+
+---
+
+### BUG-010: Radix UI Slider `ResizeObserver is not defined` in Vitest JSDOM
+* **Date Reported**: 2026-11-09 23:15 IST
+* **Severity**: `MEDIUM`
+* **Priority**: `P2`
+* **Affected Module**: `frontend/src/test/setup.ts`
+* **Symptoms**: Testing visualizer components with Radix Sliders failed with `ReferenceError: ResizeObserver is not defined`.
+* **Root Cause**: JSDOM does not provide a native `ResizeObserver` global implementation.
+* **Resolution**: Added mock implementation of `globalThis.ResizeObserver` in `frontend/src/test/setup.ts`.
+* **Verification**: All 7 visualizer test suites pass cleanly. Status: `RESOLVED AND VERIFIED`.

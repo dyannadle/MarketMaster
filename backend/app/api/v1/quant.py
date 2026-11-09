@@ -3,7 +3,9 @@ from app.schemas.quant import (
     BlackScholesRequest,
     BlackScholesResponse,
     BacktestRequest,
-    BacktestResponse
+    BacktestResponse,
+    MarginReliefRequest,
+    MarginReliefResponse
 )
 from app.services.quant_engine import QuantEngine
 
@@ -21,6 +23,19 @@ async def compute_black_scholes(request: BlackScholesRequest):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Quant valuation error: {str(e)}"
+        )
+
+@router.post("/margin", response_model=MarginReliefResponse)
+async def calculate_portfolio_margin(request: MarginReliefRequest):
+    """
+    Computes SEBI portfolio margin requirements and capital savings for multi-leg option strategies.
+    """
+    try:
+        return QuantEngine.calculate_margin(request)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Margin calculation error: {str(e)}"
         )
 
 @router.post("/backtest", response_model=BacktestResponse)

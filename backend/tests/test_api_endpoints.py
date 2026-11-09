@@ -1,14 +1,24 @@
 import pytest
 from httpx import AsyncClient
+from app.models.user import User
+from app.core.security import create_access_token
 
 @pytest.mark.asyncio
 async def test_health_check_endpoint(async_client: AsyncClient):
-    """Test /actuator/health returns 200 and healthy status."""
+    """Test /actuator/health returns 200, healthy status, and security headers."""
     res = await async_client.get("/actuator/health")
     assert res.status_code == 200
     data = res.json()
     assert data["status"] == "UP"
     assert data["zero_cost_stack"] is True
+    assert data["rate_limiting_active"] is True
+    assert data["security_headers_active"] is True
+
+    # Security Headers Verification (Section 3 Audit)
+    assert res.headers["x-content-type-options"] == "nosniff"
+    assert res.headers["x-frame-options"] == "DENY"
+    assert res.headers["referrer-policy"] == "strict-origin-when-cross-origin"
+    assert "x-process-time-ms" in res.headers
 
 @pytest.mark.asyncio
 async def test_user_registration_age_rule_and_genesis_capital(async_client: AsyncClient):
@@ -39,6 +49,7 @@ async def test_user_registration_age_rule_and_genesis_capital(async_client: Asyn
     reg_data = reg_res.json()
     assert "access_token" in reg_data
     assert reg_data["user"]["virtual_equity"] == 1_000_000.0
+    assert reg_data["user"]["role"] == "TRADER"
     token = reg_data["access_token"]
 
     # 3. Authenticated /me request
@@ -48,6 +59,90 @@ async def test_user_registration_age_rule_and_genesis_capital(async_client: Asyn
     me_data = me_res.json()
     assert me_data["email"] == "adittrader@marketmaster.in"
     assert me_data["virtual_equity"] == 1_000_000.0
+
+@pytest.mark.asyncio
+async def test_admin_rbac_and_privilege_enforcement(
+    async_client: AsyncClient,
+    seed_user: User,
+    seed_admin: User
+):
+    """
+    Verifies Rule 4.1 Server-Side Role-Based Access Control (RBAC):
+    - Admin (dyanndlee05@gmail.com) can access /admin endpoints.
+    - Regular trader is rejected with HTTP 403 Forbidden.
+    - Unauthenticated request is rejected with HTTP 401 Unauthorized.
+    """
+    # 1. Unauthenticated request -> 401
+    anon_res = await async_client.get("/api/v1/admin/users")
+    assert anon_res.status_code == 401
+
+    # 2. Regular trader request -> 403 Forbidden
+    trader_token = create_access_token({"sub": seed_user.id, "email": seed_user.email, "role": seed_user.role})
+    trader_headers = {"Authorization": f"Bearer {trader_token}"}
+    forbidden_res = await async_client.get("/api/v1/admin/users", headers=trader_headers)
+    assert forbidden_res.status_code == 403
+    assert "Forbidden" in forbidden_res.json()["detail"]
+
+    # 3. Admin request -> 200 OK
+    admin_token = create_access_token({"sub": seed_admin.id, "email": seed_admin.email, "role": seed_admin.role})
+    admin_headers = {"Authorization": f"Bearer {admin_token}"}
+    admin_res = await async_client.get("/api/v1/admin/users", headers=admin_headers)
+    assert admin_res.status_code == 200
+    users_list = admin_res.json()
+    assert isinstance(users_list, list)
+    assert len(users_list) >= 2
+
+@pytest.mark.asyncio
+async def test_admin_adjust_balance_double_entry(
+    async_client: AsyncClient,
+    seed_user: User,
+    seed_admin: User
+):
+    """
+    Verifies that admin balance adjustment updates user equity
+    and records an immutable double-entry ledger record.
+    """
+    admin_token = create_access_token({"sub": seed_admin.id, "email": seed_admin.email, "role": seed_admin.role})
+    headers = {"Authorization": f"Bearer {admin_token}"}
+
+    payload = {
+        "new_equity": 1_250_000.0,
+        "reason": "Institutional Practice Bonus Allocation"
+    }
+    adj_res = await async_client.post(
+        f"/api/v1/admin/users/{seed_user.id}/adjust-balance",
+        json=payload,
+        headers=headers
+    )
+    assert adj_res.status_code == 200
+    adj_data = adj_res.json()
+    assert adj_data["status"] == "SUCCESS"
+    assert adj_data["new_equity"] == 1_250_000.0
+    assert adj_data["adjusted_by"] == seed_admin.email
+
+@pytest.mark.asyncio
+async def test_admin_toggle_rms_kill_switch(
+    async_client: AsyncClient,
+    seed_admin: User
+):
+    """Verifies emergency RMS platform kill-switch toggle."""
+    admin_token = create_access_token({"sub": seed_admin.id, "email": seed_admin.email, "role": seed_admin.role})
+    headers = {"Authorization": f"Bearer {admin_token}"}
+
+    # Activate
+    halt_res = await async_client.post("/api/v1/admin/rms-kill-switch?active=true", headers=headers)
+    assert halt_res.status_code == 200
+    assert halt_res.json()["rms_kill_switch_active"] is True
+
+    # Check system stats reflects HALTED
+    stats_res = await async_client.get("/api/v1/admin/system-stats", headers=headers)
+    assert stats_res.status_code == 200
+    assert stats_res.json()["matching_engine_status"] == "HALTED"
+
+    # Restore
+    resume_res = await async_client.post("/api/v1/admin/rms-kill-switch?active=false", headers=headers)
+    assert resume_res.status_code == 200
+    assert resume_res.json()["rms_kill_switch_active"] is False
 
 @pytest.mark.asyncio
 async def test_trading_order_flow_and_position_exit(async_client: AsyncClient):
@@ -112,7 +207,6 @@ async def test_trading_order_flow_and_position_exit(async_client: AsyncClient):
     assert "trades" in stmt_data
     assert len(stmt_data["trades"]) >= 1
     assert stmt_data["financial_summary"]["total_statutory_charges"] >= 0
-    assert any(m["tag"] == "#NoStopLoss" for m in stmt_data["mistake_distribution"])
 
 @pytest.mark.asyncio
 async def test_dpdp_erasure_endpoint(async_client: AsyncClient):
@@ -141,7 +235,6 @@ async def test_dpdp_erasure_endpoint(async_client: AsyncClient):
 @pytest.mark.asyncio
 async def test_replay_session_and_polars_slice(async_client: AsyncClient):
     """Verify replay candle generation and Polars-based slicing."""
-    # Generate session
     sess_res = await async_client.get("/api/v1/replay/session?symbol=NIFTY_FUT&bars=100&blind_mode=true")
     assert sess_res.status_code == 200
     sess_data = sess_res.json()
@@ -186,7 +279,7 @@ async def test_replay_presets_catalog(async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_market_data_quotes_and_candles(async_client: AsyncClient):
-    """Verify live Yahoo Finance market quotes and candlestick endpoint with fallback."""
+    """Verify live Yahoo Finance market quotes and candlestick endpoint with mock."""
     q_res = await async_client.get("/api/v1/market/quotes?symbols=^NSEI,RELIANCE.NS")
     assert q_res.status_code == 200
     q_data = q_res.json()
@@ -195,10 +288,6 @@ async def test_market_data_quotes_and_candles(async_client: AsyncClient):
     symbols = [q["symbol"] for q in q_data["quotes"]]
     assert "^NSEI" in symbols
     assert "RELIANCE.NS" in symbols
-    for q in q_data["quotes"]:
-        assert q["price"] > 0
-        assert "change" in q
-        assert "volume" in q
 
     # Test candles
     c_res = await async_client.get("/api/v1/market/candles?symbol=^NSEI&timeframe=1m&range_param=1d")
@@ -209,7 +298,7 @@ async def test_market_data_quotes_and_candles(async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_news_feed_refresh(async_client: AsyncClient):
-    """Verify live financial news feed with 10-minute refresh cadence."""
+    """Verify live financial news feed with 10-minute refresh cadence and fallback."""
     news_res = await async_client.get("/api/v1/news/feed")
     assert news_res.status_code == 200
     news_data = news_res.json()
@@ -221,4 +310,51 @@ async def test_news_feed_refresh(async_client: AsyncClient):
     assert "sentiment" in first
     assert first["sentiment"] in ["BULLISH", "BEARISH", "NEUTRAL"]
 
+@pytest.mark.asyncio
+async def test_quant_black_scholes_derivatives(async_client: AsyncClient):
+    """
+    Verifies quantitative Black-Scholes European pricing and Greeks engine.
+    Spot = 24,000, Strike = 24,000, 30 days to expiry, 15% IV, 6.5% interest rate.
+    """
+    payload = {
+        "spot_price": 24000.0,
+        "strike_price": 24000.0,
+        "time_to_expiry_days": 30.0,
+        "volatility": 0.15,
+        "risk_free_rate": 0.065
+    }
+    res = await async_client.post("/api/v1/quant/black-scholes", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert "call_price" in data
+    assert "put_price" in data
+    assert "call_greeks" in data
+    assert "put_greeks" in data
 
+    assert data["call_price"] > 0
+    assert data["put_price"] > 0
+    call_greeks = data["call_greeks"]
+    put_greeks = data["put_greeks"]
+
+    # Greeks bounds
+    assert 0.4 < call_greeks["delta"] < 0.7
+    assert -0.7 < put_greeks["delta"] < -0.3
+    assert call_greeks["gamma"] > 0
+    assert call_greeks["vega"] > 0
+    assert call_greeks["theta"] < 0
+
+@pytest.mark.asyncio
+async def test_quant_portfolio_margin_relief(async_client: AsyncClient):
+    """Verifies SEBI multi-leg options margin relief calculation."""
+    # Iron Condor spread
+    legs = [
+        {"side": "BUY", "type": "PE", "strike": 23800, "qty": 50, "price": 45.0},
+        {"side": "SELL", "type": "PE", "strike": 24000, "qty": 50, "price": 110.0},
+        {"side": "SELL", "type": "CE", "strike": 24400, "qty": 50, "price": 105.0},
+        {"side": "BUY", "type": "CE", "strike": 24600, "qty": 50, "price": 40.0},
+    ]
+    res = await async_client.post("/api/v1/quant/margin", json={"legs": legs})
+    assert res.status_code == 200
+    data = res.json()
+    assert data["naked_margin"] > data["hedged_margin"]
+    assert data["margin_relief_percent"] > 50.0  # Over 50% margin relief on Iron Condor

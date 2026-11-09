@@ -44,3 +44,20 @@ class BacktestResponse(BaseModel):
     equity_curve: List[float]
     slippage_savings: float
 
+class OptionLeg(BaseModel):
+    side: str = Field(..., example="BUY")
+    type: str = Field(..., example="CE")
+    strike: float = Field(..., example=24500.0)
+    qty: int = Field(default=50, example=50)
+    price: float = Field(default=100.0, example=100.0)
+
+class MarginReliefRequest(BaseModel):
+    legs: List[OptionLeg]
+
+class MarginReliefResponse(BaseModel):
+    naked_margin: float
+    hedged_margin: float
+    capital_saved: float
+    margin_relief_percent: float
+
+

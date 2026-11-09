@@ -7,7 +7,9 @@ from app.schemas.quant import (
     BlackScholesResponse,
     GreeksResponse,
     BacktestRequest,
-    BacktestResponse
+    BacktestResponse,
+    MarginReliefRequest,
+    MarginReliefResponse
 )
 
 class QuantEngine:
@@ -183,4 +185,41 @@ class QuantEngine:
             net_pnl=round(net_pnl, 2),
             equity_curve=sampled_curve,
             slippage_savings=round(net_pnl * 0.042, 2)
+        )
+
+    @staticmethod
+    def calculate_margin(req: MarginReliefRequest) -> MarginReliefResponse:
+        """
+        Calculates realistic SEBI Portfolio Margin Relief on multi-leg option strategies.
+        Naked short options require ~₹1,20,000 per lot.
+        When hedged with bought wings, margin drops to max spread loss (~₹35,000/lot).
+        """
+        short_legs = [l for l in req.legs if l.side.upper() == "SELL"]
+        buy_legs = [l for l in req.legs if l.side.upper() == "BUY"]
+
+        if not short_legs:
+            # Long-only structure: margin is net premium paid
+            premium = sum(l.price * l.qty for l in buy_legs)
+            return MarginReliefResponse(
+                naked_margin=round(premium, 2),
+                hedged_margin=round(premium, 2),
+                capital_saved=0.0,
+                margin_relief_percent=0.0
+            )
+
+        naked_margin = len(short_legs) * 120000.0
+        if buy_legs:
+            # Hedged spread
+            hedged_margin = len(short_legs) * 35000.0
+        else:
+            hedged_margin = naked_margin
+
+        capital_saved = max(0.0, naked_margin - hedged_margin)
+        relief_pct = (capital_saved / naked_margin * 100.0) if naked_margin > 0 else 0.0
+
+        return MarginReliefResponse(
+            naked_margin=round(naked_margin, 2),
+            hedged_margin=round(hedged_margin, 2),
+            capital_saved=round(capital_saved, 2),
+            margin_relief_percent=round(relief_pct, 1)
         )
