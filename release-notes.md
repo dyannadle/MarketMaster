@@ -3,7 +3,28 @@
 
 ---
 
-### Release v1.0.31 (Current — Full-Spectrum Testing Automation & Master Verification Engine)
+### Release v1.0.32 (Current — Behavioral Trade Journal, Cool-Down Engine & Pyodide Quant Backtester)
+* **Release Date**: 2026-11-10 20:15 IST
+* **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
+* **Key Enhancements**:
+  * **Option 1: Behavioral Trade Journal & Cool-Down Engine (Trader Psychology)**:
+    * *Automated Post-Mortem Diagnostics Modal*: Pops up upon closing any position or replay session, prompting the trader to tag execution psychology (`#PlanAdhered`, `#RevengeTrade`, `#MovedStopLoss`, `#FOMOEntry`, `#CutWinnerEarly`) with reflection logging.
+    * *Behavioral Mistake Heatmap*: Interactive visual analytics tab on `/portfolio` quantifying exact rupee P&L loss attributable to emotional errors vs. disciplined strategy edge, showing win rates, mistake loss shares, and risk manager coaching advice.
+    * *Psychological Cool-Down Protocol*: Automated revenge trading detection ($\ge 2$ losing market orders placed within 45 seconds of a stop-out or loss) locking order execution for a mandatory 3-minute guided breathing and discipline reset with native haptic pulses.
+  * **Option 2: Client-Side Pyodide Quant Backtesting Sandbox in `/lab`**:
+    * *In-Browser Python Quant Sandbox*: WebAssembly-powered client-side Python execution (Pyodide Python 3.12) embedded in Strategy Lab with offline-first high-speed vector fallback.
+    * *Vectorized Strategy Engine & Templates*: 4 institutional templates (Dual EMA 9/21, Bollinger Bands 20/2σ, 15m Opening Range Breakout, Intraday VWAP Mean Reversion) evaluating 375 bars of realistic 1-minute Nifty 50 and Bank Nifty intraday candles.
+    * *Interactive Quant Telemetry & Terminal Stdout*: Real-time calculation of Cumulative Return %, Sharpe Ratio, Sortino Ratio, Maximum Drawdown %, Win/Loss Expectancy, and live Python `print()` stdout execution console.
+  * **Full-Spectrum Test Automation Verified**:
+    * Backend Pytest: 13/13 tests passing.
+    * Frontend Vitest: **49/49 tests passing across 15 suites** (added `behavioral-journal.test.tsx` and `pyodide-backtester.test.tsx`).
+    * TypeScript: Zero errors (`tsc --noEmit`).
+    * Production Build: 100% clean Nitro SSR bundle.
+    * Android Assets: 70 production assets compiled and synchronized.
+
+---
+
+### Release v1.0.31 (Full-Spectrum Testing Automation & Master Verification Engine)
 * **Release Date**: 2026-11-09 23:30 IST
 * **Status**: `STABLE / FULLY AUTOMATED & VERIFIED`
 * **Key Enhancements**:

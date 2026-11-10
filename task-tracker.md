@@ -211,4 +211,17 @@
 | :--- | :--- | :---: | :---: | :--- |
 | T-15.1.1 | ₹0 Free-Tier Cloud Deployment Configs | P1 | COMPLETED AND VERIFIED | `render.yaml` (FastAPI backend + Nitro frontend) and `vercel.json` edge rewrites configured. |
 | T-15.1.2 | Docker Orchestration | P2 | COMPLETED AND VERIFIED | `docker/docker-compose.yml` orchestrating FastAPI, Postgres 16, Redis 7, and Nitro frontend. |
-| T-15.1.3 | Android Offline Native Packaging | P1 | COMPLETED AND VERIFIED | 67 optimized assets synced to `android/app/src/main/assets/www/` with offline asset fallback. |
+| T-15.1.3 | Android Offline Native Packaging | P1 | COMPLETED AND VERIFIED | 70 optimized assets synced to `android/app/src/main/assets/www/` with offline asset fallback. |
+
+---
+
+## 16. Trader Psychology, Behavioral Journal & Client-Side Quant Backtesting Sandbox (PIP Part 2 & Part 3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-16.1.1 | Automated Post-Mortem Diagnostics Modal | P1 | COMPLETED AND VERIFIED | Instant prompt upon position square-off with multi-tag psychological classification (`#PlanAdhered`, `#RevengeTrade`, `#MovedStopLoss`, `#FOMOEntry`, `#CutWinnerEarly`). |
+| T-16.1.2 | Behavioral Mistake Heatmap & Psychology Tab | P1 | COMPLETED AND VERIFIED | Visual grid in `/portfolio` quantifying exact rupee P&L loss attributable to emotional errors vs disciplined strategy edge, with coach recommendations. |
+| T-16.1.3 | Psychological Cool-Down & Guided Breathing Protocol | P0 | COMPLETED AND VERIFIED | Automated revenge trading detection ($\ge 2$ losing market orders within 45s of a stop-out); locks order ticket for mandatory 3-minute guided breathing reset and haptic pulse. |
+| T-16.1.4 | In-Browser Pyodide Quant Backtesting Sandbox | P1 | COMPLETED AND VERIFIED | Client-side Python 3.12 WebAssembly execution (Pyodide) in `/lab` with offline-first high-speed vector fallback. |
+| T-16.1.5 | Vectorized Strategy Templates & Institutional Metrics | P1 | COMPLETED AND VERIFIED | Dual EMA, Bollinger Bands, 15m ORB, and VWAP templates; calculates Cumulative Return, Sharpe, Sortino, Max Drawdown, and Win/Loss Expectancy. |
+| T-16.1.6 | Monospace Terminal Stdout & Interactive Curves | P2 | COMPLETED AND VERIFIED | Embedded terminal console for Python `print()` logs, bar-by-bar Recharts equity curves, and underwater drawdown profiles. |

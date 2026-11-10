@@ -571,3 +571,30 @@
   * Packaged single-command execution in `scripts/run_all_tests.py` and `pnpm test:all` completing full-stack verification in ~40 seconds.
 
 ---
+
+### [v1.0.32-BEHAVIORAL-JOURNAL-COOL-DOWN-AND-PYODIDE-SANDBOX] — 2026-11-10 14:45:00 UTC (Local: 2026-11-10 20:15:00 +05:30)
+* **Author**: Antigravity Enterprise Architecture Team
+* **Change Category**: Trader Psychology, Behavioral Analytics, Cool-Down Protocol & Pyodide Quant Backtesting (`Psychology`, `Journal`, `CoolDown`, `Pyodide`, `Wasm`, `Quant`, `Backtester`, `Testing`)
+* **Files Created & Modified**:
+  * `frontend/src/lib/journal.ts` (Core trader psychology store, behavioral mistake calculation engine, and 45-second revenge trade detection)
+  * `frontend/src/components/trading/PostMortemModal.tsx` (Enhanced post-mortem modal with interactive multi-tag selection and Box Breathing reset animation)
+  * `frontend/src/components/trading/BehavioralMistakeHeatmap.tsx` (New visual psychology dashboard displaying disciplined edge vs emotional tax leakage, severity breakdown, and coach advice)
+  * `frontend/src/routes/portfolio.tsx` (Added Behavioral Mistake Heatmap & Psychology tab)
+  * `frontend/src/routes/trade.tsx` (Integrated revenge trade detector, mandatory 3-minute cool-down breathing mode lock, and persistent timer ticker)
+  * `frontend/src/lib/pyodide-runner.ts` (Client-side Pyodide WebAssembly runner, 375-bar intraday 1-min generator, and high-speed vector fallback simulator)
+  * `frontend/src/routes/lab.tsx` (Upgraded Python Pro Mode to full Pyodide Quant Backtesting Sandbox with templates, editor, stdout terminal, and institutional metrics)
+  * `frontend/src/test/behavioral-journal.test.tsx` (7 unit tests for journal trades, mistake calculation, revenge detection, and modal rendering)
+  * `frontend/src/test/pyodide-backtester.test.tsx` (5 unit tests for intraday candle generation, strategy templates, and vector quant backtesting)
+  * `scripts/run_all_tests.py` (Updated test description for 15 Vitest suites and 49 tests)
+  * `task-tracker.md` (Recorded Section 16 for Trader Psychology & Pyodide Quant Sandbox)
+  * `bug-tracker.md` (Logged BUG-011 for strict TS4111 index signature access)
+  * `release-notes.md` (Documented v1.0.32 release)
+  * `decision.md` (Recorded ADR-034)
+  * `android/app/src/main/assets/www/` (Compiled and synchronized 70 production assets)
+* **Detailed Description**:
+  * Implemented Option 1 (Behavioral Trade Journal & Cool-Down Engine) and Option 2 (Client-Side Pyodide Quant Backtesting Sandbox in `/lab`).
+  * Enforced mandatory Rule 4.3 invariant: if $\ge 2$ losing market trades occur within 45s of a stop-out, order entry is locked for 3 minutes for guided box breathing.
+  * Embedded client-side Python 3.12 WebAssembly quant backtesting against 1-minute historical intraday candles, reporting Sharpe, Sortino, Drawdown, and Win/Loss Expectancy.
+  * Full-spectrum test automation verified with 100% green pass rate: 13/13 Pytest tests + 49/49 Vitest tests across 15 suites + 0 TypeScript errors + production Nitro build.
+
+---

@@ -483,3 +483,39 @@
 * **Impact**: Total test automation coverage across frontend, backend, APIs, quant engines, visualizers, statements, auth, and native bridge with 100% green pass rate (50 tests total: 13 Pytest + 37 Vitest) and sub-minute execution.
 
 ---
+
+### Record: ADR-034 — Behavioral Trade Journal, Mandatory Cool-Down Reset Protocol & In-Browser Pyodide Quant Backtesting Sandbox
+* **Date & Timestamp**: 2026-11-10 20:15:00 UTC (Local: 2026-11-10 20:15:00 +05:30)
+* **Status**: Approved & Implemented
+* **Decision Taken**:
+  1. **Behavioral Trade Journal & Psychology Diagnostics (`frontend/src/lib/journal.ts`)**:
+     - Modeled execution psychology states: `#PlanAdhered`, `#RevengeTrade`, `#MovedStopLoss`, `#FOMOEntry`, `#CutWinnerEarly`.
+     - Created persistent journal store (`mm-trade-journal`) capturing trade timestamps, prices, realized P&L, risk parameters, tags, and trader reflections.
+     - Formulated `calculateBehavioralMistakes()` algorithm deriving:
+       - Disciplined Strategy Edge P&L vs Emotional Leakage Tax.
+       - Per-tag severity, win rate %, and proportion of overall trading losses.
+       - Institutional Risk Manager diagnosis and personalized recommendations.
+  2. **Automated Post-Mortem Diagnostics Modal (`PostMortemModal.tsx`)**:
+     - Integrated into trade lifecycle on position square-off.
+     - Multi-tag interactive selection with automated heuristics.
+     - Visual Box Breathing module (Inhale 4s -> Hold 4s -> Exhale 4s -> Rest 4s) triggered during cool-down.
+  3. **Psychological Cool-Down & Revenge Trading Protocol**:
+     - Implemented invariant: If $\ge 2$ losing market orders occur within 45 seconds of a stop-out or loss, order entry is locked for 180 seconds (3 minutes).
+     - Persistent cool-down lock across page reloads via `mm-cool-down-until`.
+     - Integrated with `nativeBridge.vibrateBreathingPulse()` for haptic calming feedback.
+  4. **Behavioral Mistake Heatmap View (`BehavioralMistakeHeatmap.tsx` in `/portfolio`)**:
+     - Added dedicated Psychology tab in `/portfolio` displaying the full behavioral leakage grid, heat severity colors, and trade post-mortem history.
+  5. **In-Browser Pyodide Quant Backtesting Sandbox (`frontend/src/lib/pyodide-runner.ts` & `/lab`)**:
+     - Integrated client-side Python 3.12 WebAssembly (Pyodide) runner with high-speed offline vector fallback.
+     - Created 4 institutional templates: Dual EMA (9/21), Bollinger Bands (20/2σ), 15m ORB, and Intraday VWAP.
+     - Generates 375 realistic 1-minute historical intraday candles (9:15 AM to 3:30 PM IST) for NIFTY 50 and BANK NIFTY.
+     - Computes quantitative metrics: Cumulative Return %, Sharpe Ratio, Sortino Ratio, Max Drawdown %, and Win/Loss Expectancy.
+     - Added Monaco-style editor, live Python stdout terminal console, and Recharts equity/drawdown curves.
+  6. **Automated Test Suites**:
+     - Added `frontend/src/test/behavioral-journal.test.tsx` (7 tests).
+     - Added `frontend/src/test/pyodide-backtester.test.tsx` (5 tests).
+     - Total Vitest tests expanded to 49/49 across 15 suites (62 tests total including backend Pytest).
+* **Why Taken**: Completes PIP Part 2 & Regulatory Risk Invariants (Trader Psychology & Emotional Tax tracking) and Milestone 4 / PIP Part 3 (In-browser Python Quant backtesting without expensive backend compute).
+* **Impact**: Empirically trains traders to identify and eliminate costly cognitive biases, prevents destructive revenge trading through hard invariant enforcement, and empowers quantitative strategy development at ₹0 hosting cost.
+
+---

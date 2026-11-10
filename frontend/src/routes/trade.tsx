@@ -14,6 +14,7 @@ import { OptionsStrategyBuilder, StrategyLeg } from "@/components/trading/Option
 import { LiveNewsFeed } from "@/components/trading/LiveNewsFeed";
 import { nativeBridge } from "@/lib/native";
 import { TradeStatementExporter } from "@/components/trading/TradeStatementExporter";
+import { checkCoolDownStatus, detectRevengeTrading } from "@/lib/journal";
 
 export const Route = createFileRoute("/trade")({
   validateSearch: (s: Record<string, unknown>): { s?: string | undefined } => ({
@@ -97,6 +98,15 @@ function Trade() {
 
   const inst = tradable.find((t) => t.symbol === sym) || tradable[0]!;
   const q = prices[sym] || { p: 24500, base: 24450 };
+
+  // Check persistent cool-down status on mount
+  useEffect(() => {
+    const status = checkCoolDownStatus();
+    if (status.isTriggered && status.remainingSeconds > 0) {
+      setIsCoolDownActive(true);
+      setCoolDownRemaining(status.remainingSeconds);
+    }
+  }, []);
 
   // Cool-Down Timer Ticker
   useEffect(() => {
@@ -269,15 +279,30 @@ function Trade() {
       const pnl = exitData.realized_pnl;
       const isLoss = pnl < 0;
       const newScore = exitData.discipline_score ?? 85;
-      const isCoolDown = newScore < 70;
+
+      // Check Rule 4.3 Revenge Trading & Cool-Down Invariants
+      const revengeCheck = detectRevengeTrading(pnl, type);
+      const isCoolDown = newScore < 70 || revengeCheck.isRevenge;
 
       setDisciplineScore(newScore);
 
       if (isCoolDown) {
         setIsCoolDownActive(true);
-        setCoolDownRemaining(180);
-        toast.warning("Discipline dropped below 70! Mandatory 3-minute cool-down breathing mode activated.");
+        setCoolDownRemaining(revengeCheck.coolDownSeconds || 180);
+        if (revengeCheck.isRevenge) {
+          toast.warning("Revenge trading detected (>= 2 losing market orders within 45s of stop-out)! Mandatory 3-minute cool-down breathing reset activated.");
+        } else {
+          toast.warning("Discipline dropped below 70! Mandatory 3-minute cool-down breathing mode activated.");
+        }
       }
+
+      const assignedTags = revengeCheck.isRevenge
+        ? ["#RevengeTrade", "#FOMOEntry"]
+        : isLoss
+        ? stopLoss
+          ? ["#PlanAdhered"]
+          : ["#MovedStopLoss", "#RevengeTrade"]
+        : ["#PlanAdhered"];
 
       setPostMortemData({
         symbol: exitData.symbol || sym,
@@ -288,7 +313,7 @@ function Trade() {
         realizedPnl: pnl,
         disciplineScore: newScore,
         disciplineDelta: isLoss ? -10 : +5,
-        tags: exitData.post_mortem?.tags || (isLoss ? ["#NoStopLoss"] : ["#ProfitableExit"]),
+        tags: assignedTags,
         stopLossUsed: Boolean(stopLoss),
         targetUsed: Boolean(targetPrice),
         isCoolDownTriggered: isCoolDown,

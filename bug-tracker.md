@@ -128,3 +128,15 @@
 * **Root Cause**: JSDOM does not provide a native `ResizeObserver` global implementation.
 * **Resolution**: Added mock implementation of `globalThis.ResizeObserver` in `frontend/src/test/setup.ts`.
 * **Verification**: All 7 visualizer test suites pass cleanly. Status: `RESOLVED AND VERIFIED`.
+
+---
+
+### BUG-011: TS4111 Index Signature Property Access under `noUncheckedIndexedAccess`
+* **Date Reported**: 2026-11-10 20:06 IST
+* **Severity**: `LOW`
+* **Priority**: `P3`
+* **Affected Module**: `frontend/src/test/pyodide-backtester.test.tsx`
+* **Symptoms**: `tsc` reported `error TS4111: Property 'dual_ema' comes from an index signature, so it must be accessed with ['dual_ema']`.
+* **Root Cause**: Strict `noUncheckedIndexedAccess` in `tsconfig.json` requires bracket notation for properties on typed string index dictionaries (`Record<string, ...>`).
+* **Resolution**: Switched template accesses to bracket notation `PYTHON_STRATEGY_TEMPLATES["dual_ema"]!.code`.
+* **Verification**: `npx --prefix frontend tsc -p frontend/tsconfig.json --noEmit` exited with code 0. Status: `RESOLVED AND VERIFIED`.

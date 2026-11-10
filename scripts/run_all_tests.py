@@ -64,7 +64,7 @@ def main():
             ROOT_DIR
         ),
         (
-            "Frontend Component & Visualizer Vitest Suite (13 suites, 37 tests)",
+            "Frontend Component & Visualizer Vitest Suite (15 suites, 49 tests)",
             ["pnpm", "-C", "frontend", "test"],
             ROOT_DIR
         ),
