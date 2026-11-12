@@ -237,3 +237,18 @@
 | T-17.1.3 | Level-3 FIFO Queue Priority for Limit Orders | P0 | COMPLETED AND VERIFIED | Passive limit orders placed at back of queue; fills simulated only after preceding contracts drain. |
 | T-17.1.4 | Microstructure Network & Matching Latency Jitter | P2 | COMPLETED AND VERIFIED | Realistic 5ms–50ms latency jitter injected into order ticket and L2 queue telemetry. |
 | T-17.1.5 | Historical Macro News Catalyst Pins Overlay | P2 | COMPLETED AND VERIFIED | Chronological event overlay with automatic masking of identities/dates in Blind Mode. |
+
+---
+
+## 18. Offline Capabilities, Social Pedagogy & Market Data Engineering (Milestone 12 / PIP Part 3.3, 4.2 & 5.2)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-18.1.1 | PWA Service Worker & Static Asset Cache | P1 | COMPLETED AND VERIFIED | `frontend/public/sw.js` registered in `__root.tsx` with stale-while-revalidate offline caching strategy. |
+| T-18.1.2 | IndexedDB Local Storage for Offline Historical Datasets | P1 | COMPLETED AND VERIFIED | `frontend/src/lib/offline-storage.ts` managing 1-minute historical datasets (NIFTY50, BANKNIFTY) and offline session run queues. |
+| T-18.1.3 | Offline Session Sync Queue & Indicator | P2 | COMPLETED AND VERIFIED | Live status pills in `/challenges` header indicating IndexedDB dataset readiness and pending unsynced replay sessions. |
+| T-18.1.4 | Alpha Desk Anonymous Peer Setup Forum | P1 | COMPLETED AND VERIFIED | `frontend/src/components/challenges/AlphaDeskForum.tsx` enabling traders to publish annotated setups with thesis, tags, and entry/SL/TP levels. |
+| T-18.1.5 | Rule 4.3 Validation & Risk-Reward Scoring | P0 | COMPLETED AND VERIFIED | Automated check enforcing risk $\le 1.5\%$ per trade and computing exact R:R ratio prior to publishing setup. |
+| T-18.1.6 | Pedagogical Peer Reviews & Critiques | P2 | COMPLETED AND VERIFIED | Community members review setups with clarity and risk management scores (1-5) and structured feedback. |
+| T-18.1.7 | Synthetic Merton Jump-Diffusion & GBM Data Generator | P1 | COMPLETED AND VERIFIED | `scripts/seed_market_data.py` CLI generating infinite 1-minute intraday OHLCV candles with realistic U-shaped volume liquidity curves. |
+

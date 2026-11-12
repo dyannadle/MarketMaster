@@ -3,7 +3,30 @@
 
 ---
 
-### Release v1.0.33 (Current — SM-2 Spaced Repetition, Alpha Arena, Level-3 FIFO Queue & Catalyst Overlay)
+### Release v1.0.34 (Current — PWA Offline Replay Terminal, Alpha Desk Peer Setup Forum & Synthetic GBM Engine)
+* **Release Date**: 2026-11-12 22:10 IST
+* **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
+* **Key Enhancements**:
+  * **Option 1: PWA Offline Replay Terminal & IndexedDB Local Storage (PIP Part 3.3)**:
+    * *Service Worker & Offline Caching*: Registered `frontend/public/sw.js` providing stale-while-revalidate caching for web assets, icons, fonts, and scripts.
+    * *IndexedDB Historical Datasets*: Client-side storage manager (`frontend/src/lib/offline-storage.ts`) caching full 1-minute historical datasets (Nifty 50, Bank Nifty), offline session runs, and sync queues for zero-latency drills on planes or offline commutes.
+    * *Reconnection Sync Queue*: Tracks pending unsynced offline replay runs and displays live status badges in the terminal header.
+  * **Option 2: 1-Click Interactive Chart Annotation & Anonymous Peer Setup Sharing (PIP Part 5.2)**:
+    * *Alpha Desk Peer Setup Forum (`frontend/src/components/challenges/AlphaDeskForum.tsx`)*: Anonymous institutional setup review forum in `/challenges`.
+    * *Rule 4.3 Validation & R:R Calculator*: Automatically verifies risk per trade $\le 1.5\%$ and computes exact risk-to-reward ratios before publishing.
+    * *Pedagogical Peer Reviews*: Allows fellow traders to score setups on structural invalidation clarity and risk discipline rather than hindsight P&L.
+  * **Option 3: Automated Synthetic Geometric Brownian Motion (GBM) Market Data Generator (PIP Part 4.2)**:
+    * *High-Fidelity CLI Generator (`scripts/seed_market_data.py`)*: Simulates realistic Merton Jump-Diffusion, GBM drift/volatility, and intraday U-shaped volume liquidity curves (peaks at open 09:15-10:00 & close 14:30-15:30 IST) generating infinite synthetic historical data without large downloads.
+  * **Master Verification Engine Verified**:
+    * Backend Pytest: 13/13 tests passing (100% green).
+    * Frontend Vitest: **60/60 tests passing across 18 suites** (added `alpha-desk-and-offline.test.tsx`).
+    * TypeScript: Zero errors (`tsc --noEmit`).
+    * Production Build: 100% clean Nitro SSR bundle.
+    * Android Container: 74 production assets compiled and synchronized.
+
+---
+
+### Release v1.0.33 (SM-2 Spaced Repetition, Alpha Arena, Level-3 FIFO Queue & Catalyst Overlay)
 * **Release Date**: 2026-11-12 21:20 IST
 * **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
 * **Key Enhancements**:

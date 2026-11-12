@@ -40,7 +40,17 @@ import {
 } from "@/lib/glicko2";
 import { nativeBridge } from "@/lib/native";
 import { AlphaArenaPanel } from "@/components/challenges/AlphaArenaPanel";
+import { AlphaDeskForum } from "@/components/challenges/AlphaDeskForum";
 import { getCatalystsForPreset } from "@/lib/microstructure";
+import { Share2, WifiOff, HardDriveDownload } from "lucide-react";
+import {
+  saveOfflineDataset,
+  generateSyntheticDataset,
+  listOfflineDatasets,
+  recordOfflineReplayRun,
+  getPendingOfflineRuns,
+  markOfflineRunsSynced
+} from "@/lib/offline-storage";
 
 export const Route = createFileRoute("/challenges")({
   head: () => ({
@@ -162,7 +172,10 @@ export const DAILY_SETUPS = [
 ];
 
 function ChallengesAndGym() {
-  const [activeTab, setActiveTab] = useState<"GYM" | "LEADERBOARD" | "ALPHA_ARENA">("GYM");
+  const [activeTab, setActiveTab] = useState<"GYM" | "LEADERBOARD" | "ALPHA_ARENA" | "ALPHA_DESK">("GYM");
+  const [isOfflineStorageReady, setIsOfflineStorageReady] = useState(false);
+  const [offlineDatasetsCount, setOfflineDatasetsCount] = useState(0);
+  const [pendingSyncRunsCount, setPendingSyncRunsCount] = useState(0);
 
   // Mode: Practice (casual replay) vs Rated (Elo rating at stake + mandatory Rule 4.3 stop-loss)
   const [gymMode, setGymMode] = useState<"PRACTICE" | "RATED">("RATED");
@@ -266,6 +279,27 @@ function ChallengesAndGym() {
 
   useEffect(() => {
     loadNewSession(selectedPresetId, isMaskedBlind);
+
+    // Initialize offline datasets check
+    if (typeof window !== "undefined" && window.indexedDB) {
+      listOfflineDatasets().then(async (datasets) => {
+        if (datasets.length === 0) {
+          // Auto-seed default offline datasets
+          const d1 = generateSyntheticDataset("NIFTY50_OFFLINE", "Nifty 50 Offline Replay", 24200, 375);
+          const d2 = generateSyntheticDataset("BANKNIFTY_OFFLINE", "Bank Nifty Volatility Replay", 51200, 375);
+          await saveOfflineDataset(d1);
+          await saveOfflineDataset(d2);
+          setOfflineDatasetsCount(2);
+        } else {
+          setOfflineDatasetsCount(datasets.length);
+        }
+        setIsOfflineStorageReady(true);
+      }).catch(() => setIsOfflineStorageReady(false));
+
+      getPendingOfflineRuns().then((runs) => {
+        setPendingSyncRunsCount(runs.length);
+      }).catch(() => {});
+    }
   }, [selectedPresetId, isMaskedBlind]);
 
   // Sliced candles visible to the trader
@@ -527,6 +561,14 @@ function ChallengesAndGym() {
               <Trophy className="h-4 w-4" /> Alpha Arena (Calmar League)
             </button>
             <button
+              onClick={() => setActiveTab("ALPHA_DESK")}
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 font-bold transition-all ${
+                activeTab === "ALPHA_DESK" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Share2 className="h-4 w-4" /> Alpha Desk (Peer Setups)
+            </button>
+            <button
               onClick={() => setActiveTab("LEADERBOARD")}
               className={`flex items-center gap-2 rounded-lg px-4 py-2 font-bold transition-all ${
                 activeTab === "LEADERBOARD" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
@@ -569,11 +611,24 @@ function ChallengesAndGym() {
                 <span className="text-[10px] text-muted-foreground ml-1">(±{traderProfile.rd})</span>
               </div>
             </div>
+
+            {/* Offline PWA & Storage Indicator (PIP 3.3) */}
+            <div className="hidden lg:flex items-center gap-2 border-l border-border/60 pl-3">
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <HardDriveDownload className="size-3" /> IndexedDB ({offlineDatasetsCount} Datasets Ready)
+              </span>
+              {pendingSyncRunsCount > 0 && (
+                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                  <WifiOff className="size-3" /> {pendingSyncRunsCount} Unsynced Runs
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
         {activeTab === "GYM" ? (
           <div className="space-y-6">
+            {/* Scenario Selector & Blind Toggle Bar */}
             {/* Scenario Selector & Blind Toggle Bar */}
             <div className="rounded-xl border border-border bg-card p-4 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3">
@@ -1040,6 +1095,8 @@ function ChallengesAndGym() {
           </div>
         ) : activeTab === "ALPHA_ARENA" ? (
           <AlphaArenaPanel traderTier={traderProfile.rankTitle} />
+        ) : activeTab === "ALPHA_DESK" ? (
+          <AlphaDeskForum currentSymbol={activePreset.instrument || "NIFTY50"} currentPrice={currentLtp} />
         ) : (
           /* Leaderboard & Daily Challenge Rotation Tab */
           <div className="space-y-6">

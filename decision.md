@@ -533,3 +533,16 @@
 * **Impact**: Zero server latency or hosting expense, 100% deterministic local evaluation, verified with automated Vitest suites and 0 TypeScript compilation errors.
 
 ---
+
+### ADR-036: PWA Offline Replay Terminal (IndexedDB), Alpha Desk Peer Setup Forum & Synthetic GBM Engine
+* **Status**: Accepted & Implemented (v1.0.34)
+* **Date**: 2026-11-12
+* **Context**: Traders needed the ability to drill historical market replay sessions completely offline (during flights or low-connectivity commutes) with zero network latency, participate in peer review of trade setups focused on risk-reward and structural invalidation, and generate unlimited high-fidelity synthetic market data without downloading gigabytes of external CSVs.
+* **Decision**:
+  1. Implemented Progressive Web App (PWA) service worker (`sw.js`) and client-side IndexedDB manager (`frontend/src/lib/offline-storage.ts`) caching full 1-minute historical datasets (Nifty 50, Bank Nifty), offline session runs, and sync queues.
+  2. Built "Alpha Desk" anonymous peer setup and chart annotation forum (`frontend/src/components/challenges/AlphaDeskForum.tsx` & `frontend/src/lib/chart-annotations.ts`) calculating R:R, verifying Rule 4.3 ($R \le 1.5\%$), and gathering community pedagogical reviews.
+  3. Developed standalone high-fidelity market data generator (`scripts/seed_market_data.py`) combining Merton Jump-Diffusion, Geometric Brownian Motion drift, and intraday U-shaped volume liquidity curves.
+* **Why Taken**: Completes PIP Part 3.3 (Offline Replay Terminal), PIP Part 5.2 (Anonymous Peer Setup Sharing), and PIP Part 4.2 (Synthetic Historical Data Generator).
+* **Impact**: Fully verified across 18 Vitest suites (60 tests) + 13 Pytest tests (73 total automated tests green), 0 TypeScript compilation errors, production Nitro bundle built and synchronized to Android assets (74 assets).
+
+---

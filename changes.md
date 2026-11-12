@@ -620,3 +620,24 @@
   * Nitro client build and Android asset sync (73 assets) verified.
 
 ---
+
+### [v1.0.34] - 2026-11-12 - PWA Offline Replay Terminal (IndexedDB), Alpha Desk Peer Setup Forum & Synthetic GBM Engine
+* **Category**: Offline Capabilities, Social Pedagogy & Market Data Engineering
+* **Files Modified / Added**:
+  * `frontend/public/sw.js`: PWA service worker with stale-while-revalidate strategy for offline asset caching.
+  * `frontend/src/lib/offline-storage.ts`: Client-side IndexedDB manager for 1-minute historical datasets, offline session runs, and sync queues.
+  * `frontend/src/lib/chart-annotations.ts`: Peer setup sharing data layer calculating risk-reward ratios and enforcing Rule 4.3 invariant ($R \le 1.5\%$).
+  * `frontend/src/components/challenges/AlphaDeskForum.tsx`: Interactive setup publishing and peer critique forum with clarity and risk scores.
+  * `frontend/src/routes/challenges.tsx`: Integrated Alpha Desk tab and IndexedDB offline dataset status pills.
+  * `frontend/src/routes/__root.tsx`: Registered PWA service worker in production browser lifecycle.
+  * `scripts/seed_market_data.py`: Standalone CLI tool generating synthetic Merton Jump-Diffusion + GBM intraday market candles with U-shaped volume liquidity curves.
+  * `frontend/src/test/alpha-desk-and-offline.test.tsx`: 3 Vitest unit tests verifying risk-reward math, Rule 4.3 boundaries, and peer review storage.
+  * `scripts/run_all_tests.py`: Updated test matrix covering 18 Vitest suites and 60 frontend tests.
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Synchronized living documentation registries.
+* **Testing & Verification**:
+  * 13/13 Pytest backend tests pass (100% green).
+  * 60/60 Vitest frontend tests across 18 suites pass (100% green).
+  * Strict TypeScript compilation (`tsc --noEmit`) passes with 0 errors.
+  * Production Nitro build and Android asset sync (74 assets) verified.
+
+---

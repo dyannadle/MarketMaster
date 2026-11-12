@@ -64,19 +64,19 @@ def main():
             ROOT_DIR
         ),
         (
-            "Frontend Component & Visualizer Vitest Suite (17 suites, 57 tests)",
+            "Frontend Component & Visualizer Vitest Suite (18 suites, 60 tests)",
             ["pnpm", "test"],
             ROOT_DIR / "frontend"
         ),
         (
             "Frontend TypeScript Static Type Check (0 errors)",
-            ["npx", "--prefix", "frontend", "tsc", "-p", "frontend/tsconfig.json", "--noEmit"],
-            ROOT_DIR
+            ["npx", "tsc", "--noEmit"],
+            ROOT_DIR / "frontend"
         ),
         (
             "Full Production Bundle & Nitro SSR Build",
-            ["pnpm", "-C", "frontend", "build"],
-            ROOT_DIR
+            ["pnpm", "build"],
+            ROOT_DIR / "frontend"
         )
     ]
 
