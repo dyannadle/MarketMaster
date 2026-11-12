@@ -263,4 +263,16 @@
 | T-19.1.3 | Git Pre-Commit Quality & Docs Verification Hook | P2 | COMPLETED AND VERIFIED | `scripts/pre_commit_hook.py` auditing staged source files and ensuring documentation synchronization per Rule 7.1 and 7.2. |
 | T-19.1.4 | Macro Synthetic Regimes in Strategy Lab | P1 | COMPLETED AND VERIFIED | `MacroRegime` types (`FLASH_CRASH`, `CHOPPY_MEAN_REVERSION`, `TRENDING_EXPANSION`) selectable in `/lab` with Merton jump shocks. |
 
+---
+
+## 20. Mobile Packaging & Android APK Assembly (Milestone 14 / PIP Part 3.3 & Rules 8.1)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-20.1.1 | Gradle Wrapper 8.7 Binary Provisioning | P1 | COMPLETED AND VERIFIED | `gradle-wrapper.jar` deployed with distribution URL set to Gradle 8.7. |
+| T-20.1.2 | Vector Launcher Icon Asset Configuration | P2 | COMPLETED AND VERIFIED | `android/app/src/main/res/drawable/ic_launcher.xml` created and linked in AndroidManifest. |
+| T-20.1.3 | Java 17 Native WebView Activity Shell | P1 | COMPLETED AND VERIFIED | `MainActivity.java` with `MarketMasterNative` JS bridge exposing haptic pulses and offline failover. |
+| T-20.1.4 | Standalone Android Debug APK Assembly | P0 | COMPLETED AND VERIFIED | `gradlew assembleDebug` passed in 16s; produced `app-debug.apk` (6.31 MB). |
+
+
 

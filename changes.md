@@ -659,3 +659,21 @@
   * Nitro client build and Android asset sync (74 assets) verified.
 
 ---
+
+### [v1.0.36] - 2026-11-12 - Native Android APK Assembly & Packaging Pipeline
+* **Category**: Mobile Engineering & Android Build Pipeline
+* **Files Modified / Added**:
+  * `android/gradle/wrapper/gradle-wrapper.jar`: Provisioned Gradle 8.7 wrapper binary.
+  * `android/build.gradle`: Removed conflicting `allprojects` repository declarations in favor of `settings.gradle`.
+  * `android/app/src/main/res/drawable/ic_launcher.xml`: Vector launcher icon created.
+  * `android/app/src/main/AndroidManifest.xml`: Pointed icon references to `@drawable/ic_launcher`.
+  * `android/app/src/main/java/in/marketmaster/app/MainActivity.java`: Refactored to clean Java 17 WebView shell with `MarketMasterNative` bridge.
+  * `android/app/build/outputs/apk/debug/app-debug.apk`: Built verified 6.31 MB Android APK.
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `gradlew assembleDebug` passed in 16s (36 actionable tasks).
+  * Standalone APK generated at `android/app/build/outputs/apk/debug/app-debug.apk` (6.31 MB).
+  * All 14 Pytest backend tests pass (100% green).
+  * All 60 Vitest frontend tests pass (100% green).
+
+---

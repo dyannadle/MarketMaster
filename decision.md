@@ -560,3 +560,17 @@
 * **Impact**: 14/14 Pytest backend tests pass (100% green); 60/60 Vitest tests pass across 18 suites (74 total tests pass); strict typecheck 0 errors; clean Nitro production build.
 
 ---
+
+### ADR-038: Native Android Packaging & Standalone APK Assembly
+* **Status**: Accepted & Implemented (v1.0.36)
+* **Date**: 2026-11-12
+* **Context**: Android app compilation failed due to missing `gradle-wrapper.jar`, repository preferences, resource mipmap icon resolution, and Kotlin keyword collision (`in.marketmaster.app`). Required robust native Android compilation generating a self-contained debug APK.
+* **Decision**:
+  1. Provisioned official Gradle Wrapper 8.7 (`gradle-wrapper.jar`) and aligned repository modes in `android/settings.gradle` and `android/build.gradle`.
+  2. Created vector drawable launcher icon (`ic_launcher.xml`) in `android/app/src/main/res/drawable/` resolving AAPT manifest linking errors.
+  3. Replaced Kotlin wrapper with clean Java 17 implementation (`MainActivity.java`) to cleanly bypass Kotlin `in` package identifier restrictions without bytecode reflection overhead.
+  4. Built and validated standalone debug APK (`android/app/build/outputs/apk/debug/app-debug.apk`, 6.31 MB).
+* **Why Taken**: Provides zero-friction mobile deployment and offline packaging for Android devices.
+* **Impact**: `gradlew assembleDebug` succeeds in 16s with 36/36 tasks green; produces 6.31 MB APK ready for distribution or sideloading.
+
+---

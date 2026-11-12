@@ -3,7 +3,25 @@
 
 ---
 
-### Release v1.0.35 (Current — DPDP Right to Erasure Suite, Strict CSP v3 Headers & Synthetic Macro Regimes)
+### Release v1.0.36 (Current — Native Android Packaging & Standalone APK Assembly)
+* **Release Date**: 2026-11-12 22:55 IST
+* **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
+* **Key Enhancements**:
+  * **Native Android Gradle 8.7 Compilation & APK Assembly**:
+    * Provisioned Gradle Wrapper 8.7 (`gradle-wrapper.jar`) and aligned repository modes in `settings.gradle`.
+    * Resolved resource linking by provisioning vector launcher icon (`ic_launcher.xml`).
+    * Refactored main Android container activity (`MainActivity.java`) with Java 17 to eliminate Kotlin keyword naming restrictions.
+    * Successfully assembled standalone debug APK: `android/app/build/outputs/apk/debug/app-debug.apk` (6.31 MB).
+  * **Master Verification Engine Verified**:
+    * Backend Pytest: 14/14 tests passing (100% green).
+    * Frontend Vitest: 60/60 tests passing across 18 suites (100% green).
+    * TypeScript: Zero errors (`tsc --noEmit`).
+    * Production Nitro Build: 100% clean SSR bundle.
+    * Android Container: 74 production assets compiled and synchronized.
+
+---
+
+### Release v1.0.35 (DPDP Right to Erasure Suite, Strict CSP v3 Headers & Synthetic Macro Regimes)
 * **Release Date**: 2026-11-12 22:30 IST
 * **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
 * **Key Enhancements**:
