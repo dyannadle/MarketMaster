@@ -3,7 +3,26 @@
 
 ---
 
-### Release v1.0.32 (Current — Behavioral Trade Journal, Cool-Down Engine & Pyodide Quant Backtester)
+### Release v1.0.33 (Current — SM-2 Spaced Repetition, Alpha Arena, Level-3 FIFO Queue & Catalyst Overlay)
+* **Release Date**: 2026-11-12 21:20 IST
+* **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
+* **Key Enhancements**:
+  * **Option 2: Spaced Repetition (SM-2) Flashcards & Weekly "Alpha Arena" Tournaments**:
+    * *SM-2 Spaced Repetition Engine in `/learn`*: Interactive flashcard drill across Levels 0–5; automatically calculates adaptive recall intervals ($1d \rightarrow 3d \rightarrow 7d \rightarrow 21d$) based on user recall quality.
+    * *Weekly "Alpha Arena" Tournaments in `/challenges`*: Mon–Fri IST competition ranked by **Calmar Ratio** and **Risk-Adjusted Return** (instead of raw P&L) so disciplined risk managers beat reckless 100x leverage gamblers.
+  * **Option 3: Level-3 FIFO Queue Priority & Historical News Catalyst Overlay**:
+    * *FIFO Limit Order Queue Simulation in `/trade`*: Passive limit orders rest at the back of the Level-3 FIFO queue and only fill once preceding contracts drain.
+    * *Microstructure Latency Jitter & Catalyst Pins*: Realistic `5ms–50ms` ping jitter displayed on order execution; historical macro news catalysts pinned along replay charts with automatic masking in Blind Mode.
+  * **Master Verification Engine Verified**:
+    * Backend Pytest: 13/13 tests passing.
+    * Frontend Vitest: **57/57 tests passing across 17 suites** (added `sm2-and-alpha-arena.test.tsx` and `microstructure-and-fifo.test.tsx`).
+    * TypeScript: Zero errors (`tsc --noEmit`).
+    * Production Build: 100% clean Nitro SSR bundle.
+    * Android Container: 73 production assets compiled and synchronized.
+
+---
+
+### Release v1.0.32 (Behavioral Trade Journal, Cool-Down Engine & Pyodide Quant Backtester)
 * **Release Date**: 2026-11-10 20:15 IST
 * **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
 * **Key Enhancements**:

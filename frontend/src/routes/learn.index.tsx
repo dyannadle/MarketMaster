@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { Brain } from "lucide-react";
 import { PageHeader } from "@/components/AppShell";
 import { curriculum } from "@/lib/data";
+import { SpacedRepetitionDeck } from "@/components/learn/SpacedRepetitionDeck";
 
 export const Route = createFileRoute("/learn/")({
   head: () => ({
@@ -17,14 +19,32 @@ export const Route = createFileRoute("/learn/")({
 
 function Learn() {
   const [lvl, setLvl] = useState<number | null>(null);
+  const [showSm2, setShowSm2] = useState(true);
   const levels = lvl === null ? curriculum : curriculum.filter((l) => l.level === lvl);
   return (
     <div>
-      <PageHeader title="Learning Academy" sub="Concept-level lessons with examples, quizzes and simulator practice." />
+      <PageHeader title="Learning Academy" sub="Concept-level lessons with examples, quizzes and simulator practice.">
+        <button
+          onClick={() => setShowSm2((s) => !s)}
+          className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-bold transition ${
+            showSm2
+              ? "border-primary bg-primary/15 text-primary"
+              : "border-border bg-card text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Brain className="h-4 w-4" />
+          <span>{showSm2 ? "Hide SM-2 Flashcards" : "Open SM-2 Flashcards"}</span>
+        </button>
+      </PageHeader>
       <div className="flex gap-2 overflow-x-auto px-5 py-4 md:px-8">
         <Chip on={lvl === null} onClick={() => setLvl(null)}>All levels</Chip>
         {curriculum.map((l) => <Chip key={l.level} on={lvl === l.level} onClick={() => setLvl(l.level)}>L{l.level} · {l.name}</Chip>)}
       </div>
+      {showSm2 && (
+        <div className="px-5 pb-6 md:px-8">
+          <SpacedRepetitionDeck />
+        </div>
+      )}
       <div className="space-y-10 px-5 pb-10 md:px-8">
         {levels.map((l) => (
           <section key={l.level}>

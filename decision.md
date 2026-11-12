@@ -519,3 +519,17 @@
 * **Impact**: Empirically trains traders to identify and eliminate costly cognitive biases, prevents destructive revenge trading through hard invariant enforcement, and empowers quantitative strategy development at ₹0 hosting cost.
 
 ---
+
+### ADR-035: SM-2 Spaced Repetition, Weekly Alpha Arena, Level-3 FIFO Queueing & News Catalyst Overlay
+* **Status**: Accepted & Implemented (v1.0.33)
+* **Date**: 2026-11-12
+* **Context**: Traders require adaptive pedagogical retention for complex financial concepts (Options Greeks, Wyckoff accumulation, Rule 4.3 sizing) while avoiding simplistic leaderboards that reward reckless 100x leverage gambling. Microstructure simulation also required realistic order queue execution priority and macro event awareness.
+* **Decision**:
+  1. Implemented client-side SuperMemo-2 (SM-2) spaced repetition algorithm in `/learn` with adaptive review intervals ($1\text{d} \rightarrow 3\text{d} \rightarrow 7\text{d} \rightarrow 21\text{d}$) and performance grading (0–5).
+  2. Implemented Weekly "Alpha Arena" tournament engine in `/challenges` ranked strictly by Calmar Ratio ($\text{Return} / \text{Max Drawdown}$) and composite risk-adjusted score to enforce discipline.
+  3. Integrated Level-3 FIFO Queue priority simulation in `/trade` tracking depth order ahead of limit orders at the bid/ask and consumption by market volume.
+  4. Added dynamic execution latency jitter (5ms–50ms) and historical macro news catalyst timeline pins with Blind Mode masking.
+* **Why Taken**: Aligns pedagogical progression with proven memory science, incentivizes sound risk management over gambling, and models real-world exchange execution microstructure.
+* **Impact**: Zero server latency or hosting expense, 100% deterministic local evaluation, verified with automated Vitest suites and 0 TypeScript compilation errors.
+
+---

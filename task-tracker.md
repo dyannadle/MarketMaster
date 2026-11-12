@@ -225,3 +225,15 @@
 | T-16.1.4 | In-Browser Pyodide Quant Backtesting Sandbox | P1 | COMPLETED AND VERIFIED | Client-side Python 3.12 WebAssembly execution (Pyodide) in `/lab` with offline-first high-speed vector fallback. |
 | T-16.1.5 | Vectorized Strategy Templates & Institutional Metrics | P1 | COMPLETED AND VERIFIED | Dual EMA, Bollinger Bands, 15m ORB, and VWAP templates; calculates Cumulative Return, Sharpe, Sortino, Max Drawdown, and Win/Loss Expectancy. |
 | T-16.1.6 | Monospace Terminal Stdout & Interactive Curves | P2 | COMPLETED AND VERIFIED | Embedded terminal console for Python `print()` logs, bar-by-bar Recharts equity curves, and underwater drawdown profiles. |
+
+---
+
+## 17. Pedagogical Spaced Repetition (SM-2), Alpha Arena Tournaments & Market Microstructure (Milestone 11)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-17.1.1 | SuperMemo-2 (SM-2) Spaced Repetition Flashcards | P1 | COMPLETED AND VERIFIED | Adaptive retention intervals ($1d \rightarrow 3d \rightarrow 7d \rightarrow 21d$) across Levels 0–5; graded recall in `/learn`. |
+| T-17.1.2 | Weekly "Alpha Arena" Paper Tournament | P1 | COMPLETED AND VERIFIED | Free Mon 09:15 – Fri 15:30 IST tournament ranked by Calmar Ratio and Risk-Adjusted Score in `/challenges`. |
+| T-17.1.3 | Level-3 FIFO Queue Priority for Limit Orders | P0 | COMPLETED AND VERIFIED | Passive limit orders placed at back of queue; fills simulated only after preceding contracts drain. |
+| T-17.1.4 | Microstructure Network & Matching Latency Jitter | P2 | COMPLETED AND VERIFIED | Realistic 5ms–50ms latency jitter injected into order ticket and L2 queue telemetry. |
+| T-17.1.5 | Historical Macro News Catalyst Pins Overlay | P2 | COMPLETED AND VERIFIED | Chronological event overlay with automatic masking of identities/dates in Blind Mode. |

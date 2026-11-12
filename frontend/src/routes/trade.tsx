@@ -15,6 +15,12 @@ import { LiveNewsFeed } from "@/components/trading/LiveNewsFeed";
 import { nativeBridge } from "@/lib/native";
 import { TradeStatementExporter } from "@/components/trading/TradeStatementExporter";
 import { checkCoolDownStatus, detectRevengeTrading } from "@/lib/journal";
+import {
+  FifoLimitOrder,
+  advanceFifoQueueTick,
+  computeLatencyJitter,
+  createFifoLimitOrder,
+} from "@/lib/microstructure";
 
 export const Route = createFileRoute("/trade")({
   validateSearch: (s: Record<string, unknown>): { s?: string | undefined } => ({
@@ -96,8 +102,40 @@ function Trade() {
   const [isCoolDownActive, setIsCoolDownActive] = useState(false);
   const [coolDownRemaining, setCoolDownRemaining] = useState(0);
 
+  // Level-3 FIFO Queue Priority & Latency State
+  const [fifoQueueOrders, setFifoQueueOrders] = useState<FifoLimitOrder[]>([]);
+  const [lastJitterMs, setLastJitterMs] = useState<number>(12);
+
   const inst = tradable.find((t) => t.symbol === sym) || tradable[0]!;
   const q = prices[sym] || { p: 24500, base: 24450 };
+
+  // Advance FIFO Queue on every live price tick
+  useEffect(() => {
+    if (fifoQueueOrders.length === 0) return;
+    const currentPrice = q.p;
+    setFifoQueueOrders((prev) => {
+      const { updated, newlyFilled } = advanceFifoQueueTick(prev, currentPrice, 110);
+      if (newlyFilled.length > 0) {
+        newlyFilled.forEach((order) => {
+          toast.success(
+            `FIFO Queue Filled! ${order.side} ${order.qty} ${order.symbol} @ ₹${order.limitPrice.toFixed(2)}`
+          );
+          nativeBridge.vibrateFill();
+          const r = applyOrder(acc, {
+            symbol: order.symbol,
+            side: order.side,
+            qty: order.qty,
+            price: order.limitPrice,
+            type: "LIMIT",
+          });
+          if (typeof r !== "string") {
+            save(r);
+          }
+        });
+      }
+      return updated.filter((o) => o.status === "QUEUED");
+    });
+  }, [q.p]);
 
   // Check persistent cool-down status on mount
   useEffect(() => {
@@ -193,11 +231,34 @@ function Trade() {
     }));
   }, [q.p]);
 
-  // Execute Order
+  // Execute Order with Microstructure Latency & Level-3 FIFO Queueing
   const place = async () => {
     if (isCoolDownActive) {
       toast.error(`Cool-Down Mode Active! Please wait ${formatTime(coolDownRemaining)} before trading.`);
       return;
+    }
+
+    const jitter = computeLatencyJitter(false);
+    setLastJitterMs(jitter);
+
+    // If LIMIT order, simulate Level-3 FIFO Queue placement
+    if (type === "LIMIT" && Number(limit) > 0) {
+      const limitVal = Number(limit);
+      const isPassive = (side === "BUY" && limitVal < q.p) || (side === "SELL" && limitVal > q.p);
+      if (isPassive) {
+        const fifoOrder = createFifoLimitOrder({
+          symbol: sym,
+          side,
+          qty,
+          limitPrice: limitVal,
+          depthAhead: Math.round(180 + Math.random() * 320),
+        });
+        setFifoQueueOrders((prev) => [fifoOrder, ...prev]);
+        toast.info(
+          `Level-3 FIFO Queue: ${side} ${qty} ${sym} queued @ ₹${limitVal.toFixed(2)} (${fifoOrder.queueAhead} contracts ahead, ${jitter}ms latency)`
+        );
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -215,7 +276,7 @@ function Trade() {
       const fill = backendRes?.fill_price != null ? backendRes.fill_price : estimatedFillPrice;
       const slip = backendRes?.slippage != null ? backendRes.slippage : slippagePts;
       toast.success(
-        `${side} ${qty} ${sym} filled @ ₹${Number(fill).toFixed(2)} (Slippage: ₹${Number(slip).toFixed(2)})`
+        `${side} ${qty} ${sym} filled @ ₹${Number(fill).toFixed(2)} (Slippage: ₹${Number(slip).toFixed(2)}, Latency: ${jitter}ms)`
       );
       nativeBridge.vibrateFill();
       await refreshPositions();
@@ -227,7 +288,7 @@ function Trade() {
       } else {
         save(r);
         toast.success(
-          `${side} ${qty} ${sym} @ ₹${estimatedFillPrice.toFixed(2)} executed (Simulated matching engine)`
+          `${side} ${qty} ${sym} @ ₹${estimatedFillPrice.toFixed(2)} executed (${jitter}ms matching latency)`
         );
         nativeBridge.vibrateFill();
       }
@@ -790,9 +851,11 @@ function Trade() {
         <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-              <ArrowDownUp className="h-3.5 w-3.5 text-primary" /> LEVEL-2 DEPTH
+              <ArrowDownUp className="h-3.5 w-3.5 text-primary" /> LEVEL-2 DEPTH &amp; FIFO QUEUE
             </span>
-            <span className="text-[10px] text-muted-foreground">NSE L2 Queue</span>
+            <span className="font-mono text-[10px] text-primary">
+              Ping Jitter: {lastJitterMs}ms
+            </span>
           </div>
 
           <div className="num grid grid-cols-2 gap-x-2 text-xs font-mono">
@@ -815,6 +878,45 @@ function Trade() {
               </div>
             ))}
           </div>
+
+          {/* Pending Limit Orders (Level-3 FIFO Queue Priority) */}
+          {fifoQueueOrders.length > 0 && (
+            <div className="mt-3 border-t border-border/40 pt-3 space-y-2">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                Active Level-3 FIFO Limit Queue ({fifoQueueOrders.length})
+              </p>
+              {fifoQueueOrders.map((o) => {
+                const progressPct = Math.max(
+                  0,
+                  Math.min(100, ((o.initialQueueAhead - o.queueAhead) / (o.initialQueueAhead || 1)) * 100)
+                );
+                return (
+                  <div key={o.id} className="rounded-lg border border-border/50 bg-secondary/20 p-2 text-[11px] space-y-1">
+                    <div className="flex items-center justify-between font-mono">
+                      <span className="font-bold">
+                        <span className={o.side === "BUY" ? "text-gain" : "text-loss"}>{o.side}</span>{" "}
+                        {o.qty} {o.symbol} @ ₹{o.limitPrice.toFixed(1)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setFifoQueueOrders((prev) => prev.filter((item) => item.id !== o.id))}
+                        className="text-[10px] text-rose-400 hover:underline"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                      <span>Contracts Ahead: <strong className="text-foreground">{o.queueAhead}</strong></span>
+                      <span>Jitter: {o.latencyJitterMs}ms</span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-secondary overflow-hidden">
+                      <div className="h-full bg-primary transition-all" style={{ width: `${progressPct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 

@@ -64,9 +64,9 @@ def main():
             ROOT_DIR
         ),
         (
-            "Frontend Component & Visualizer Vitest Suite (15 suites, 49 tests)",
-            ["pnpm", "-C", "frontend", "test"],
-            ROOT_DIR
+            "Frontend Component & Visualizer Vitest Suite (17 suites, 57 tests)",
+            ["pnpm", "test"],
+            ROOT_DIR / "frontend"
         ),
         (
             "Frontend TypeScript Static Type Check (0 errors)",

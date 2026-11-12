@@ -39,6 +39,8 @@ import {
   getRankFromRating,
 } from "@/lib/glicko2";
 import { nativeBridge } from "@/lib/native";
+import { AlphaArenaPanel } from "@/components/challenges/AlphaArenaPanel";
+import { getCatalystsForPreset } from "@/lib/microstructure";
 
 export const Route = createFileRoute("/challenges")({
   head: () => ({
@@ -160,7 +162,7 @@ export const DAILY_SETUPS = [
 ];
 
 function ChallengesAndGym() {
-  const [activeTab, setActiveTab] = useState<"GYM" | "LEADERBOARD">("GYM");
+  const [activeTab, setActiveTab] = useState<"GYM" | "LEADERBOARD" | "ALPHA_ARENA">("GYM");
 
   // Mode: Practice (casual replay) vs Rated (Elo rating at stake + mandatory Rule 4.3 stop-loss)
   const [gymMode, setGymMode] = useState<"PRACTICE" | "RATED">("RATED");
@@ -517,12 +519,20 @@ function ChallengesAndGym() {
               <Activity className="h-4 w-4" /> Replay Gym & Simulator
             </button>
             <button
+              onClick={() => setActiveTab("ALPHA_ARENA")}
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 font-bold transition-all ${
+                activeTab === "ALPHA_ARENA" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Trophy className="h-4 w-4" /> Alpha Arena (Calmar League)
+            </button>
+            <button
               onClick={() => setActiveTab("LEADERBOARD")}
               className={`flex items-center gap-2 rounded-lg px-4 py-2 font-bold transition-all ${
                 activeTab === "LEADERBOARD" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Trophy className="h-4 w-4" /> Daily Challenges & Leaderboard
+              <Medal className="h-4 w-4" /> Daily Challenges &amp; Leaderboard
             </button>
           </div>
 
@@ -618,6 +628,50 @@ function ChallengesAndGym() {
                     </button>
                   );
                 })}
+              </div>
+
+              {/* Historical News Catalyst Pins Overlay */}
+              <div className="mt-3 rounded-lg border border-border/60 bg-secondary/15 p-3 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 text-[11px]">
+                    <Zap className="h-3.5 w-3.5 text-amber-400" /> Historical Macro News Catalyst Overlay
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {isMaskedBlind || selectedPresetId === "BLIND_RANDOM"
+                      ? "Identifiers Masked (Blind Practice)"
+                      : "Chronological Tape Pins"}
+                  </span>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {getCatalystsForPreset(selectedPresetId, isMaskedBlind || selectedPresetId === "BLIND_RANDOM").map((cat) => {
+                    const isPassed = currentIndex >= cat.barIndex;
+                    return (
+                      <div
+                        key={cat.id}
+                        className={`flex items-start justify-between rounded-md border p-2 text-xs transition-all ${
+                          isPassed
+                            ? "border-amber-500/40 bg-amber-500/10 text-foreground"
+                            : "border-border/40 bg-background/50 text-muted-foreground opacity-60"
+                        }`}
+                      >
+                        <div className="space-y-0.5 pr-2">
+                          <div className="flex items-center gap-1.5">
+                            <span className="rounded bg-secondary px-1.5 py-0.2 text-[9px] font-bold uppercase text-primary font-mono">
+                              Bar #{cat.barIndex}
+                            </span>
+                            <span className="text-[9px] font-bold uppercase text-amber-400">
+                              {cat.category}
+                            </span>
+                          </div>
+                          <p className="font-medium text-[11px] leading-snug">{cat.headline}</p>
+                        </div>
+                        <span className="shrink-0 rounded bg-background/80 px-2 py-0.5 font-mono text-[10px] font-bold border border-border/40">
+                          {cat.surprise}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
@@ -984,6 +1038,8 @@ function ChallengesAndGym() {
               </div>
             )}
           </div>
+        ) : activeTab === "ALPHA_ARENA" ? (
+          <AlphaArenaPanel traderTier={traderProfile.rankTitle} />
         ) : (
           /* Leaderboard & Daily Challenge Rotation Tab */
           <div className="space-y-6">

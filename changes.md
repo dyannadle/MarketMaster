@@ -598,3 +598,25 @@
   * Full-spectrum test automation verified with 100% green pass rate: 13/13 Pytest tests + 49/49 Vitest tests across 15 suites + 0 TypeScript errors + production Nitro build.
 
 ---
+
+### [v1.0.33] - 2026-11-12 - Spaced Repetition (SM-2) Flashcards, Alpha Arena Tournaments, Level-3 FIFO Queue & Historical Catalyst Overlay
+* **Category**: Pedagogical Intelligence, Microstructure Execution & Competitive Tournaments
+* **Files Modified / Added**:
+  * `frontend/src/lib/spaced-repetition.ts`: SuperMemo-2 (SM-2) spaced repetition engine with adaptive intervals and persistence.
+  * `frontend/src/components/learn/SpacedRepetitionDeck.tsx`: Interactive flashcard drill UI with card flip and retention analytics.
+  * `frontend/src/routes/learn.index.tsx`: Header toggle and drill integration for academy courses.
+  * `frontend/src/lib/alpha-arena.ts`: Weekly Calmar Ratio tournament scoring and leaderboard evaluation.
+  * `frontend/src/components/challenges/AlphaArenaPanel.tsx`: Alpha Arena tournament dashboard with risk metrics and submission.
+  * `frontend/src/lib/microstructure.ts`: Level-3 FIFO limit queue tracker, latency jitter generator, and macro news catalyst pins.
+  * `frontend/src/routes/challenges.tsx`: Integrated Alpha Arena tab and historical news timeline overlay with Blind Mode masking.
+  * `frontend/src/routes/trade.tsx`: Limit order FIFO queue depth tracker, queue progression loop, and latency jitter indicators.
+  * `frontend/src/test/sm2-and-alpha-arena.test.tsx`: 5 Vitest unit tests verifying SM-2 intervals and Calmar leaderboards.
+  * `frontend/src/test/microstructure-and-fifo.test.tsx`: 3 Vitest unit tests verifying latency jitter, queue consumption, and catalyst masking.
+  * `task-tracker.md`, `release-notes.md`, `decision.md`: Updated living documentation registries.
+* **Testing & Verification**:
+  * 13/13 Pytest backend tests pass.
+  * 57/57 Vitest frontend tests across 17 suites pass.
+  * Strict TypeScript check (`tsc --noEmit`) passes with 0 errors.
+  * Nitro client build and Android asset sync (73 assets) verified.
+
+---
