@@ -52,17 +52,39 @@ export interface QuantBacktestResult {
   executionTimeMs: number;
 }
 
+export type MacroRegime = 'NORMAL' | 'FLASH_CRASH' | 'CHOPPY_MEAN_REVERSION' | 'TRENDING_EXPANSION';
+
 /**
  * Generate 375 bars of realistic 1-minute historical intraday candles
- * (9:15 AM to 3:30 PM IST)
+ * (9:15 AM to 3:30 PM IST) with selectable macro regimes (PIP Part 2.3 & 4.2)
  */
 export function generateIntradayCandles(
   symbol: "NIFTY 50" | "BANK NIFTY",
-  seed: number = 42
+  seed: number = 42,
+  regime: MacroRegime = 'NORMAL'
 ): Candle[] {
   const bars: Candle[] = [];
   const basePrice = symbol === "NIFTY 50" ? 24500 : 52100;
-  const volatility = symbol === "NIFTY 50" ? 0.0006 : 0.0011;
+  
+  let volMultiplier = 1.0;
+  let driftBias = 0.0;
+  let jumpIntensity = 0.005;
+
+  if (regime === 'FLASH_CRASH') {
+    volMultiplier = 3.5;
+    driftBias = -0.0003;
+    jumpIntensity = 0.035; // 7x jump probability for tail-risk events
+  } else if (regime === 'CHOPPY_MEAN_REVERSION') {
+    volMultiplier = 0.55;
+    driftBias = 0.0;
+    jumpIntensity = 0.001;
+  } else if (regime === 'TRENDING_EXPANSION') {
+    volMultiplier = 1.4;
+    driftBias = 0.00025; // Continuous one-way institutional bid
+    jumpIntensity = 0.008;
+  }
+
+  const volatility = (symbol === "NIFTY 50" ? 0.0006 : 0.0011) * volMultiplier;
 
   let current = basePrice;
   let pseudoRandom = seed;
@@ -82,13 +104,19 @@ export function generateIntradayCandles(
 
     // Intraday trend & mean reversion factor
     const trendDrift = Math.sin((i / 375) * Math.PI * 2) * (symbol === "NIFTY 50" ? 8 : 22);
-    const step = (rand() - 0.495) * current * volatility + trendDrift * 0.03;
+    let step = (rand() - 0.495) * current * volatility + trendDrift * 0.03 + (current * driftBias);
+
+    // Merton Jump shock injection
+    if (rand() < jumpIntensity) {
+      const jumpPct = regime === 'FLASH_CRASH' ? -0.008 : (rand() - 0.5) * 0.007;
+      step += current * jumpPct;
+    }
 
     const open = Math.round((current + (rand() - 0.5) * 4) * 10) / 10;
     const close = Math.round((current + step) * 10) / 10;
-    const high = Math.round((Math.max(open, close) + rand() * 6) * 10) / 10;
-    const low = Math.round((Math.min(open, close) - rand() * 6) * 10) / 10;
-    const volume = Math.round(5000 + rand() * 25000 + (i < 30 || i > 345 ? 15000 : 0));
+    const high = Math.round((Math.max(open, close) + rand() * 6 * volMultiplier) * 10) / 10;
+    const low = Math.round((Math.min(open, close) - rand() * 6 * volMultiplier) * 10) / 10;
+    const volume = Math.round((5000 + rand() * 25000 + (i < 30 || i > 345 ? 15000 : 0)) * (regime === 'FLASH_CRASH' ? 2.5 : 1.0));
 
     bars.push({
       time: timeStr,
@@ -229,12 +257,13 @@ export async function runQuantBacktest(
   code: string,
   symbol: "NIFTY 50" | "BANK NIFTY",
   strategyName: string = "Custom Python Strategy",
-  initialCapital: number = 1_000_000
+  initialCapital: number = 1_000_000,
+  regime: MacroRegime = 'NORMAL'
 ): Promise<QuantBacktestResult> {
   const startTime = performance.now();
-  const candles = generateIntradayCandles(symbol);
+  const candles = generateIntradayCandles(symbol, 42, regime);
   const logs: string[] = [];
-  logs.push(`[MarketMaster Quant Sandbox] Initializing environment for ${symbol}...`);
+  logs.push(`[MarketMaster Quant Sandbox] Initializing environment for ${symbol} (Regime: ${regime})...`);
 
   let engineUsed: QuantBacktestResult["engine"] = "Client Vector Engine (Offline/Fast)";
 

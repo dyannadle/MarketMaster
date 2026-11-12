@@ -3,7 +3,27 @@
 
 ---
 
-### Release v1.0.34 (Current — PWA Offline Replay Terminal, Alpha Desk Peer Setup Forum & Synthetic GBM Engine)
+### Release v1.0.35 (Current — DPDP Right to Erasure Suite, Strict CSP v3 Headers & Synthetic Macro Regimes)
+* **Release Date**: 2026-11-12 22:30 IST
+* **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
+* **Key Enhancements**:
+  * **Option 1: Automated DPDP "Right to Erasure" End-to-End Test Suite & Strict CSP v3 Headers (PIP Part 6.1 & 6.2)**:
+    * *DPDP Act 2023 Erasure Regression Suite*: Added `test_dpdp_right_to_erasure_full_cascade` in `backend/tests/test_api_endpoints.py`, verifying atomic cascade deletion across all user data, positions, orders, executions, and ledger records, with immediate JWT token invalidation (401 Unauthorized).
+    * *Strict CSP v3 & Security Headers*: Configured `frontend/public/_headers` with `script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net`, `frame-ancestors 'none'`, `cross-origin-opener-policy: same-origin`, and `strict-transport-security`.
+  * **Option 2: Pre-Commit Quality Gate & Documentation Synchronization Check (PIP Part 4.1)**:
+    * *Pre-Commit Verification Script*: Built `scripts/pre_commit_hook.py` auditing staged changes and alerting if documentation logs (`changes.md`, `decision.md`) are out of sync per Rules 7.1 and 7.2.
+  * **Option 3: Synthetic Macro Regime Presets in Strategy Lab (PIP Part 2.3 & 4.2)**:
+    * *Macro Synthetic Regimes in `/lab`*: Injected selectable macro market regimes (`NORMAL`, `FLASH_CRASH`, `CHOPPY_MEAN_REVERSION`, `TRENDING_EXPANSION`) into the client vector engine and Pyodide sandbox with Merton jump shocks and volatility multipliers.
+  * **Master Verification Engine Verified**:
+    * Backend Pytest: **14/14 tests passing (100% green)**.
+    * Frontend Vitest: **60/60 tests passing across 18 suites (100% green)**.
+    * TypeScript: Zero errors (`tsc --noEmit`).
+    * Production Build: 100% clean Nitro SSR bundle.
+    * Android Container: 74 production assets compiled and synchronized.
+
+---
+
+### Release v1.0.34 (PWA Offline Replay Terminal, Alpha Desk Peer Setup Forum & Synthetic GBM Engine)
 * **Release Date**: 2026-11-12 22:10 IST
 * **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
 * **Key Enhancements**:

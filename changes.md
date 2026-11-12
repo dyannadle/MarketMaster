@@ -641,3 +641,21 @@
   * Production Nitro build and Android asset sync (74 assets) verified.
 
 ---
+
+### [v1.0.35] - 2026-11-12 - DPDP Act 2023 Erasure Regression Suite, Strict CSP v3 Headers & Synthetic Macro Regime Injection
+* **Category**: Compliance Hardening, Security Engineering & Quant Simulation
+* **Files Modified / Added**:
+  * `backend/tests/test_api_endpoints.py`: Added automated DPDP Right to Erasure cascade integration test (`test_dpdp_right_to_erasure_full_cascade`).
+  * `frontend/public/_headers`: Configured strict CSP v3 policy with `script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net`, `frame-ancestors 'none'`, and COOP/HSTS headers.
+  * `scripts/pre_commit_hook.py`: Git pre-commit hook auditing staged code changes and documentation sync per Rules 7.1 and 7.2.
+  * `frontend/src/lib/pyodide-runner.ts`: Added `MacroRegime` types (`NORMAL`, `FLASH_CRASH`, `CHOPPY_MEAN_REVERSION`, `TRENDING_EXPANSION`) with Merton jump parameters.
+  * `frontend/src/routes/lab.tsx`: Added Macro Synthetic Regime selector dropdown in Strategy Lab control bar.
+  * `scripts/run_all_tests.py`: Updated orchestrator to reflect 14 backend Pytest tests.
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation logs.
+* **Testing & Verification**:
+  * 14/14 Pytest backend tests pass (100% green).
+  * 60/60 Vitest frontend tests across 18 suites pass (100% green).
+  * Strict TypeScript check (`tsc --noEmit`) passes with 0 errors.
+  * Nitro client build and Android asset sync (74 assets) verified.
+
+---

@@ -35,6 +35,7 @@ import {
   runQuantBacktest,
   PYTHON_STRATEGY_TEMPLATES,
   QuantBacktestResult,
+  MacroRegime,
 } from "@/lib/pyodide-runner";
 
 export const Route = createFileRoute("/lab")({
@@ -110,6 +111,7 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
 
   // Backtest Results State
   const [selectedTemplate, setSelectedTemplate] = useState<string>("dual_ema");
+  const [selectedRegime, setSelectedRegime] = useState<MacroRegime>("NORMAL");
   const [backtestResult, setBacktestResult] = useState<{
     strategy_name: string;
     engine?: string;
@@ -215,7 +217,7 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
     try {
       const quantSymbol = symbol.includes("BANK") ? "BANK NIFTY" : "NIFTY 50";
       const stratName = PYTHON_STRATEGY_TEMPLATES[selectedTemplate]?.name || "Python Quant Strategy";
-      const res = await runQuantBacktest(customPythonCode, quantSymbol, stratName);
+      const res = await runQuantBacktest(customPythonCode, quantSymbol, stratName, 1_000_000, selectedRegime);
 
       setBacktestResult({
         strategy_name: res.strategyName,
@@ -344,6 +346,20 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
                 <option value="Dual_EMA_Crossover">Dual EMA Crossover</option>
                 <option value="Mean_Reversion_RSI">RSI Mean Reversion</option>
                 <option value="ATR_Volatility_Breakout">ATR Volatility Breakout</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase">Macro Synthetic Regime</label>
+              <select
+                value={selectedRegime}
+                onChange={(e) => setSelectedRegime(e.target.value as MacroRegime)}
+                className="mt-1 w-full rounded-md border border-border bg-background px-3 py-1.5 text-xs font-semibold font-mono"
+              >
+                <option value="NORMAL">Normal Intraday (GBM + 1.0x Vol)</option>
+                <option value="FLASH_CRASH">Flash Crash (Merton Jump 7x Vol)</option>
+                <option value="CHOPPY_MEAN_REVERSION">Choppy Range (Low Vol 0.55x)</option>
+                <option value="TRENDING_EXPANSION">Trending Expansion (+Drift Bias)</option>
               </select>
             </div>
 

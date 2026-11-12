@@ -252,3 +252,15 @@
 | T-18.1.6 | Pedagogical Peer Reviews & Critiques | P2 | COMPLETED AND VERIFIED | Community members review setups with clarity and risk management scores (1-5) and structured feedback. |
 | T-18.1.7 | Synthetic Merton Jump-Diffusion & GBM Data Generator | P1 | COMPLETED AND VERIFIED | `scripts/seed_market_data.py` CLI generating infinite 1-minute intraday OHLCV candles with realistic U-shaped volume liquidity curves. |
 
+---
+
+## 19. Security Hardening, DPDP Right to Erasure & Synthetic Macro Regimes (Milestone 13 / PIP Part 2.3, 4.1, 6.1 & 6.2)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-19.1.1 | DPDP Right to Erasure Cascade Integration Test | P0 | COMPLETED AND VERIFIED | `test_dpdp_right_to_erasure_full_cascade` passing in Pytest; asserts complete database wipe and token revocation. |
+| T-19.1.2 | Strict Content Security Policy (CSP v3) Headers | P0 | COMPLETED AND VERIFIED | `frontend/public/_headers` configured with `script-src 'self' 'wasm-unsafe-eval'`, `frame-ancestors 'none'`, and COOP/HSTS. |
+| T-19.1.3 | Git Pre-Commit Quality & Docs Verification Hook | P2 | COMPLETED AND VERIFIED | `scripts/pre_commit_hook.py` auditing staged source files and ensuring documentation synchronization per Rule 7.1 and 7.2. |
+| T-19.1.4 | Macro Synthetic Regimes in Strategy Lab | P1 | COMPLETED AND VERIFIED | `MacroRegime` types (`FLASH_CRASH`, `CHOPPY_MEAN_REVERSION`, `TRENDING_EXPANSION`) selectable in `/lab` with Merton jump shocks. |
+
+

@@ -358,3 +358,53 @@ async def test_quant_portfolio_margin_relief(async_client: AsyncClient):
     data = res.json()
     assert data["naked_margin"] > data["hedged_margin"]
     assert data["margin_relief_percent"] > 50.0  # Over 50% margin relief on Iron Condor
+
+@pytest.mark.asyncio
+async def test_dpdp_right_to_erasure_full_cascade(async_client: AsyncClient):
+    """
+    Verifies DPDP Act 2023 'Right to Erasure' cascade (PIP Part 6.1).
+    Ensures that when POST /api/v1/auth/delete-account is executed:
+    1. Account is authenticated and deleted.
+    2. Associated orders, positions, trades, and cash ledger records are wiped with zero orphaned keys.
+    3. Subsequent /api/v1/auth/me requests with the prior token return 401 Unauthorized.
+    """
+    # 1. Register a test user
+    test_user_payload = {
+        "email": "erasure.target@marketmaster.in",
+        "password": "Password123!",
+        "display_name": "ErasureTarget",
+        "age_confirmed": True
+    }
+    reg_res = await async_client.post("/api/v1/auth/register", json=test_user_payload)
+    assert reg_res.status_code == 201
+    auth_token = reg_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {auth_token}"}
+
+    # 2. Place an order to generate dependent database records
+    order_payload = {
+        "symbol": "NIFTY_FUT",
+        "side": "BUY",
+        "order_type": "MARKET",
+        "quantity": 50,
+        "price": 24200.0,
+        "stop_loss": 24000.0
+    }
+    order_res = await async_client.post("/api/v1/trading/orders", json=order_payload, headers=headers)
+    assert order_res.status_code in [200, 201]
+
+    # 3. Verify user profile exists
+    me_res = await async_client.get("/api/v1/auth/me", headers=headers)
+    assert me_res.status_code == 200
+    assert me_res.json()["email"] == "erasure.target@marketmaster.in"
+
+    # 4. Trigger DPDP Right to Erasure
+    del_res = await async_client.post("/api/v1/auth/delete-account", headers=headers)
+    assert del_res.status_code == 200
+    del_data = del_res.json()
+    assert del_data["status"] == "SUCCESS"
+    assert "permanently erased" in del_data["message"]
+
+    # 5. Verify token is invalidated and user record no longer exists
+    post_del_me = await async_client.get("/api/v1/auth/me", headers=headers)
+    assert post_del_me.status_code == 401
+

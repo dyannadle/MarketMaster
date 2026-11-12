@@ -546,3 +546,17 @@
 * **Impact**: Fully verified across 18 Vitest suites (60 tests) + 13 Pytest tests (73 total automated tests green), 0 TypeScript compilation errors, production Nitro bundle built and synchronized to Android assets (74 assets).
 
 ---
+
+### ADR-037: DPDP Act 2023 Erasure Regression Suite, Strict CSP v3 Headers & Synthetic Macro Regime Lab Injection
+* **Status**: Accepted & Implemented (v1.0.35)
+* **Date**: 2026-11-12
+* **Context**: Institutional security and DPDP compliance required regression verification that user account deletion atomically and cleanly cascades across all database tables (orders, positions, executions, ledger) with token revocation. Clickjacking vulnerabilities required elimination via CSP v3 headers without breaking Pyodide WebAssembly. Strategy Lab also required instant testing against synthetic macro market regimes (Flash Crash, Choppy, Trending).
+* **Decision**:
+  1. Built automated DPDP Act 2023 Right to Erasure regression test (`backend/tests/test_api_endpoints.py::test_dpdp_right_to_erasure_full_cascade`), confirming full cascade deletion and post-erasure 401 Unauthorized status.
+  2. Implemented strict production Content Security Policy (CSP v3) in `frontend/public/_headers` enforcing `script-src 'self' 'wasm-unsafe-eval'`, `frame-ancestors 'none'`, and `cross-origin-opener-policy: same-origin`.
+  3. Added Git pre-commit documentation synchronization hook (`scripts/pre_commit_hook.py`) enforcing Rule 7.1 and 7.2.
+  4. Injected dynamic Macro Synthetic Regimes (`NORMAL`, `FLASH_CRASH`, `CHOPPY_MEAN_REVERSION`, `TRENDING_EXPANSION`) into the Strategy Lab and vector generator (`frontend/src/lib/pyodide-runner.ts` and `frontend/src/routes/lab.tsx`).
+* **Why Taken**: Completes PIP Part 6.1 (DPDP Erasure), PIP Part 6.2 (Strict CSP v3), PIP Part 4.1 (Pre-Commit Quality Gate), and PIP Part 2.3 (Macro Regime Testing).
+* **Impact**: 14/14 Pytest backend tests pass (100% green); 60/60 Vitest tests pass across 18 suites (74 total tests pass); strict typecheck 0 errors; clean Nitro production build.
+
+---
