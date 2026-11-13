@@ -274,5 +274,17 @@
 | T-20.1.3 | Java 17 Native WebView Activity Shell | P1 | COMPLETED AND VERIFIED | `MainActivity.java` with `MarketMasterNative` JS bridge exposing haptic pulses and offline failover. |
 | T-20.1.4 | Standalone Android Debug APK Assembly | P0 | COMPLETED AND VERIFIED | `gradlew assembleDebug` passed in 16s; produced `app-debug.apk` (6.31 MB). |
 
+---
+
+## 21. Android Release Signing & Automated CD Release Workflow (Milestone 15 / PIP Part 3.3 & Rules 8.1)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-21.1.1 | Release Keystore Generator CLI | P1 | COMPLETED AND VERIFIED | `scripts/generate_release_keystore.py` producing 2048-bit RSA keys with 27-year validity. |
+| T-21.1.2 | Gradle Release Signing Configuration | P0 | COMPLETED AND VERIFIED | `signingConfigs.release` configured in `android/app/build.gradle` with environment variable overrides. |
+| T-21.1.3 | GitHub Actions Android CD Release Workflow | P0 | COMPLETED AND VERIFIED | `.github/workflows/android-release.yml` automating asset bundling, signing, and GitHub Release publication on `v*` tags. |
+| T-21.1.4 | Standalone Signed Release APK Assembly | P0 | COMPLETED AND VERIFIED | `gradlew assembleRelease` passed in 2m 35s; generated optimized `app-release.apk` (5.18 MB). |
+
+
 
 

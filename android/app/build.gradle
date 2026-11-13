@@ -17,9 +17,26 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            def keystoreFile = file("../keystore/release.jks")
+            if (System.getenv("ANDROID_KEYSTORE_BASE64") != null) {
+                // Decoded on CI environment
+                keystoreFile = file("../keystore/release_ci.jks")
+            }
+            if (keystoreFile.exists()) {
+                storeFile keystoreFile
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: "MarketMaster2026!"
+                keyAlias System.getenv("ANDROID_KEY_ALIAS") ?: "marketmaster-release"
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD") ?: "MarketMaster2026!"
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

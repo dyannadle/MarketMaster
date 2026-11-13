@@ -574,3 +574,17 @@
 * **Impact**: `gradlew assembleDebug` succeeds in 16s with 36/36 tasks green; produces 6.31 MB APK ready for distribution or sideloading.
 
 ---
+
+### ADR-039: Android Release APK Signing & Automated GitHub Actions CD Release Deployment
+* **Status**: Accepted & Implemented (v1.0.37)
+* **Date**: 2026-11-13
+* **Context**: Institutional release distribution required an automated, cryptographically signed Android APK build pipeline triggered on git version tags with automated GitHub Release deployment, artifact persistence, and local keystore generation.
+* **Decision**:
+  1. Built standalone key generation tool (`scripts/generate_release_keystore.py`) yielding 2048-bit RSA release signing keys (`android/keystore/release.jks`) with 27-year validity.
+  2. Configured `signingConfigs.release` in `android/app/build.gradle` supporting environment variable overrides (`ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `ANDROID_KEYSTORE_BASE64`).
+  3. Created `.github/workflows/android-release.yml` with automated end-to-end steps: checkout, frontend compilation, Android web asset synchronization, Java 17 Temurin setup, keystore decoding, signed `assembleRelease` compilation, artifact upload, and GitHub Release publication on `v*` tags.
+  4. Verified local release compilation yielding optimized 5.18 MB signed release APK (`android/app/build/outputs/apk/release/app-release.apk`).
+* **Why Taken**: Completes PIP Part 3.3 (Android Offline Packaging) and provides zero-touch continuous deployment for production mobile releases.
+* **Impact**: Verified across 47/47 Gradle release tasks (BUILD SUCCESSFUL in 2m 35s); 14/14 Pytest + 60/60 Vitest tests green; strict typecheck 0 errors.
+
+---

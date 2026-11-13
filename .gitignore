@@ -46,6 +46,11 @@ dist/
 **/build/
 *.apk
 *.aab
+*.jks
+*.keystore
+release.keystore
+android/keystore/
+
 
 # IDE & OS
 .vscode/

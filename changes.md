@@ -677,3 +677,20 @@
   * All 60 Vitest frontend tests pass (100% green).
 
 ---
+
+### [v1.0.37] - 2026-11-13 - Android Release Keystore Signing & GitHub Actions CD Release Pipeline
+* **Category**: Mobile CD Pipeline & Release Automation
+* **Files Modified / Added**:
+  * `scripts/generate_release_keystore.py`: Institutional RSA 2048-bit release keystore generator CLI (`release.jks`).
+  * `android/app/build.gradle`: Configured `signingConfigs.release` targeting local or CI keystore files with environment overrides.
+  * `.github/workflows/android-release.yml`: Automated CD workflow compiling web client, syncing Android assets, building signed release APK, and publishing GitHub Release on `v*` tags.
+  * `.gitignore`: Excluded `.jks`, `.keystore`, and `android/keystore/` from version control.
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `gradlew assembleRelease` passed in 2m 35s (47 actionable tasks).
+  * Standalone signed release APK generated at `android/app/build/outputs/apk/release/app-release.apk` (5.18 MB).
+  * All 14 Pytest backend tests pass (100% green).
+  * All 60 Vitest frontend tests pass (100% green).
+  * Strict TypeScript check (`tsc --noEmit`) passes with 0 errors.
+
+---

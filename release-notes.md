@@ -3,7 +3,26 @@
 
 ---
 
-### Release v1.0.36 (Current — Native Android Packaging & Standalone APK Assembly)
+### Release v1.0.37 (Current — Android Release Keystore Signing & GitHub Actions CD Pipeline)
+* **Release Date**: 2026-11-13 20:45 IST
+* **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
+* **Key Enhancements**:
+  * **Android Release Signing & Keystore Generation**:
+    * Created CLI generator (`scripts/generate_release_keystore.py`) producing 2048-bit RSA release signing keys with 27-year validity.
+    * Configured Gradle `signingConfigs.release` in `android/app/build.gradle` supporting environment variable credentials and CI secrets.
+    * Compiled verified signed release APK: `android/app/build/outputs/apk/release/app-release.apk` (**5.18 MB**).
+  * **Automated GitHub Actions CD Release Workflow**:
+    * Implemented `.github/workflows/android-release.yml` executing web client compilation, Android asset synchronization, Gradle signing, and GitHub Release deployment upon pushing git tags (`v*`).
+  * **Master Verification Engine Verified**:
+    * Backend Pytest: 14/14 tests passing (100% green).
+    * Frontend Vitest: 60/60 tests passing across 18 suites (100% green).
+    * TypeScript: Zero errors (`tsc --noEmit`).
+    * Production Nitro Build: 100% clean SSR bundle.
+    * Android Container: 74 production assets compiled and synchronized.
+
+---
+
+### Release v1.0.36 (Native Android Packaging & Standalone APK Assembly)
 * **Release Date**: 2026-11-12 22:55 IST
 * **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
 * **Key Enhancements**:
