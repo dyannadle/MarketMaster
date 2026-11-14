@@ -437,6 +437,39 @@
 | T-36.1.2 | Real-Time Signal Attribution Inspector | P0 | COMPLETED AND VERIFIED | Explains exact mathematical rules (EMA crossover, ATR trailing stops) firing on every candle bar. |
 | T-36.1.3 | Interactive Trade Journal Annotations | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/BacktestVisualDebugger.tsx` in `/lab` with post-mortem note pinning per candle. |
 
+---
+
+## 37. Multi-Asset Correlation Matrix & Cointegration Heatmap (Milestone 31 / PIP Part 3.6 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-37.1.1 | Cross-Asset Pearson & Spearman Matrix | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/correlation-cointegration.ts` computing $6\times 6$ rolling correlation across Equities, Commodities, and Forex. |
+| T-37.1.2 | Engle-Granger Cointegration & Z-Score Tracker | P0 | COMPLETED AND VERIFIED | Solves OLS hedge ratio, residuals, ADF $t$-statistic, and rolling spread $Z$-scores with $\pm 2.0\sigma$ stat-arb bands. |
+| T-37.1.3 | Markowitz Diversification Benefit Ratio (DBR) | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/CorrelationCointegrationPanel.tsx` in `/trade` calculating portfolio concentration risk vs optimal weights. |
+
+---
+
+## 38. FIX Protocol Drop Copy Replay & Regulatory Compliance Audit Simulator (Milestone 32 / PIP Part 1.4 & 6.1)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-38.1.1 | Broker-Dealer FIX 4.4 Drop Copy Stream Replay | P1 | COMPLETED AND VERIFIED | `frontend/src/lib/fix-surveillance.ts` parsing tag-value messages with checksum check and order lifecycle reconstruction. |
+| T-38.1.2 | SEBI Schedule V Market Abuse Surveillance | P0 | COMPLETED AND VERIFIED | Automated detectors flagging wash trades, spoofing/layering ($< 1500\text{ms}$ phantom liquidity), and circular ring trades. |
+| T-38.1.3 | 1-Click Cryptographic Audit Certificate Generator | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/FixSurveillancePanel.tsx` in `/trade` generating SHA-256 clearing reconciliation certificates. |
+
+---
+
+## 39. Genetic Programming Alpha Formula Discoverer (Milestone 33 / PIP Part 2.3 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-39.1.1 | Symbolic Alpha Expression Tree Generator (AST) | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/symbolic-alpha.ts` supporting features, unary/binary ops, and rolling time-series operators. |
+| T-39.1.2 | Multi-Objective Fitness & Parsimony Penalizer | P1 | COMPLETED AND VERIFIED | Evaluates Information Coefficient (IC) + Annualized Sharpe while penalizing tree complexity ($\lambda \cdot (\text{count} + \text{depth})$). |
+| T-39.1.3 | Vectorized Python/Polars Code Generator & UI | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/SymbolicAlphaDiscoverer.tsx` in `/lab` with generation player and 1-click strategy code export. |
+
+---
+
+
 
 
 

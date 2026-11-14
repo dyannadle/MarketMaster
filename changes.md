@@ -827,5 +827,30 @@
 
 ---
 
+### [v1.0.43] - 2026-11-14 - Cross-Asset Correlation & Cointegration Matrix, FIX 4.4 Drop Copy Surveillance & Genetic Symbolic Alpha Discoverer
+* **Category**: Multi-Asset Stat-Arb, Regulatory Compliance & Generative Quantitative Alpha Research
+* **Files Modified / Added**:
+  * `frontend/src/lib/correlation-cointegration.ts`: $6\times 6$ Pearson and Spearman correlation matrices across Equities, Commodities, and Forex, Engle-Granger OLS hedge ratio & ADF $t$-statistic cointegration solver, rolling spread $Z$-scores with $\pm 2.0\sigma$ bands, and Markowitz Diversification Benefit Ratio (DBR).
+  * `frontend/src/components/trading/CorrelationCointegrationPanel.tsx`: Interactive stat-arb pair trading panel with correlation heatmaps, Z-score historical charts, and optimal asset weighting ribbons under `"CORRELATION"` tab in `/trade`.
+  * `frontend/src/lib/fix-surveillance.ts`: Institutional FIX 4.4 tag-value parser with checksum validation, order lifecycle state machine, and SEBI Schedule V surveillance detectors (Wash Trades, Spoofing/Layering, Circular Ring Trading) with SHA-256 regulatory audit certificates.
+  * `frontend/src/components/trading/FixSurveillancePanel.tsx`: Broker-dealer drop copy feed replay, real-time PFUTP market abuse violation alert cards, and signed JSON audit certificate exporter under `"SURVEILLANCE"` tab in `/trade`.
+  * `frontend/src/routes/trade.tsx`: Added `"CORRELATION"` and `"SURVEILLANCE"` view tabs and integrated panels.
+  * `frontend/src/lib/symbolic-alpha.ts`: Genetic programming symbolic regression engine with AST grammar (terminals, unary, binary, and time-series ops), multi-objective fitness evaluation (IC + Sharpe - parsimony penalty), and vectorized Polars Python code generation.
+  * `frontend/src/components/trading/SymbolicAlphaDiscoverer.tsx`: Interactive quantitative alpha evolution laboratory with population ranking, generation convergence charts, and 1-click strategy code export under `"SYMBOLIC_ALPHA"` mode in `/lab`.
+  * `frontend/src/routes/lab.tsx`: Embedded `SymbolicAlphaDiscoverer` in Strategy Lab.
+  * `frontend/src/test/coint-surveillance-alpha.test.tsx`: Vitest suite covering correlation symmetry, Engle-Granger cointegration, Markowitz DBR, FIX checksum and message parsing, order lifecycle reconstruction, SEBI surveillance alerts, cryptographic audit certificates, AST tree generation, Polars code export, and genetic generation evolution (14 tests).
+  * `android/app/build/outputs/apk/release/app-release.apk`: Built signed release APK (5.24 MB).
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `scripts/run_all_tests.py` ran all 5 layers passing 100% in 74.77s.
+  * 13 Pytest backend tests green.
+  * 24 Vitest frontend suites (117 tests) green.
+  * Strict TypeScript check (`npx tsc --noEmit`) passed with 0 errors.
+  * Full Production Nitro SSR bundle compiled cleanly in 11.40s.
+  * Multi-Service Health & Docker Smoke Test passed in 5.21s.
+  * Android Release APK compiled and signed (5.24 MB).
+
+---
+
 
 
