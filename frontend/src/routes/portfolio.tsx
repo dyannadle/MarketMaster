@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { FileSpreadsheet, Brain, Layers, Activity } from "lucide-react";
+import { FileSpreadsheet, Brain, Layers, Activity, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change, PageHeader } from "@/components/AppShell";
 import { inr } from "@/lib/data";
@@ -8,6 +8,7 @@ import { STARTING_CASH, useAccount, useLivePrices } from "@/lib/paper";
 import { TradeStatementExporter } from "@/components/trading/TradeStatementExporter";
 import { BehavioralMistakeHeatmap } from "@/components/trading/BehavioralMistakeHeatmap";
 import { PortfolioStressTesting } from "@/components/trading/PortfolioStressTesting";
+import { GreeksHedgingRebalancer } from "@/components/trading/GreeksHedgingRebalancer";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/portfolio")({
 
 function Portfolio() {
   const [isExporterOpen, setIsExporterOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"POSITIONS" | "PSYCHOLOGY" | "STRESS_TESTING">("POSITIONS");
+  const [activeTab, setActiveTab] = useState<"POSITIONS" | "PSYCHOLOGY" | "STRESS_TESTING" | "GREEKS_HEDGE">("POSITIONS");
   const prices = useLivePrices();
   const { acc, reset } = useAccount();
   const rows = acc.positions.map((p) => {
@@ -93,6 +94,17 @@ function Portfolio() {
           <Activity className="size-4" />
           <span>Cross-Margin & RMS Stress Testing</span>
         </button>
+        <button
+          onClick={() => setActiveTab("GREEKS_HEDGE")}
+          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-bold transition-all ${
+            activeTab === "GREEKS_HEDGE"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Scale className="size-4" />
+          <span>Greeks Hedging & Delta Rebalancer</span>
+        </button>
       </div>
 
       {activeTab === "POSITIONS" ? (
@@ -135,9 +147,13 @@ function Portfolio() {
         <div className="mx-5 md:mx-8">
           <BehavioralMistakeHeatmap />
         </div>
-      ) : (
+      ) : activeTab === "STRESS_TESTING" ? (
         <div className="mx-5 md:mx-8">
           <PortfolioStressTesting positions={rows} cash={Number(acc.cash || 0)} />
+        </div>
+      ) : (
+        <div className="mx-5 md:mx-8">
+          <GreeksHedgingRebalancer spotPrice={prices["NIFTY_FUT"]?.p || 24500} />
         </div>
       )}
 

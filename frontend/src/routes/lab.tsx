@@ -29,6 +29,7 @@ import {
   Sparkles,
   Dices,
   Database,
+  Activity,
 } from "lucide-react";
 import { PageHeader } from "@/components/AppShell";
 import { inr, instruments, seededSeries, strategies } from "@/lib/data";
@@ -37,6 +38,7 @@ import { InstitutionalExecutionAlgorithms } from "@/components/trading/Instituti
 import { GeneticOptimizerPanel } from "@/components/trading/GeneticOptimizerPanel";
 import { MonteCarloStressPanel } from "@/components/trading/MonteCarloStressPanel";
 import { SqlAnalyticsCachePanel } from "@/components/trading/SqlAnalyticsCachePanel";
+import { BacktestVisualDebugger } from "@/components/trading/BacktestVisualDebugger";
 import {
   runQuantBacktest,
   PYTHON_STRATEGY_TEMPLATES,
@@ -64,8 +66,8 @@ function Lab() {
   const [riskPerTrade, setRiskPerTrade] = useState(1.0);
   const [isRunning, setIsRunning] = useState(false);
 
-  // Dual-Mode State: Visual No-Code vs Python Quant Pro vs Genetic Optimizer vs Monte Carlo vs SQL Analytics
-  const [builderMode, setBuilderMode] = useState<"VISUAL" | "PYTHON" | "OPTIMIZER" | "MONTE_CARLO" | "SQL_ANALYTICS">("VISUAL");
+  // Dual-Mode State: Visual No-Code vs Python Quant Pro vs Genetic Optimizer vs Monte Carlo vs SQL Analytics vs Visual Debugger
+  const [builderMode, setBuilderMode] = useState<"VISUAL" | "PYTHON" | "OPTIMIZER" | "MONTE_CARLO" | "SQL_ANALYTICS" | "DEBUGGER">("VISUAL");
 
   // Visual No-Code rule states
   const [entryOperator, setEntryOperator] = useState<"CROSSES_ABOVE" | "GREATER_THAN">("CROSSES_ABOVE");
@@ -613,6 +615,16 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
                 >
                   <Database className="h-3.5 w-3.5" /> SQL & Parquet Analytics
                 </button>
+                <button
+                  onClick={() => setBuilderMode("DEBUGGER")}
+                  className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-bold transition-all ${
+                    builderMode === "DEBUGGER"
+                      ? "bg-primary text-primary-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Activity className="h-3.5 w-3.5" /> Visual Step Debugger
+                </button>
               </div>
 
               <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
@@ -837,7 +849,7 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
                 tradeReturns={backtestResult?.trades_list?.map((t) => t.ret / 100) || []}
                 initialCapital={1000000}
               />
-            ) : (
+            ) : builderMode === "SQL_ANALYTICS" ? (
               <SqlAnalyticsCachePanel
                 currentFast={fast}
                 currentSlow={slow}
@@ -853,6 +865,13 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
                   setBuilderMode("VISUAL");
                   toast.success(`Restored session ${session.cacheId}: Fast ${session.fastEma}, Slow ${session.slowEma} on ${session.symbol}.`);
                 }}
+              />
+            ) : (
+              <BacktestVisualDebugger
+                strategyName={strategy}
+                symbol={symbol}
+                fastPeriod={fast}
+                slowPeriod={slow}
               />
             )}
           </div>

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
-import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper, FileSpreadsheet, SlidersHorizontal, Terminal, Headphones, Rotate3d, Scale } from "lucide-react";
+import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper, FileSpreadsheet, SlidersHorizontal, Terminal, Headphones, Rotate3d, Scale, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change } from "@/components/AppShell";
 import { inr, instruments } from "@/lib/data";
@@ -27,6 +27,7 @@ import { FixProtocolInspector } from "@/components/trading/FixProtocolInspector"
 import { OrderBookHeatmap } from "@/components/trading/OrderBookHeatmap";
 import { VolatilitySurface3D } from "@/components/trading/VolatilitySurface3D";
 import { SmartOrderRoutingPanel } from "@/components/trading/SmartOrderRoutingPanel";
+import { OrderFlowFootprintCanvas } from "@/components/trading/OrderFlowFootprintCanvas";
 import {
   FifoLimitOrder,
   advanceFifoQueueTick,
@@ -65,8 +66,8 @@ function Trade() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [backendPositions, setBackendPositions] = useState<any[]>([]);
 
-  // Navigation View Toggle: Candlestick Chart vs Options Chain vs Strategy Builder vs News Wire vs FIX Inspector vs Voice Desk vs L2 Depth vs Vol Surface vs Algo Exec
-  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE" | "FIX_INSPECTOR" | "VOICE_DESK" | "L2_DEPTH" | "VOL_SURFACE" | "ALGO_EXEC">("CHART");
+  // Navigation View Toggle: Candlestick Chart vs Options Chain vs Strategy Builder vs News Wire vs FIX Inspector vs Voice Desk vs L2 Depth vs Vol Surface vs Algo Exec vs Footprint
+  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE" | "FIX_INSPECTOR" | "VOICE_DESK" | "L2_DEPTH" | "VOL_SURFACE" | "ALGO_EXEC" | "FOOTPRINT">("CHART");
   const [marketQuotes, setMarketQuotes] = useState<any[]>([]);
 
   // Multi-Leg Strategy Execution Handler
@@ -607,6 +608,14 @@ function Trade() {
               >
                 <Scale className="h-3.5 w-3.5" /> SOR & Algos
               </button>
+              <button
+                onClick={() => setTerminalView("FOOTPRINT")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                  terminalView === "FOOTPRINT" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Flame className="h-3.5 w-3.5" /> Footprint (MBP)
+              </button>
             </div>
 
           <div className="flex items-center gap-3">
@@ -676,6 +685,8 @@ function Trade() {
           <VolatilitySurface3D symbol={sym} spotPrice={q.p} />
         ) : terminalView === "ALGO_EXEC" ? (
           <SmartOrderRoutingPanel symbol={sym} currentPrice={q.p} />
+        ) : terminalView === "FOOTPRINT" ? (
+          <OrderFlowFootprintCanvas symbol={sym} currentPrice={q.p} />
         ) : (
           <LiveNewsFeed />
         )}

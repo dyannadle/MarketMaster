@@ -407,6 +407,37 @@
 | T-33.1.2 | Apache Parquet Binary Dataset Exporter | P1 | COMPLETED AND VERIFIED | Constructs standard binary `.parquet` files with `PAR1` magic bytes and columnar schema metadata. |
 | T-33.1.3 | Session Cache Replay & Strategy Lab Console | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/SqlAnalyticsCachePanel.tsx` in `/lab` with query presets and 1-click snapshot restore. |
 
+---
+
+## 34. HFT Tick-by-Tick Order Flow Footprint & Volume Profile Canvas (Milestone 28 / PIP Part 1.4 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-34.1.1 | Intra-Candle Bid/Ask Footprint & Delta Clusters | P1 | COMPLETED AND VERIFIED | `frontend/src/lib/order-flow-footprint.ts` calculating micro-price level bid/ask volumes and cumulative delta. |
+| T-34.1.2 | Point of Control (POC) & 70% Value Area (VAH/VAL) | P0 | COMPLETED AND VERIFIED | Calculates session POC and 70% Value Area boundaries for institutional balance profiling. |
+| T-34.1.3 | Diagonal Stacked Imbalances & Footprint Canvas | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/OrderFlowFootprintCanvas.tsx` in `/trade` detecting 3x/4x aggressive absorption sweeps. |
+
+---
+
+## 35. Multi-Leg Option Greeks Hedging & Dynamic Delta Rebalancer (Milestone 29 / PIP Part 3.6 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-35.1.1 | Multi-Asset Portfolio Greeks Aggregator | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/greeks-hedging.ts` aggregating Net $\Delta, \Gamma, \Theta, \mathcal{V}$ across equities, futures, and options. |
+| T-35.1.2 | Delta and Delta-Gamma Neutrality Solvers | P1 | COMPLETED AND VERIFIED | Neutralizes Delta via futures and Delta-Gamma via ATM options + futures, monitoring $|\Delta| > 50$ corridor. |
+| T-35.1.3 | Dynamic Rebalancing Execution & Cost Audit | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/GreeksHedgingRebalancer.tsx` in `/portfolio` tracking basis drag vs risk reduction. |
+
+---
+
+## 36. Backtest Visual Step Debugger & Journal Annotator (Milestone 30 / PIP Part 2.3 & 5.2)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-36.1.1 | Bar-by-Bar Step-Through Replay Player | P1 | COMPLETED AND VERIFIED | `frontend/src/lib/backtest-debugger.ts` providing step forward/back and variable speed playback (0.5x to 5x). |
+| T-36.1.2 | Real-Time Signal Attribution Inspector | P0 | COMPLETED AND VERIFIED | Explains exact mathematical rules (EMA crossover, ATR trailing stops) firing on every candle bar. |
+| T-36.1.3 | Interactive Trade Journal Annotations | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/BacktestVisualDebugger.tsx` in `/lab` with post-mortem note pinning per candle. |
+
+
 
 
 

@@ -641,4 +641,18 @@
 
 ---
 
+### ADR-044: Order Flow Footprint Canvas, Multi-Leg Option Greeks Rebalancer & Backtest Step Debugger
+* **Status**: Accepted & Implemented (v1.0.42)
+* **Date**: 2026-11-14
+* **Context**: Equipping the platform with HFT Market By Price (MBP) order flow footprint profiling with stacked imbalance detection, dynamic multi-leg option Greeks hedging with automated tolerance corridor monitoring ($|\Delta| > 50$), and a bar-by-bar backtest step debugger with real-time rule attribution in the Strategy Lab.
+* **Decision**:
+  1. **HFT Order Flow Footprint & Volume Profile Canvas**: Implemented `frontend/src/lib/order-flow-footprint.ts` and `frontend/src/components/trading/OrderFlowFootprintCanvas.tsx`. Computes intra-candle bid/ask clusters, Delta coloring, Point of Control (POC), 70% Value Area (VAH/VAL), and diagonal stacked imbalances ($3\times$ and $4\times$). Rendered via interactive grid with session volume profile histogram under `"FOOTPRINT"` tab in `/trade`.
+  2. **Multi-Leg Greeks Hedging & Dynamic Delta Rebalancer**: Implemented `frontend/src/lib/greeks-hedging.ts` and `frontend/src/components/trading/GreeksHedgingRebalancer.tsx`. Aggregates Net Delta ($\Delta$), Gamma ($\Gamma$), Theta ($\Theta$), and Vega ($\mathcal{V}$) across cash, futures, and options. Solves for Delta-neutrality (Futures) and Delta-Gamma neutrality (Futures + ATM Options), monitoring the $\pm 50$ corridor with $1$-click rebalance execution and basis drag efficiency auditing in `/portfolio`.
+  3. **Backtest Visual Step Debugger & Journal Annotator**: Implemented `frontend/src/lib/backtest-debugger.ts` and `frontend/src/components/trading/BacktestVisualDebugger.tsx` in `/lab`. Provides step forward/backward playback, variable speed player (0.5x to 5x), scrub timeline, real-time signal attribution inspector explaining crossover triggers, and interactive post-mortem journal note pinning.
+* **Why Taken**: Completes Milestones 28, 29, and 30, providing elite institutional order flow transparency, active volatility risk neutralization, and deterministic strategy debugging.
+* **Impact**: 100% test pass rate across 13 Pytest backend tests, 23 Vitest frontend suites (103 tests), strict TypeScript compilation (0 errors), Nitro SSR build, and signed release APK assembly (`app-release.apk`, 5.23 MB).
+
+---
+
+
 

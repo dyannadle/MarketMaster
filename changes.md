@@ -801,4 +801,31 @@
 
 ---
 
+### [v1.0.42] - 2026-11-14 - Order Flow Footprint Canvas, Multi-Leg Option Greeks Rebalancer & Backtest Step Debugger
+* **Category**: HFT Order Flow, Dynamic Options Greeks Hedging & Strategy Backtest Debugging
+* **Files Modified / Added**:
+  * `frontend/src/lib/order-flow-footprint.ts`: Intra-candle bid/ask volume clusters (delta footprint), Point of Control (POC), 70% Value Area (VAH/VAL), and diagonal stacked imbalances ($3\times$ and $4\times$).
+  * `frontend/src/components/trading/OrderFlowFootprintCanvas.tsx`: Interactive footprint grid with POC highlighting, delta cell coloring, and session volume profile histogram in `/trade` (`"FOOTPRINT"` tab).
+  * `frontend/src/lib/greeks-hedging.ts`: Portfolio Greeks aggregator (Net $\Delta, \Gamma, \Theta, \mathcal{V}$), Delta tolerance corridor monitoring ($|\Delta| > 50$), and Delta/Delta-Gamma neutrality solvers.
+  * `frontend/src/components/trading/GreeksHedgingRebalancer.tsx`: Dynamic rebalancing console in `/portfolio` with automated child order execution and hedging efficiency/basis drag analysis.
+  * `frontend/src/routes/portfolio.tsx`: Added `"GREEKS_HEDGE"` tab and integrated `GreeksHedgingRebalancer`.
+  * `frontend/src/routes/trade.tsx`: Added `"FOOTPRINT"` tab and embedded `OrderFlowFootprintCanvas`.
+  * `frontend/src/lib/backtest-debugger.ts`: Bar-by-bar step replay engine, ATR trailing stop ratchet, signal attribution inspector, and trade journal annotations.
+  * `frontend/src/components/trading/BacktestVisualDebugger.tsx`: Interactive player with playback controls (0.5x to 5x), scrub timeline, revealing chart, and post-mortem note pinning in `/lab` (`"DEBUGGER"` mode).
+  * `frontend/src/routes/lab.tsx`: Embedded `BacktestVisualDebugger` in Strategy Lab.
+  * `frontend/src/test/footprint-greeks-debugger.test.tsx`: Vitest suite covering footprint generation, POC, Value Area, stacked imbalances, Greeks portfolio aggregation, Delta neutrality solving, and backtest step playback.
+  * `android/app/build/outputs/apk/release/app-release.apk`: Built signed release APK (5.23 MB).
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `scripts/run_all_tests.py` ran all 5 layers passing 100% in 57.78s.
+  * 13 Pytest backend tests green.
+  * 23 Vitest frontend suites (103 tests) green.
+  * Strict TypeScript check (`npx tsc --noEmit`) passed with 0 errors.
+  * Full Production Nitro SSR bundle compiled cleanly in 9.75s.
+  * Multi-Service Health & Docker Smoke Test passed in 4.84s.
+  * Android Release APK compiled and signed (5.23 MB).
+
+---
+
+
 
