@@ -317,6 +317,36 @@
 | T-24.1.2 | Pre-Flight Health Gate in Developer Launcher | P2 | COMPLETED AND VERIFIED | Enhanced `start-all.bat` with pre-flight smoke testing and colorized terminal status feedback. |
 | T-24.1.3 | Master Test Pipeline Step 5 Integration | P0 | COMPLETED AND VERIFIED | Embedded smoke test in `scripts/run_all_tests.py`, verified with 5/5 layers passing green in 52s. |
 
+---
+
+## 25. WebRTC Peer-to-Peer Voice Alpha Desk & Floor Audio Squawk (Milestone 19 / PIP Part 3.4 & 5.2)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-25.1.1 | Institutional Audio Market Squawk Box | P1 | COMPLETED AND VERIFIED | `frontend/src/lib/squawk.ts` utilizing browser `SpeechSynthesis` for instant order fills, queue fills, breakout, and Rule 4.3 alerts. |
+| T-25.1.2 | WebRTC Mesh P2P Audio Voice Room | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/WebRtcAlphaDesk.tsx` with Web Audio API VU meter, mic capture, and trader peer states. |
+| T-25.1.3 | Terminal Integration & Audio Triggers | P2 | COMPLETED AND VERIFIED | Integrated Voice Desk tab in `trade.tsx` with automatic audio callouts on order execution and queue fills. |
+
+---
+
+## 26. FIX Protocol v4.4 Message Inspector & Institutional Drop Copy (Milestone 20 / PIP Part 1.4 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-26.1.1 | Standard FIX 4.4 Packet Encoder & Parser | P1 | COMPLETED AND VERIFIED | `frontend/src/lib/fix-protocol.ts` supporting `35=D`, `35=8`, `150=F`, and Modulo-256 CheckSum verification. |
+| T-26.1.2 | Real-Time FIX Protocol Inspector UI | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/FixProtocolInspector.tsx` displaying tag-value decoders and live message filters. |
+| T-26.1.3 | Institutional Clearing Drop Copy Exporter | P1 | COMPLETED AND VERIFIED | One-click export of raw `.fix` audit feeds for regulatory reconciliation and audit trails. |
+
+---
+
+## 27. Genetic Algorithm Strategy Parameter Optimizer (Milestone 21 / PIP Part 2.3 & 4.2)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-27.1.1 | Evolutionary Strategy Chromosome Engine | P1 | COMPLETED AND VERIFIED | `frontend/src/lib/genetic-optimizer.ts` evolving Fast/Slow EMAs, ATR multipliers, and Rule 4.3 risk sizing. |
+| T-27.1.2 | Multi-Objective Calmar & Drawdown Scoring | P0 | COMPLETED AND VERIFIED | Evaluates equity curves, penalizing drawdowns $> 1.5\%$ per Rule 4.3 while rewarding smooth Calmar/Sharpe performance. |
+| T-27.1.3 | Strategy Lab Interactive Optimizer Panel | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/GeneticOptimizerPanel.tsx` in `/lab` with generation convergence chart and 1-click apply. |
+
 
 
 

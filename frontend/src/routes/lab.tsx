@@ -26,11 +26,13 @@ import {
   ArrowRight,
   Terminal,
   FileCode2,
+  Sparkles,
 } from "lucide-react";
 import { PageHeader } from "@/components/AppShell";
 import { inr, instruments, seededSeries, strategies } from "@/lib/data";
 import { backendApi } from "@/lib/api";
 import { InstitutionalExecutionAlgorithms } from "@/components/trading/InstitutionalExecutionAlgorithms";
+import { GeneticOptimizerPanel } from "@/components/trading/GeneticOptimizerPanel";
 import {
   runQuantBacktest,
   PYTHON_STRATEGY_TEMPLATES,
@@ -58,8 +60,8 @@ function Lab() {
   const [riskPerTrade, setRiskPerTrade] = useState(1.0);
   const [isRunning, setIsRunning] = useState(false);
 
-  // Dual-Mode State: Visual No-Code Builder vs Python Quant Pro Mode
-  const [builderMode, setBuilderMode] = useState<"VISUAL" | "PYTHON">("VISUAL");
+  // Dual-Mode State: Visual No-Code Builder vs Python Quant Pro Mode vs Genetic Optimizer
+  const [builderMode, setBuilderMode] = useState<"VISUAL" | "PYTHON" | "OPTIMIZER">("VISUAL");
 
   // Visual No-Code rule states
   const [entryOperator, setEntryOperator] = useState<"CROSSES_ABOVE" | "GREATER_THAN">("CROSSES_ABOVE");
@@ -577,6 +579,16 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
                 >
                   <FileCode2 className="h-3.5 w-3.5" /> Python Quant Pro Mode
                 </button>
+                <button
+                  onClick={() => setBuilderMode("OPTIMIZER")}
+                  className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-bold transition-all ${
+                    builderMode === "OPTIMIZER"
+                      ? "bg-primary text-primary-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Sparkles className="h-3.5 w-3.5" /> Genetic Optimizer (AI)
+                </button>
               </div>
 
               <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
@@ -698,7 +710,7 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
                   </div>
                 )}
               </div>
-            ) : (
+            ) : builderMode === "PYTHON" ? (
               /* Mode B: Pyodide WebAssembly In-Browser Python Quant Sandbox */
               <div className="space-y-3">
                 {/* Strategy Templates Bar */}
@@ -784,6 +796,18 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
                   </div>
                 </div>
               </div>
+            ) : (
+              <GeneticOptimizerPanel
+                onApplyParameters={(params) => {
+                  setFast(params.fast);
+                  setSlow(params.slow);
+                  setRiskPerTrade(params.riskPerTrade);
+                  setBuilderMode("VISUAL");
+                  toast.success(
+                    `Applied evolved parameters: Fast EMA ${params.fast}, Slow EMA ${params.slow}, ATR ${params.atrMultiplier}x, Risk ${params.riskPerTrade}%.`
+                  );
+                }}
+              />
             )}
           </div>
 

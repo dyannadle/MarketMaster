@@ -3,7 +3,32 @@
 
 ---
 
-### Release v1.0.38 (Current — Persistent Web Push Alerts, SEBI Cross-Margin RMS & Multi-Service Smoke Test Suite)
+### Release v1.0.39 (Current — WebRTC Voice Alpha Desk, Audio Squawk Box, FIX 4.4 Protocol & Genetic Algorithm Optimizer)
+* **Release Date**: 2026-11-14 19:25 IST
+* **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
+* **Key Enhancements**:
+  * **Option 1: Real-Time WebRTC Peer-to-Peer Voice Alpha Desk & Floor Audio Squawk (Milestone 19)**:
+    * Implemented browser-native speech synthesis floor squawk (`frontend/src/lib/squawk.ts`) generating instant professional audio callouts for trade fills, queue executions, breakout surges, and Rule 4.3 risk limit alarms with zero external cloud expenses ($₹0$).
+    * Built interactive WebRTC voice room (`frontend/src/components/trading/WebRtcAlphaDesk.tsx`) with microphone audio capture, Web Audio API VU level meter, and simulated floor peer channels.
+  * **Option 2: FIX Protocol v4.4 Message Inspector & Institutional Drop Copy Log (Milestone 20)**:
+    * Full FIX 4.4 tag-value parser and generator (`frontend/src/lib/fix-protocol.ts`) supporting `35=D` New Order Single, `35=8` Execution Report, `150=F` Trade Fill, and modulo-256 checksum calculation.
+    * Interactive inspector UI (`frontend/src/components/trading/FixProtocolInspector.tsx`) in `/trade` with message filtering, test injection, and `.fix` file drop copy exporter for regulatory clearing audits.
+  * **Option 3: Genetic Algorithm Strategy Parameter Optimizer in `/lab` (Milestone 21)**:
+    * Built client-side evolutionary algorithm (`frontend/src/lib/genetic-optimizer.ts`) searching multi-dimensional parameter spaces (Fast EMA, Slow EMA, ATR multiplier, Risk per trade).
+    * Evaluates chromosomes across historical/seeded price series using tournament selection, uniform crossover, and Gaussian mutation, optimizing Calmar and Sharpe ratios while strictly enforcing Rule 4.3 drawdown limits ($R \le 1.5\%$).
+    * Interactive UI (`frontend/src/components/trading/GeneticOptimizerPanel.tsx`) in `/lab` featuring generation fitness convergence charts and 1-click parameter application.
+  * **Master Verification Engine Verified**:
+    * Backend Pytest: 13/13 tests passing (100% green).
+    * Frontend Vitest: 76/76 tests passing across 20 suites (100% green).
+    * TypeScript: Zero errors (`npx tsc --noEmit`).
+    * Production Nitro Build: 100% clean SSR bundle (7.3s).
+    * Multi-Service Smoke Test: 100% passed (4.05s).
+    * Android Container: 77 production assets compiled and synchronized.
+    * Android Release APK: Verified signed assembly (`app-release.apk`, **5.19 MB**).
+
+---
+
+### Release v1.0.38 (Persistent Web Push Alerts, SEBI Cross-Margin RMS & Multi-Service Smoke Test Suite)
 * **Release Date**: 2026-11-14 19:10 IST
 * **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
 * **Key Enhancements**:

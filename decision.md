@@ -601,3 +601,16 @@
 * **Impact**: 100% test pass rate across 13 Pytest backend tests, 19 Vitest frontend suites (66 tests), strict TypeScript compilation (0 errors), Nitro SSR build, and signed release APK assembly (`app-release.apk`, 5.18 MB).
 
 ---
+
+### ADR-041: WebRTC Voice Alpha Desk, Audio Squawk Box, FIX 4.4 Drop Copy Protocol & Genetic Algorithm Strategy Optimizer
+* **Status**: Accepted & Implemented (v1.0.39)
+* **Date**: 2026-11-14
+* **Context**: Delivering zero-latency trader voice collaboration, floor market audio callouts, broker-dealer FIX 4.4 messaging with clearing Drop Copy audit feeds, and AI-driven quantitative parameter optimization.
+* **Decision**:
+  1. **WebRTC P2P Voice Alpha Desk & Floor Audio Squawk**: Built `frontend/src/lib/squawk.ts` utilizing browser `window.speechSynthesis` for fast institutional audio callouts (Level-3 queue fills, market fills, breakout surges, and Rule 4.3 drawdown alarms) with zero external cloud cost ($₹0$). Built `frontend/src/components/trading/WebRtcAlphaDesk.tsx` with WebRTC mesh audio peer controls, Web Audio API VU meter, and simulated floor peer channels.
+  2. **FIX Protocol v4.4 Message Inspector & Drop Copy**: Implemented `frontend/src/lib/fix-protocol.ts` and `frontend/src/components/trading/FixProtocolInspector.tsx`. Encodes and decodes standard FIX tags (`8=FIX.4.4`, `35=D` New Order, `35=8` Execution Report, `55` Symbol, `54` Side, `38` Qty, `44` Price, `39` OrdStatus, `150` ExecType, `10` Modulo-256 CheckSum). Exports `.fix` drop copy streams for clearing audits.
+  3. **Genetic Algorithm Strategy Parameter Optimizer**: Built `frontend/src/lib/genetic-optimizer.ts` and `frontend/src/components/trading/GeneticOptimizerPanel.tsx` in `/lab`. Evolves Dual EMA and ATR trailing stop parameters using tournament selection, uniform crossover, and Gaussian mutation, scoring fitness on Calmar Ratio and Sharpe Ratio while heavily penalizing Rule 4.3 drawdown breaches ($> 1.5\%$).
+* **Why Taken**: Completes Milestones 19, 20, and 21, equipping MarketMaster with institutional exchange gateways, real-time voice squawk telemetry, and evolutionary quant optimization.
+* **Impact**: 100% test pass rate across 13 Pytest backend tests, 20 Vitest frontend suites (76 tests), strict TypeScript validation (0 errors), Nitro SSR build, and signed release APK assembly (`app-release.apk`, 5.19 MB).
+
+---

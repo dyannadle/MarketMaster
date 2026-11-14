@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
-import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper, FileSpreadsheet, SlidersHorizontal } from "lucide-react";
+import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper, FileSpreadsheet, SlidersHorizontal, Terminal, Headphones } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change } from "@/components/AppShell";
 import { inr, instruments } from "@/lib/data";
@@ -16,6 +16,14 @@ import { nativeBridge } from "@/lib/native";
 import { TradeStatementExporter } from "@/components/trading/TradeStatementExporter";
 import { checkCoolDownStatus, detectRevengeTrading } from "@/lib/journal";
 import { dispatchNotification } from "@/lib/notifications";
+import { squawkBox } from "@/lib/squawk";
+import {
+  createNewOrderSingleFix,
+  createExecutionReportFix,
+  logFixMessage,
+} from "@/lib/fix-protocol";
+import { WebRtcAlphaDesk } from "@/components/trading/WebRtcAlphaDesk";
+import { FixProtocolInspector } from "@/components/trading/FixProtocolInspector";
 import {
   FifoLimitOrder,
   advanceFifoQueueTick,
@@ -54,8 +62,8 @@ function Trade() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [backendPositions, setBackendPositions] = useState<any[]>([]);
 
-  // Navigation View Toggle: Candlestick Chart vs Options Chain Matrix vs Strategy Builder vs Live News Wire
-  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE">("CHART");
+  // Navigation View Toggle: Candlestick Chart vs Options Chain vs Strategy Builder vs News Wire vs FIX Inspector vs Voice Desk
+  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE" | "FIX_INSPECTOR" | "VOICE_DESK">("CHART");
   const [marketQuotes, setMarketQuotes] = useState<any[]>([]);
 
   // Multi-Leg Strategy Execution Handler
@@ -128,6 +136,15 @@ function Trade() {
             message: `${order.side} ${order.qty} ${order.symbol} @ ₹${order.limitPrice.toFixed(2)} executed after depth drained.`,
             meta: { symbol: order.symbol, side: order.side, qty: order.qty, price: order.limitPrice },
           });
+          squawkBox.fifoQueueFilled(order.side, order.qty, order.symbol, order.limitPrice);
+          logFixMessage(
+            createExecutionReportFix({
+              symbol: order.symbol,
+              side: order.side,
+              qty: order.qty,
+              fillPrice: order.limitPrice,
+            })
+          );
           const r = applyOrder(acc, {
             symbol: order.symbol,
             side: order.side,
@@ -292,6 +309,10 @@ function Trade() {
         message: `${side} ${qty} ${sym} filled @ ₹${Number(fill).toFixed(2)} (${jitter}ms latency).`,
         meta: { symbol: sym, side, qty, price: fill },
       });
+      squawkBox.orderFilled(side, qty, sym, Number(fill));
+      const fixOrder = createNewOrderSingleFix({ symbol: sym, side, qty, orderType: type, price: Number(fill) });
+      logFixMessage(fixOrder);
+      logFixMessage(createExecutionReportFix({ symbol: sym, side, qty, fillPrice: Number(fill), clOrdId: fixOrder.clOrdId }));
       await refreshPositions();
     } catch {
       // Offline fallback: Use local paper engine
@@ -310,6 +331,10 @@ function Trade() {
           message: `${side} ${qty} ${sym} @ ₹${estimatedFillPrice.toFixed(2)} simulated fill.`,
           meta: { symbol: sym, side, qty, price: estimatedFillPrice },
         });
+        squawkBox.orderFilled(side, qty, sym, estimatedFillPrice);
+        const fixOrder = createNewOrderSingleFix({ symbol: sym, side, qty, orderType: type, price: estimatedFillPrice });
+        logFixMessage(fixOrder);
+        logFixMessage(createExecutionReportFix({ symbol: sym, side, qty, fillPrice: estimatedFillPrice, clOrdId: fixOrder.clOrdId }));
       }
     } finally {
       setIsSubmitting(false);
@@ -539,6 +564,22 @@ function Trade() {
               >
                 <Newspaper className="h-3.5 w-3.5" /> Market News Wire
               </button>
+              <button
+                onClick={() => setTerminalView("FIX_INSPECTOR")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                  terminalView === "FIX_INSPECTOR" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Terminal className="h-3.5 w-3.5" /> FIX 4.4 Protocol
+              </button>
+              <button
+                onClick={() => setTerminalView("VOICE_DESK")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                  terminalView === "VOICE_DESK" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Headphones className="h-3.5 w-3.5" /> Alpha Desk & Squawk
+              </button>
             </div>
 
           <div className="flex items-center gap-3">
@@ -598,6 +639,10 @@ function Trade() {
             lotSize={inst.lot || 50}
             onExecuteStrategy={handleExecuteStrategy}
           />
+        ) : terminalView === "FIX_INSPECTOR" ? (
+          <FixProtocolInspector />
+        ) : terminalView === "VOICE_DESK" ? (
+          <WebRtcAlphaDesk />
         ) : (
           <LiveNewsFeed />
         )}
