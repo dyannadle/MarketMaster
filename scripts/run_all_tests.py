@@ -64,7 +64,7 @@ def main():
             ROOT_DIR
         ),
         (
-            "Frontend Component & Visualizer Vitest Suite (18 suites, 60 tests)",
+            "Frontend Component & Visualizer Vitest Suite (19 suites, 66 tests)",
             ["pnpm", "test"],
             ROOT_DIR / "frontend"
         ),
@@ -77,7 +77,12 @@ def main():
             "Full Production Bundle & Nitro SSR Build",
             ["pnpm", "build"],
             ROOT_DIR / "frontend"
-        )
+        ),
+        (
+            "Multi-Service Health & Docker Smoke Test (Milestone 18)",
+            [python_bin, "scripts/smoke_test_services.py"],
+            ROOT_DIR
+        ),
     ]
 
     results = []

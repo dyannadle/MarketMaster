@@ -588,3 +588,16 @@
 * **Impact**: Verified across 47/47 Gradle release tasks (BUILD SUCCESSFUL in 2m 35s); 14/14 Pytest + 60/60 Vitest tests green; strict typecheck 0 errors.
 
 ---
+
+### ADR-040: Persistent Web Push Dispatcher, SEBI PRAN Cross-Margin RMS Stress Testing & Multi-Service Smoke Test Suite
+* **Status**: Accepted & Implemented (v1.0.38)
+* **Date**: 2026-11-14
+* **Context**: Moving from mock notifications to live persistent microstructure event dispatching, providing institutional multi-asset cross-margin relief models with scenario stress testing in `/portfolio`, and orchestrating zero-dependency service reconciliation.
+* **Decision**:
+  1. **Persistent Web Push & Microstructure Dispatcher Engine**: Created `frontend/src/lib/notifications.ts` and enhanced `frontend/public/sw.js` with background `push` and `notificationclick` handlers. Dispatches live events on Level-3 FIFO order fills, direct market fills, position exits, SM-2 flashcard due drills, and Rule 4.3 risk threshold alerts. Reactive unread badge integrated in `AppShell.tsx`.
+  2. **Multi-Asset Cross-Margin & RMS Scenario Stress Simulator**: Implemented `frontend/src/lib/cross-margin-stress.ts` and interactive UI `frontend/src/components/trading/PortfolioStressTesting.tsx` under a new tab in `/portfolio`. Accurately models SEBI PRAN margin relief (Cash + Short Futures 75% relief, Protective Puts 40% VaR relief) and macro shocks (RBI ±50 bps repo hike/cut, Black Swan -3.5% gap down, FII Short Squeeze +2.5%, and custom sliders for Nifty %, VIX, and repo rates) with net Greek aggregations ($\Delta, \Gamma, \Theta, \mathcal{V}$) and Rule 4.3 ($R \le 1.5\%$) capital breach warnings.
+  3. **Automated Docker Multi-Service Boot & Smoke Test Orchestrator**: Built `scripts/smoke_test_services.py` testing Docker Compose configurations, FastAPI Black-Scholes pricing core, PWA manifests, CSP v3 headers, and live endpoints with colored ANSI reporting. Embedded as Step 5 in master test runner `scripts/run_all_tests.py` and pre-flight gate in `start-all.bat`.
+* **Why Taken**: Completes Milestones 16, 17, and 18, hardening institutional risk management, communication fidelity, and deployment reliability.
+* **Impact**: 100% test pass rate across 13 Pytest backend tests, 19 Vitest frontend suites (66 tests), strict TypeScript compilation (0 errors), Nitro SSR build, and signed release APK assembly (`app-release.apk`, 5.18 MB).
+
+---

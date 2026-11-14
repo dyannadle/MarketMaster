@@ -285,6 +285,38 @@
 | T-21.1.3 | GitHub Actions Android CD Release Workflow | P0 | COMPLETED AND VERIFIED | `.github/workflows/android-release.yml` automating asset bundling, signing, and GitHub Release publication on `v*` tags. |
 | T-21.1.4 | Standalone Signed Release APK Assembly | P0 | COMPLETED AND VERIFIED | `gradlew assembleRelease` passed in 2m 35s; generated optimized `app-release.apk` (5.18 MB). |
 
+---
+
+## 22. Persistent Web Push & Notification Dispatcher Engine (Milestone 16 / PIP Part 3.4 & Rule 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-22.1.1 | Background Web Push & Notification Click Handlers | P1 | COMPLETED AND VERIFIED | `frontend/public/sw.js` enhanced with `push` and `notificationclick` listeners with window focus targeting. |
+| T-22.1.2 | Persistent Notification Dispatcher Store | P1 | COMPLETED AND VERIFIED | `frontend/src/lib/notifications.ts` managing `ORDER_FILL`, `RISK_ALERT`, `TOURNAMENT`, `SM2_DUE` with localStorage persistence and custom events. |
+| T-22.1.3 | Microstructure & Rule 4.3 Trade Triggers | P0 | COMPLETED AND VERIFIED | Wired `dispatchNotification` in `frontend/src/routes/trade.tsx` on FIFO order execution, market fills, and position square-off. |
+| T-22.1.4 | Navigation Unread Badge & Notifications Route | P2 | COMPLETED AND VERIFIED | Reactive unread badge in `AppShell.tsx` and full filtering / push permissions UI in `frontend/src/routes/notifications.tsx`. |
+
+---
+
+## 23. Multi-Asset Cross-Margin & Portfolio Stress Testing Simulator (Milestone 17 / PIP Part 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-23.1.1 | SEBI PRAN Cross-Margin Relief Calculator | P1 | COMPLETED AND VERIFIED | `frontend/src/lib/cross-margin-stress.ts` modeling 75% futures relief on Cash-Futures spreads and 40% relief on protective puts. |
+| T-23.1.2 | Macro Scenario Shock Stress Engine | P1 | COMPLETED AND VERIFIED | Simulates RBI ±50 bps repo hike/cut, Black Swan -3.5% gap down, FII Squeeze +2.5%, and custom real-time sliders. |
+| T-23.1.3 | Portfolio Greeks Aggregates & Rule 4.3 Risk Gate | P0 | COMPLETED AND VERIFIED | Computes Net Delta ($\Delta$), Gamma ($\Gamma$), Theta ($\Theta$), Vega ($\mathcal{V}$), stressed margin calls, and flags drawdowns > 1.50%. |
+| T-23.1.4 | Dedicated Interactive Portfolio Tab | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/PortfolioStressTesting.tsx` embedded in `frontend/src/routes/portfolio.tsx`. |
+
+---
+
+## 24. Automated Docker Multi-Service Boot & Smoke Test Orchestrator (Milestone 18 / DevOps & Rule 8.1)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-24.1.1 | Zero-Dependency Smoke Test Verification CLI | P1 | COMPLETED AND VERIFIED | `scripts/smoke_test_services.py` verifying Docker specs, FastAPI Black-Scholes pricing core, PWA manifests, and CSP headers. |
+| T-24.1.2 | Pre-Flight Health Gate in Developer Launcher | P2 | COMPLETED AND VERIFIED | Enhanced `start-all.bat` with pre-flight smoke testing and colorized terminal status feedback. |
+| T-24.1.3 | Master Test Pipeline Step 5 Integration | P0 | COMPLETED AND VERIFIED | Embedded smoke test in `scripts/run_all_tests.py`, verified with 5/5 layers passing green in 52s. |
+
 
 
 

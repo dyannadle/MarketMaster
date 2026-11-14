@@ -3,7 +3,36 @@
 
 ---
 
-### Release v1.0.37 (Current — Android Release Keystore Signing & GitHub Actions CD Pipeline)
+### Release v1.0.38 (Current — Persistent Web Push Alerts, SEBI Cross-Margin RMS & Multi-Service Smoke Test Suite)
+* **Release Date**: 2026-11-14 19:10 IST
+* **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
+* **Key Enhancements**:
+  * **Option 1: Real-Time Web Push & Persistent Notification Dispatcher Engine (Milestone 16)**:
+    * Enhanced `frontend/public/sw.js` with background `push` event dispatching, client notification clicks, and window focusing.
+    * Built reactive persistent notification store (`frontend/src/lib/notifications.ts`) with types for order fills, Rule 4.3 risk alerts, tournament notices, SM-2 spaced repetition drills, and price alerts.
+    * Integrated dispatch triggers on FIFO queue order fills, direct market executions, and position closures in `frontend/src/routes/trade.tsx`.
+    * Upgraded `frontend/src/routes/notifications.tsx` with category filters, Web Push permission activator, and mark-all-read/clear features.
+    * Added reactive unread count badge in `AppShell.tsx` navigation sidebar.
+  * **Option 2: Multi-Asset Cross-Margin & Portfolio Stress Testing Simulator (Milestone 17)**:
+    * Implemented SEBI PRAN-style cross-margin optimization engine (`frontend/src/lib/cross-margin-stress.ts`) providing up to 75% relief on Cash-Futures spreads and 40% VaR relief on protective puts.
+    * Interactive RMS scenario stress testing simulator (`frontend/src/components/trading/PortfolioStressTesting.tsx`) with preset macro shocks (RBI ±50 bps repo hike/cut, Black Swan -3.5% gap down, FII Short Squeeze +2.5%) and custom real-time sliders for equity shock %, VIX shift, and repo rates.
+    * Real-time calculation of net portfolio Greeks ($\Delta, \Gamma, \Theta, \mathcal{V}$), stressed margin requirements, and Rule 4.3 daily drawdown gate ($R \le 1.5\%$).
+    * Integrated under dedicated tab in `frontend/src/routes/portfolio.tsx`.
+  * **Option 3: Automated Docker Multi-Service Boot & Smoke Test Orchestrator (Milestone 18)**:
+    * Created zero-dependency root CLI (`scripts/smoke_test_services.py`) verifying Docker Compose service specs, FastAPI Black-Scholes quant engine, PWA manifest, CSP v3 headers, and live endpoints with ANSI color-coded reporting.
+    * Integrated as Step 5 in master automation pipeline `scripts/run_all_tests.py` and pre-flight gate in `start-all.bat`.
+  * **Master Verification Engine Verified**:
+    * Backend Pytest: 13/13 tests passing (100% green).
+    * Frontend Vitest: 66/66 tests passing across 19 suites (100% green).
+    * TypeScript: Zero errors (`npx tsc --noEmit`).
+    * Production Nitro Build: 100% clean SSR bundle (8.57s).
+    * Multi-Service Smoke Test: 100% passed (3.94s).
+    * Android Container: 75 production assets compiled and synchronized.
+    * Android Release APK: Verified signed assembly (`app-release.apk`, **5.18 MB**).
+
+---
+
+### Release v1.0.37 (Android Release Keystore Signing & GitHub Actions CD Pipeline)
 * **Release Date**: 2026-11-13 20:45 IST
 * **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
 * **Key Enhancements**:

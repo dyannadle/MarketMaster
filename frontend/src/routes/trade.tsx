@@ -15,6 +15,7 @@ import { LiveNewsFeed } from "@/components/trading/LiveNewsFeed";
 import { nativeBridge } from "@/lib/native";
 import { TradeStatementExporter } from "@/components/trading/TradeStatementExporter";
 import { checkCoolDownStatus, detectRevengeTrading } from "@/lib/journal";
+import { dispatchNotification } from "@/lib/notifications";
 import {
   FifoLimitOrder,
   advanceFifoQueueTick,
@@ -121,6 +122,12 @@ function Trade() {
             `FIFO Queue Filled! ${order.side} ${order.qty} ${order.symbol} @ ₹${order.limitPrice.toFixed(2)}`
           );
           nativeBridge.vibrateFill();
+          dispatchNotification({
+            type: "ORDER_FILL",
+            title: `FIFO Fill: ${order.side} ${order.symbol}`,
+            message: `${order.side} ${order.qty} ${order.symbol} @ ₹${order.limitPrice.toFixed(2)} executed after depth drained.`,
+            meta: { symbol: order.symbol, side: order.side, qty: order.qty, price: order.limitPrice },
+          });
           const r = applyOrder(acc, {
             symbol: order.symbol,
             side: order.side,
@@ -279,6 +286,12 @@ function Trade() {
         `${side} ${qty} ${sym} filled @ ₹${Number(fill).toFixed(2)} (Slippage: ₹${Number(slip).toFixed(2)}, Latency: ${jitter}ms)`
       );
       nativeBridge.vibrateFill();
+      dispatchNotification({
+        type: "ORDER_FILL",
+        title: `Order Executed: ${side} ${sym}`,
+        message: `${side} ${qty} ${sym} filled @ ₹${Number(fill).toFixed(2)} (${jitter}ms latency).`,
+        meta: { symbol: sym, side, qty, price: fill },
+      });
       await refreshPositions();
     } catch {
       // Offline fallback: Use local paper engine
@@ -291,6 +304,12 @@ function Trade() {
           `${side} ${qty} ${sym} @ ₹${estimatedFillPrice.toFixed(2)} executed (${jitter}ms matching latency)`
         );
         nativeBridge.vibrateFill();
+        dispatchNotification({
+          type: "ORDER_FILL",
+          title: `Paper Order: ${side} ${sym}`,
+          message: `${side} ${qty} ${sym} @ ₹${estimatedFillPrice.toFixed(2)} simulated fill.`,
+          meta: { symbol: sym, side, qty, price: estimatedFillPrice },
+        });
       }
     } finally {
       setIsSubmitting(false);
@@ -306,6 +325,12 @@ function Trade() {
       const res = await backendApi.exitPosition(posId, currentLtp);
       exitData = res;
       toast.success("Position closed at market price.");
+      dispatchNotification({
+        type: "ORDER_FILL",
+        title: `Position Closed: ${posSymbol || sym}`,
+        message: `Closed position at market price ₹${Number(currentLtp).toFixed(2)}.`,
+        meta: { posId, price: currentLtp },
+      });
       await refreshPositions();
     } catch {
       // Local fallback calculation

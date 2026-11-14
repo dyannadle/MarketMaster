@@ -1,5 +1,6 @@
 // Service Worker for MarketMaster PWA & Offline Terminal
 // PIP Part 3.3 Offline Strategy: Stale-While-Revalidate for app assets, Cache-First for static fonts/favicons
+// PIP Part 3.4 & Milestone 16: Web Push Notification Dispatcher Engine
 
 const CACHE_NAME = 'marketmaster-pwa-v1';
 const PRECACHE_URLS = [
@@ -10,7 +11,7 @@ const PRECACHE_URLS = [
   '/sitemap.xml',
 ];
 
-self.addEventListener('install', (event: ExtendableEvent) => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_URLS);
@@ -18,7 +19,7 @@ self.addEventListener('install', (event: ExtendableEvent) => {
   );
 });
 
-self.addEventListener('activate', (event: ExtendableEvent) => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -32,11 +33,11 @@ self.addEventListener('activate', (event: ExtendableEvent) => {
   );
 });
 
-self.addEventListener('fetch', (event: FetchEvent) => {
+self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Don't intercept non-GET or cross-origin websocket/analytics/API if desired
+  // Don't intercept non-GET or cross-origin websocket/analytics/API
   if (request.method !== 'GET') return;
 
   // Stale-while-revalidate for local origin navigation and scripts
@@ -57,4 +58,46 @@ self.addEventListener('fetch', (event: FetchEvent) => {
       })
     );
   }
+});
+
+// Milestone 16: Background Web Push Notification Dispatcher
+self.addEventListener('push', (event) => {
+  let data = {};
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (_e) {
+      data = { message: event.data.text() };
+    }
+  }
+
+  const title = data.title || 'MarketMaster Risk Alert';
+  const options = {
+    body: data.message || 'Microstructure event triggered.',
+    icon: '/favicon.ico',
+    badge: '/favicon.ico',
+    data: data.meta || { url: '/notifications' },
+    tag: data.tag || 'mm-notification-' + Date.now(),
+    renotify: true,
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) || '/notifications';
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes(targetUrl) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+    })
+  );
 });

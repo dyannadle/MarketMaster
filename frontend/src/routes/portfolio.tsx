@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { FileSpreadsheet, Brain, Layers } from "lucide-react";
+import { FileSpreadsheet, Brain, Layers, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change, PageHeader } from "@/components/AppShell";
 import { inr } from "@/lib/data";
 import { STARTING_CASH, useAccount, useLivePrices } from "@/lib/paper";
 import { TradeStatementExporter } from "@/components/trading/TradeStatementExporter";
 import { BehavioralMistakeHeatmap } from "@/components/trading/BehavioralMistakeHeatmap";
+import { PortfolioStressTesting } from "@/components/trading/PortfolioStressTesting";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/portfolio")({
 
 function Portfolio() {
   const [isExporterOpen, setIsExporterOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"POSITIONS" | "PSYCHOLOGY">("POSITIONS");
+  const [activeTab, setActiveTab] = useState<"POSITIONS" | "PSYCHOLOGY" | "STRESS_TESTING">("POSITIONS");
   const prices = useLivePrices();
   const { acc, reset } = useAccount();
   const rows = acc.positions.map((p) => {
@@ -57,7 +58,7 @@ function Portfolio() {
         <Stat label="Largest position" value={`${Number(largest || 0).toFixed(1)}%`} extra={<span className={`text-xs ${largest > 25 ? "text-loss" : "text-gain"}`}>{largest > 25 ? "Concentration risk" : "Within limits"}</span>} />
       </div>
 
-      {/* View Switcher: Open Positions vs Behavioral Psychology Heatmap */}
+      {/* View Switcher: Open Positions vs Behavioral Psychology Heatmap vs Stress Testing */}
       <div className="mx-5 mb-4 flex border-b border-border/60 md:mx-8">
         <button
           onClick={() => setActiveTab("POSITIONS")}
@@ -80,6 +81,17 @@ function Portfolio() {
         >
           <Brain className="size-4" />
           <span>Behavioral Mistake Heatmap & Psychology</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("STRESS_TESTING")}
+          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-bold transition-all ${
+            activeTab === "STRESS_TESTING"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Activity className="size-4" />
+          <span>Cross-Margin & RMS Stress Testing</span>
         </button>
       </div>
 
@@ -119,9 +131,13 @@ function Portfolio() {
             </tbody>
           </table>
         </div>
-      ) : (
+      ) : activeTab === "PSYCHOLOGY" ? (
         <div className="mx-5 md:mx-8">
           <BehavioralMistakeHeatmap />
+        </div>
+      ) : (
+        <div className="mx-5 md:mx-8">
+          <PortfolioStressTesting positions={rows} cash={Number(acc.cash || 0)} />
         </div>
       )}
 

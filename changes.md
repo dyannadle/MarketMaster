@@ -694,3 +694,31 @@
   * Strict TypeScript check (`tsc --noEmit`) passes with 0 errors.
 
 ---
+
+### [v1.0.38] - 2026-11-14 - Real-Time Web Push Dispatcher, SEBI Cross-Margin RMS & Multi-Service Smoke Test Suite
+* **Category**: Real-Time Alerts, RMS Stress Testing & DevOps Verification
+* **Files Modified / Added**:
+  * `frontend/public/sw.js`: Added Web Push API background notification and client focus handlers. Fixed JS syntax error.
+  * `frontend/src/lib/notifications.ts`: Created reactive persistent notification dispatcher store (`ORDER_FILL`, `RISK_ALERT`, `TOURNAMENT`, `SM2_DUE`, `PRICE_ALERT`).
+  * `frontend/src/routes/notifications.tsx`: Upgraded notifications route with category filtering, Web Push permission requests, and mark-all-read/clear capabilities.
+  * `frontend/src/components/AppShell.tsx`: Connected reactive unread notification counter badge to navigation sidebar.
+  * `frontend/src/routes/trade.tsx`: Integrated `dispatchNotification` triggers on FIFO queue order fills, market orders, and position closures.
+  * `frontend/src/lib/cross-margin-stress.ts`: Implemented SEBI PRAN cross-margin relief calculator and institutional RMS scenario stress simulator (RBI ±50 bps, Black Swan -3.5%, FII Squeeze +2.5%, custom sliders) with Greek aggregations ($\Delta, \Gamma, \Theta, \mathcal{V}$) and Rule 4.3 drawdown limits ($R \le 1.5\%$).
+  * `frontend/src/components/trading/PortfolioStressTesting.tsx`: Interactive RMS stress testing simulator UI with real-time sliders and capital risk warnings.
+  * `frontend/src/routes/portfolio.tsx`: Embedded new tab `Cross-Margin & RMS Stress Testing` alongside holdings and psychology heatmap.
+  * `scripts/smoke_test_services.py`: Standalone zero-dependency Python verification CLI testing Docker specs, FastAPI Black-Scholes pricing core, PWA manifests, CSP v3 headers, and live service endpoints with ANSI reporting.
+  * `start-all.bat`: Added pre-flight automated smoke test reconciliation to the developer launcher.
+  * `scripts/run_all_tests.py`: Integrated smoke test as Step 5 in master automation pipeline.
+  * `frontend/src/test/notifications-and-stress.test.tsx`: Vitest test suite covering notifications, SEBI PRAN cross-margin relief, and scenario stress testing.
+  * `android/app/build/outputs/apk/release/app-release.apk`: Built signed release APK (5.18 MB).
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `scripts/run_all_tests.py` ran all 5 verification layers passing 100% in 52.54s.
+  * 13 Pytest backend tests green.
+  * 19 Vitest frontend suites (66 tests) green.
+  * Strict TypeScript check (`npx tsc --noEmit`) passed with 0 errors.
+  * Production Nitro SSR client bundle compiled in 8.57s.
+  * Multi-Service Health & Docker Smoke Test passed in 3.94s.
+  * Android Release APK compiled and signed (5.18 MB).
+
+---

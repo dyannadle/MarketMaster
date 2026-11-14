@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
+import { useNotifications } from "@/lib/notifications";
 import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 import {
@@ -51,6 +52,7 @@ const mobile = [
 export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
+  const { unreadCount } = useNotifications();
   const navigate = useNavigate();
   if (bare.includes(pathname)) return <>{children}</>;
   const linkCls = "flex items-center justify-between rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground";
@@ -114,6 +116,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <n.icon className="size-4" />
                   <span>{n.label}</span>
                 </div>
+                {n.to === "/notifications" && unreadCount > 0 && (
+                  <span className="rounded-full bg-primary px-1.5 py-0.2 text-[10px] font-bold text-primary-foreground">
+                    {unreadCount}
+                  </span>
+                )}
                 {"adminOnly" in n && n.adminOnly && (
                   <span className="rounded bg-rose-500/15 px-1.5 py-0.5 text-[9px] font-bold text-rose-400">
                     SUPER
