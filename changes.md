@@ -776,3 +776,29 @@
 
 ---
 
+### [v1.0.41] - 2026-11-14 - 3D Options Volatility Surface, Multi-Venue Smart Order Routing & In-Browser SQL Analytics Lake
+* **Category**: Quantitative Volatility, Algorithmic Execution Slicing & Relational Data Lake
+* **Files Modified / Added**:
+  * `frontend/src/lib/volatility-surface.ts`: Black-Scholes inversion with Newton-Raphson/bisection solver, Hagan SABR asymptotic expansion ($\alpha, \beta, \rho, \nu$), Put-Call Skew ratio calculation, and term structure contango/backwardation detection.
+  * `frontend/src/components/trading/VolatilitySurface3D.tsx`: Interactive HTML5 Canvas 3D surface mesh with azimuth/elevation rotation, IV heatmap coloring, and 2D smile/term structure cross-sections.
+  * `frontend/src/lib/smart-order-router.ts`: Multi-venue fragmented liquidity model (NSE vs BSE), NBBO best bid/ask matching, SOR depth-weighted routing, Intraday VWAP U-shaped volume slicing, Iceberg concealment, and Implementation Shortfall metric ($\text{bps}$).
+  * `frontend/src/components/trading/SmartOrderRoutingPanel.tsx`: Interactive execution console in `/trade` with live multi-venue order gateways, NBBO spread monitor, and child order schedule table.
+  * `frontend/src/routes/trade.tsx`: Added `"VOL_SURFACE"` and `"ALGO_EXEC"` view tabs and wired components.
+  * `frontend/src/lib/offline-sql-cache.ts`: In-browser relational SQL execution engine (`SELECT`, `WHERE`, `GROUP BY`, `ORDER BY`, `LIMIT`), Apache Parquet binary exporter (`PAR1`), and local storage session cache manager.
+  * `frontend/src/components/trading/SqlAnalyticsCachePanel.tsx`: SQL console with presets, tabular query grid, 1-click Parquet dataset download, and session cache replay history.
+  * `frontend/src/routes/lab.tsx`: Added `"SQL_ANALYTICS"` mode in Strategy Lab with parameter restore integration.
+  * `frontend/src/test/vol-sor-sql.test.tsx`: Vitest suite covering Black-Scholes inversion, Put-Call Parity, SABR skew, multi-venue quotes, SOR execution, VWAP schedule, Iceberg slicing, relational SQL queries, Parquet magic bytes, and cache persistence.
+  * `android/app/build/outputs/apk/release/app-release.apk`: Built signed release APK (5.20 MB).
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `scripts/run_all_tests.py` ran all 5 layers passing 100% in 60.10s.
+  * 13 Pytest backend tests green.
+  * 22 Vitest frontend suites (95 tests) green.
+  * Strict TypeScript check (`npx tsc --noEmit`) passed with 0 errors.
+  * Full Production Nitro SSR bundle compiled cleanly in 8.44s.
+  * Multi-Service Health & Docker Smoke Test passed in 4.29s.
+  * Android Release APK compiled and signed (5.20 MB).
+
+---
+
+

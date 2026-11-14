@@ -1,0 +1,1 @@
+import{h as e,i as t,m as n,n as r,r as i}from"./AreaChart-BKBfbTPr.js";var a=r({chartName:`BarChart`,GraphicalChild:e,defaultTooltipEventType:`axis`,validateTooltipEventTypes:[`axis`,`item`],axisComponents:[{axisType:`xAxis`,AxisComp:t},{axisType:`yAxis`,AxisComp:i}],formatAxisMap:n});export{a as t};

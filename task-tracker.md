@@ -377,6 +377,37 @@
 | T-30.1.2 | Parameter Cluster Robustness Matrix | P1 | COMPLETED AND VERIFIED | 5x5 Fast EMA vs Slow EMA parameter evaluation detecting robust plateaus vs fragile overfitting cliffs. |
 | T-30.1.3 | Interactive Monte Carlo Resampling Panel in `/lab` | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/MonteCarloStressPanel.tsx` with fan chart projections and parameter robustness heatmap. |
 
+---
+
+## 31. 3D Options Volatility Surface & SABR Smile Model (Milestone 25 / PIP Part 3.6 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-31.1.1 | Analytical Black-Scholes IV Inverter | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/volatility-surface.ts` with Newton-Raphson & bisection solver recovering strike implied vol. |
+| T-31.1.2 | Hagan SABR Asymptotic Smile Engine | P1 | COMPLETED AND VERIFIED | SABR model with normalized $\alpha$ volatility scaling, capturing negative equity skew across strikes and tenors. |
+| T-31.1.3 | Interactive 3D Surface Visualizer & Skew Metrics | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/VolatilitySurface3D.tsx` in `/trade` with 3D mesh rotation and 2D cross-sections. |
+
+---
+
+## 32. Multi-Venue Smart Order Routing & VWAP Execution (Milestone 26 / PIP Part 1.4 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-32.1.1 | Fragmented Multi-Venue Depth & NBBO Engine | P1 | COMPLETED AND VERIFIED | `frontend/src/lib/smart-order-router.ts` modeling NSE (2.1ms) and BSE (4.6ms) with NBBO matching and arbitrage cross checks. |
+| T-32.1.2 | Intraday VWAP & Iceberg Order Slicers | P1 | COMPLETED AND VERIFIED | Schedules parent orders along 7-interval U-shaped volume curve; conceals total size via visible iceberg clips. |
+| T-32.1.3 | Implementation Shortfall & SOR Console UI | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/SmartOrderRoutingPanel.tsx` in `/trade` tracking slippage $\text{bps}$ and venue splits. |
+
+---
+
+## 33. In-Browser Relational SQL Analytics & Parquet Data Lake (Milestone 27 / PIP Part 2.3 & 4.2)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-33.1.1 | Zero-Latency In-Browser SQL Execution Engine | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/offline-sql-cache.ts` executing relational queries (`SELECT`, `WHERE`, `GROUP BY`, `ORDER BY`, `LIMIT`). |
+| T-33.1.2 | Apache Parquet Binary Dataset Exporter | P1 | COMPLETED AND VERIFIED | Constructs standard binary `.parquet` files with `PAR1` magic bytes and columnar schema metadata. |
+| T-33.1.3 | Session Cache Replay & Strategy Lab Console | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/SqlAnalyticsCachePanel.tsx` in `/lab` with query presets and 1-click snapshot restore. |
+
+
 
 
 
