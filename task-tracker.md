@@ -469,10 +469,33 @@
 
 ---
 
+## 40. Institutional Tape Velocity & Microstructure Sandbox (Milestone 34 / PIP Part 1.4 & 4.3)
 
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-40.1.1 | Real-Time Time & Sales Velocity Meter | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/tape-reading.ts` calculating rolling 1s TPS vs 30s baseline, burst speed ratio, and large block execution alerts. |
+| T-40.1.2 | Aggressive vs Passive Liquidity Profiler | P1 | COMPLETED AND VERIFIED | Computes maker/taker distributions and flags resting institutional iceberg orders when absorption absorbs aggressive flow. |
+| T-40.1.3 | Gamified Tape Reading Drills & Sandbox UI | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/TapeReadingSandbox.tsx` in `/trade` with interactive microstructure drill challenges and real-time tape replay. |
 
+---
 
+## 41. Indian Market Corporate Actions & Dividend Adjustment Simulator (Milestone 35 / PIP Part 3.6 & 5.2)
 
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-41.1.1 | Historical Corporate Actions Engine (Splits & Bonus) | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/corporate-actions.ts` adjusting quantities and average prices for 1:1 bonus, 1:5/1:10 splits without altering invested capital. |
+| T-41.1.2 | Section 194 10% TDS Cash Dividend Accounting | P0 | COMPLETED AND VERIFIED | Calculates 10% TDS withholding and generates double-entry cash ledger accounting entries crediting net dividends to virtual cash. |
+| T-41.1.3 | Backward Cumulative Adjustment Factor (CAF) Series | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/CorporateActionsSimulator.tsx` in `/portfolio` rendering continuous adjusted vs raw price charts. |
 
+---
 
+## 42. Quantitative Factor Model & Barra-Style Risk Attribution (Milestone 36 / PIP Part 4.3 & 6.1)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-42.1.1 | Multi-Variate Fama-French & Carhart 4-Factor Solver | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/factor-risk-model.ts` ridge OLS solver extracting Market ($\beta_{mkt}$), Size ($\beta_{smb}$), Value ($\beta_{hml}$), Momentum ($\beta_{wml}$), and Jensen's $\alpha$. |
+| T-42.1.2 | Systematic vs Specific Risk Decomposition | P0 | COMPLETED AND VERIFIED | Decomposes active portfolio variance into systematic factor risk and idiosyncratic risk, deriving Information Ratio (IR). |
+| T-42.1.3 | Real-Time Style Drift Warning Alerts & Console | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/FactorRiskModelPanel.tsx` in `/portfolio` displaying factor beta breakdown and style drift violation banners. |
+
+---
 

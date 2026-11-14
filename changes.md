@@ -850,7 +850,27 @@
   * Multi-Service Health & Docker Smoke Test passed in 5.21s.
   * Android Release APK compiled and signed (5.24 MB).
 
+### [v1.0.44] - 2026-11-14 - Institutional Tape Velocity & Microstructure Sandbox, Corporate Actions with Sec 194 TDS & Multi-Factor Barra Risk Attribution
+* **Category**: Market Microstructure, Indian Corporate Actions Accounting & Quantitative Factor Risk Attribution
+* **Files Modified / Added**:
+  * `frontend/src/lib/tape-reading.ts`: Time & Sales tape print generator with millisecond timestamps, rolling 1-second TPS velocity vs 30s baseline, burst ratio, maker/taker volume distribution, aggressive buyer/seller flow gauge, resting iceberg detection, and gamified practice drills.
+  * `frontend/src/components/trading/TapeReadingSandbox.tsx`: Real-time tape visualizer with block trade execution callouts, velocity burst meters, buyer/seller flow gauges, iceberg alert cards, and interactive scenario quizzes under `"TAPE_READING"` tab in `/trade`.
+  * `frontend/src/routes/trade.tsx`: Added `"TAPE_READING"` view tab and integrated `TapeReadingSandbox`.
+  * `frontend/src/lib/corporate-actions.ts`: Corporate actions engine simulating stock splits (1:5, 1:10), bonus issues (1:1), and cash dividends with Indian Income Tax Act Section 194 10% TDS withholding and double-entry cash ledger accounting entries; continuous backward Cumulative Adjustment Factor (CAF) price series generator.
+  * `frontend/src/components/trading/CorporateActionsSimulator.tsx`: Portfolio holding adjustment calculator, raw vs adjusted price series Recharts comparison, and double-entry TDS accounting ledger under `"CORPORATE_ACTIONS"` tab in `/portfolio`.
+  * `frontend/src/lib/factor-risk-model.ts`: Multivariate OLS regression solver with ridge regularization ($\lambda = 10^{-5}$), Fama-French & Carhart 4-factor risk decomposition ($\beta_{mkt}, \beta_{smb}, \beta_{hml}, \beta_{wml}, \alpha$), Systematic vs Specific Risk breakdown, Information Ratio, and Style Drift Warning checks.
+  * `frontend/src/components/trading/FactorRiskModelPanel.tsx`: Portfolio factor risk attribution dashboard with KPI metrics, factor beta breakdown tiles, systematic risk progress meters, and style drift warning alerts under `"FACTOR_RISK"` tab in `/portfolio`.
+  * `frontend/src/routes/portfolio.tsx`: Added `"CORPORATE_ACTIONS"` and `"FACTOR_RISK"` tabs and integrated components.
+  * `frontend/src/test/tape-actions-factors.test.tsx`: Vitest suite covering tape generation, TPS velocity, burst speed, aggressive buyer/seller split, resting iceberg detection, drill evaluation, stock split & bonus adjustment, cash dividend with Sec 194 TDS, continuous backward price adjustments, 4-factor OLS decomposition, and style drift warnings (12 tests).
+  * `android/app/build/outputs/apk/release/app-release.apk`: Built signed release APK (5.24 MB).
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `scripts/run_all_tests.py` ran all 5 layers passing 100% in 55.05s.
+  * 13 Pytest backend tests green.
+  * 25 Vitest frontend suites (129 tests) green.
+  * Strict TypeScript check (`npx tsc --noEmit`) passed with 0 errors.
+  * Full Production Nitro SSR bundle compiled cleanly in 9.70s.
+  * Multi-Service Health & Docker Smoke Test passed in 4.71s.
+  * Android Release APK compiled and signed (5.24 MB).
+
 ---
-
-
-

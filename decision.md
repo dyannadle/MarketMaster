@@ -663,8 +663,16 @@
 * **Why Taken**: Completes Milestones 31, 32, and 33, empowering students with hedge-fund-level pair trading stat-arb, regulatory compliance audit literacy, and generative AI alpha research capabilities.
 * **Impact**: 100% test pass rate across 13 Pytest backend tests, 24 Vitest frontend suites (117 tests), strict TypeScript compilation (0 errors), Nitro SSR build, multi-service Docker smoke verification, and signed release APK assembly (`app-release.apk`, 5.24 MB).
 
+### ADR-046: Institutional Tape Velocity & Microstructure Sandbox, Corporate Actions with Sec 194 TDS & Multi-Factor Barra Risk Attribution
+* **Status**: Accepted & Implemented (v1.0.44)
+* **Date**: 2026-11-14
+* **Context**: Delivering institutional Time & Sales tape reading mechanics with velocity burst meters, aggressive/passive fill analysis, and gamified practice drills; authentic Indian market corporate action simulations (splits, bonus, dividends) with backward cumulative adjustment factors (CAF) and Section 194 10% TDS accounting ledgers; and quantitative Fama-French & Carhart 4-factor risk decomposition with systematic vs specific risk attribution, Information Ratio, and style drift warnings in `/portfolio`.
+* **Decision**:
+  1. **Institutional Market Microstructure Replay & Tape Reading Sandbox**: Implemented `frontend/src/lib/tape-reading.ts` and `frontend/src/components/trading/TapeReadingSandbox.tsx`. Calculates rolling 1-second trades-per-second (TPS) relative to a 30-second baseline, burst ratio, aggressive buyer vs seller pressure, maker vs taker distributions, and resting institutional iceberg absorption detection. Incorporates gamified microstructure practice drills with scenario quizzes (e.g. iceberg absorption, momentum breakouts, stop-hunts) under `"TAPE_READING"` tab in `/trade`.
+  2. **Indian Market Corporate Actions & Dividend Adjustment Simulator**: Implemented `frontend/src/lib/corporate-actions.ts` and `frontend/src/components/trading/CorporateActionsSimulator.tsx`. Simulates 1:1 bonus issues, 1:5/1:10 stock splits, and cash dividends on historical portfolio holdings. Computes continuous backward Cumulative Adjustment Factor (CAF) series to eliminate artificial ex-date price drops for technical backtesting, and models Indian Income Tax Act Section 194 10% TDS withholding on dividends with automated double-entry cash ledger accounting entries. Integrated under `"CORPORATE_ACTIONS"` tab in `/portfolio`.
+  3. **Quantitative Factor Model & Barra-Style Risk Attribution in `/portfolio`**: Implemented `frontend/src/lib/factor-risk-model.ts` and `frontend/src/components/trading/FactorRiskModelPanel.tsx`. Implements a multi-variate OLS regression solver with ridge regularization ($\lambda = 10^{-5}$) to decompose simulated portfolio returns into Market Beta ($\beta_{mkt}$), Size ($\beta_{smb}$), Value ($\beta_{hml}$), Momentum ($\beta_{wml}$), and Jensen's Alpha ($\alpha$) with $t$-statistic significance. Computes Systematic (Factor) Risk vs Specific (Idiosyncratic) Risk, Active Return, Tracking Error, Information Ratio (IR), and real-time Style Drift Warnings. Integrated under `"FACTOR_RISK"` tab in `/portfolio`.
+* **Why Taken**: Completes Milestones 34, 35, and 36, equipping traders with elite tape reading intuition, real-world Indian taxation & corporate action accounting skills, and hedge-fund-grade Barra-style factor risk attribution.
+* **Impact**: 100% test pass rate across 13 Pytest backend tests, 25 Vitest frontend suites (129 tests), strict TypeScript compilation (0 errors), Nitro SSR build, multi-service Docker smoke verification, and signed release APK assembly (`app-release.apk`, 5.24 MB).
+
 ---
-
-
-
 

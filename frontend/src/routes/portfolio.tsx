@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { FileSpreadsheet, Brain, Layers, Activity, Scale } from "lucide-react";
+import { FileSpreadsheet, Brain, Layers, Activity, Scale, Calendar, PieChart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change, PageHeader } from "@/components/AppShell";
 import { inr } from "@/lib/data";
@@ -9,6 +9,8 @@ import { TradeStatementExporter } from "@/components/trading/TradeStatementExpor
 import { BehavioralMistakeHeatmap } from "@/components/trading/BehavioralMistakeHeatmap";
 import { PortfolioStressTesting } from "@/components/trading/PortfolioStressTesting";
 import { GreeksHedgingRebalancer } from "@/components/trading/GreeksHedgingRebalancer";
+import { CorporateActionsSimulator } from "@/components/trading/CorporateActionsSimulator";
+import { FactorRiskModelPanel } from "@/components/trading/FactorRiskModelPanel";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -24,7 +26,7 @@ export const Route = createFileRoute("/portfolio")({
 
 function Portfolio() {
   const [isExporterOpen, setIsExporterOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"POSITIONS" | "PSYCHOLOGY" | "STRESS_TESTING" | "GREEKS_HEDGE">("POSITIONS");
+  const [activeTab, setActiveTab] = useState<"POSITIONS" | "PSYCHOLOGY" | "STRESS_TESTING" | "GREEKS_HEDGE" | "CORPORATE_ACTIONS" | "FACTOR_RISK">("POSITIONS");
   const prices = useLivePrices();
   const { acc, reset } = useAccount();
   const rows = acc.positions.map((p) => {
@@ -105,6 +107,28 @@ function Portfolio() {
           <Scale className="size-4" />
           <span>Greeks Hedging & Delta Rebalancer</span>
         </button>
+        <button
+          onClick={() => setActiveTab("CORPORATE_ACTIONS")}
+          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-bold transition-all ${
+            activeTab === "CORPORATE_ACTIONS"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Calendar className="size-4" />
+          <span>Corporate Actions & Sec 194 TDS</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("FACTOR_RISK")}
+          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-bold transition-all ${
+            activeTab === "FACTOR_RISK"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <PieChart className="size-4" />
+          <span>Factor Risk Attribution (Barra)</span>
+        </button>
       </div>
 
       {activeTab === "POSITIONS" ? (
@@ -151,9 +175,17 @@ function Portfolio() {
         <div className="mx-5 md:mx-8">
           <PortfolioStressTesting positions={rows} cash={Number(acc.cash || 0)} />
         </div>
-      ) : (
+      ) : activeTab === "GREEKS_HEDGE" ? (
         <div className="mx-5 md:mx-8">
           <GreeksHedgingRebalancer spotPrice={prices["NIFTY_FUT"]?.p || 24500} />
+        </div>
+      ) : activeTab === "CORPORATE_ACTIONS" ? (
+        <div className="mx-5 md:mx-8">
+          <CorporateActionsSimulator />
+        </div>
+      ) : (
+        <div className="mx-5 md:mx-8">
+          <FactorRiskModelPanel />
         </div>
       )}
 

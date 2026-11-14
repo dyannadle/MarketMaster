@@ -3,7 +3,33 @@
 
 ---
 
-### Release v1.0.43 (Current — Cross-Asset Correlation & Cointegration Matrix, FIX 4.4 Drop Copy Surveillance & Genetic Symbolic Alpha Discoverer)
+### Release v1.0.44 (Current — Institutional Tape Velocity & Microstructure Sandbox, Corporate Actions with Sec 194 TDS & Multi-Factor Barra Risk Attribution)
+* **Release Date**: 2026-11-14 23:25 IST
+* **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
+* **Key Enhancements**:
+  * **Option 1: Institutional Market Microstructure Replay & Tape Reading Sandbox (Milestone 34)**:
+    * Time & Sales velocity engine (`frontend/src/lib/tape-reading.ts`) calculating millisecond prints, rolling 1-second TPS vs 30s baseline, burst ratio, aggressive buyer/seller pressure, maker/taker volume profile, and resting iceberg absorption detection.
+    * Real-time tape visualization console (`frontend/src/components/trading/TapeReadingSandbox.tsx`) under `"TAPE_READING"` tab in `/trade` with block trade execution alerts, tape velocity meters, buyer/seller flow gauges, and gamified practice drills with scenario quizzes.
+  * **Option 2: Indian Market Corporate Actions & Dividend Adjustment Simulator (Milestone 35)**:
+    * Historical corporate actions simulator (`frontend/src/lib/corporate-actions.ts`) modeling stock splits (1:5, 1:10), bonus issues (1:1), and cash dividends with Indian Income Tax Act Section 194 10% TDS withholding and automated double-entry ledger vouchers.
+    * Continuous backward Cumulative Adjustment Factor (CAF) price series generator eliminating artificial ex-date price drops and preserving technical return continuity for historical backtesting.
+    * Interactive holding adjustment calculator and raw vs adjusted Recharts price chart (`frontend/src/components/trading/CorporateActionsSimulator.tsx`) under `"CORPORATE_ACTIONS"` tab in `/portfolio`.
+  * **Option 3: Quantitative Factor Model & Barra-Style Risk Attribution in `/portfolio` (Milestone 36)**:
+    * Fama-French & Carhart 4-factor multi-variate OLS regression engine (`frontend/src/lib/factor-risk-model.ts`) with ridge regularization ($\lambda = 10^{-5}$) deriving Market Beta ($\beta_{mkt}$), Size ($\beta_{smb}$), Value ($\beta_{hml}$), Momentum ($\beta_{wml}$), and Jensen's Alpha ($\alpha$) with $t$-statistic significance.
+    * Quantitative risk decomposition into Systematic (Factor) Risk vs Specific (Idiosyncratic) Risk, Active Return, Tracking Error, Information Ratio (IR), and real-time Style Drift Warning checks.
+    * Institutional factor risk attribution dashboard (`frontend/src/components/trading/FactorRiskModelPanel.tsx`) under `"FACTOR_RISK"` tab in `/portfolio`.
+  * **Master Verification Engine Verified**:
+    * Backend Pytest: 13/13 tests passing (100% green).
+    * Frontend Vitest: 129/129 tests passing across 25 suites (100% green).
+    * TypeScript: Zero errors (`npx tsc --noEmit`).
+    * Production Nitro Build: 100% clean SSR bundle (9.70s).
+    * Multi-Service Smoke Test: 100% passed (4.71s).
+    * Android Container: 83 production assets compiled and synchronized.
+    * Android Release APK: Verified signed assembly (`app-release.apk`, **5.24 MB**).
+
+---
+
+### Release v1.0.43 (Cross-Asset Correlation & Cointegration Matrix, FIX 4.4 Drop Copy Surveillance & Genetic Symbolic Alpha Discoverer)
 * **Release Date**: 2026-11-14 23:15 IST
 * **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
 * **Key Enhancements**:

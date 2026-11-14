@@ -30,6 +30,7 @@ import { SmartOrderRoutingPanel } from "@/components/trading/SmartOrderRoutingPa
 import { OrderFlowFootprintCanvas } from "@/components/trading/OrderFlowFootprintCanvas";
 import { CorrelationCointegrationPanel } from "@/components/trading/CorrelationCointegrationPanel";
 import { FixSurveillancePanel } from "@/components/trading/FixSurveillancePanel";
+import { TapeReadingSandbox } from "@/components/trading/TapeReadingSandbox";
 import {
   FifoLimitOrder,
   advanceFifoQueueTick,
@@ -68,8 +69,8 @@ function Trade() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [backendPositions, setBackendPositions] = useState<any[]>([]);
 
-  // Navigation View Toggle: Candlestick Chart vs Options Chain vs Strategy Builder vs News Wire vs FIX Inspector vs Voice Desk vs L2 Depth vs Vol Surface vs Algo Exec vs Footprint vs Correlation vs Surveillance
-  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE" | "FIX_INSPECTOR" | "VOICE_DESK" | "L2_DEPTH" | "VOL_SURFACE" | "ALGO_EXEC" | "FOOTPRINT" | "CORRELATION" | "SURVEILLANCE">("CHART");
+  // Navigation View Toggle: Candlestick Chart vs Options Chain vs Strategy Builder vs News Wire vs FIX Inspector vs Voice Desk vs L2 Depth vs Vol Surface vs Algo Exec vs Footprint vs Correlation vs Surveillance vs Tape Reading
+  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE" | "FIX_INSPECTOR" | "VOICE_DESK" | "L2_DEPTH" | "VOL_SURFACE" | "ALGO_EXEC" | "FOOTPRINT" | "CORRELATION" | "SURVEILLANCE" | "TAPE_READING">("CHART");
   const [marketQuotes, setMarketQuotes] = useState<any[]>([]);
 
   // Multi-Leg Strategy Execution Handler
@@ -634,6 +635,14 @@ function Trade() {
               >
                 <ShieldCheck className="h-3.5 w-3.5" /> FIX Surveillance
               </button>
+              <button
+                onClick={() => setTerminalView("TAPE_READING")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                  terminalView === "TAPE_READING" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Zap className="h-3.5 w-3.5" /> Tape & Velocity
+              </button>
             </div>
 
           <div className="flex items-center gap-3">
@@ -709,6 +718,8 @@ function Trade() {
           <CorrelationCointegrationPanel />
         ) : terminalView === "SURVEILLANCE" ? (
           <FixSurveillancePanel />
+        ) : terminalView === "TAPE_READING" ? (
+          <TapeReadingSandbox symbol={sym} currentPrice={q.p} />
         ) : (
           <LiveNewsFeed />
         )}
