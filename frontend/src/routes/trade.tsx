@@ -24,6 +24,7 @@ import {
 } from "@/lib/fix-protocol";
 import { WebRtcAlphaDesk } from "@/components/trading/WebRtcAlphaDesk";
 import { FixProtocolInspector } from "@/components/trading/FixProtocolInspector";
+import { OrderBookHeatmap } from "@/components/trading/OrderBookHeatmap";
 import {
   FifoLimitOrder,
   advanceFifoQueueTick,
@@ -62,8 +63,8 @@ function Trade() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [backendPositions, setBackendPositions] = useState<any[]>([]);
 
-  // Navigation View Toggle: Candlestick Chart vs Options Chain vs Strategy Builder vs News Wire vs FIX Inspector vs Voice Desk
-  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE" | "FIX_INSPECTOR" | "VOICE_DESK">("CHART");
+  // Navigation View Toggle: Candlestick Chart vs Options Chain vs Strategy Builder vs News Wire vs FIX Inspector vs Voice Desk vs L2 Depth
+  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE" | "FIX_INSPECTOR" | "VOICE_DESK" | "L2_DEPTH">("CHART");
   const [marketQuotes, setMarketQuotes] = useState<any[]>([]);
 
   // Multi-Leg Strategy Execution Handler
@@ -580,6 +581,14 @@ function Trade() {
               >
                 <Headphones className="h-3.5 w-3.5" /> Alpha Desk & Squawk
               </button>
+              <button
+                onClick={() => setTerminalView("L2_DEPTH")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                  terminalView === "L2_DEPTH" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Layers className="h-3.5 w-3.5" /> L2 Depth & OIR
+              </button>
             </div>
 
           <div className="flex items-center gap-3">
@@ -643,6 +652,8 @@ function Trade() {
           <FixProtocolInspector />
         ) : terminalView === "VOICE_DESK" ? (
           <WebRtcAlphaDesk />
+        ) : terminalView === "L2_DEPTH" ? (
+          <OrderBookHeatmap symbol={sym} currentPrice={q.p} />
         ) : (
           <LiveNewsFeed />
         )}

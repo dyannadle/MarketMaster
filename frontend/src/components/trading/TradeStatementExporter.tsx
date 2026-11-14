@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { inr } from "@/lib/data";
 import { backendApi } from "@/lib/api";
 import { useAccount } from "@/lib/paper";
+import { SebiAuditCertificateModal } from "@/components/trading/SebiAuditCertificateModal";
 
 interface TradeItem {
   id: string;
@@ -75,6 +76,7 @@ export function TradeStatementExporter({ isOpen, onClose }: TradeStatementExport
   const [activeTab, setActiveTab] = useState<"STATEMENT" | "MISTAKES">("STATEMENT");
   const [statement, setStatement] = useState<StatementData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCertOpen, setIsCertOpen] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -245,6 +247,9 @@ export function TradeStatementExporter({ isOpen, onClose }: TradeStatementExport
           </div>
 
           <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => setIsCertOpen(true)} className="gap-1.5 text-xs font-bold text-primary border-primary/30 bg-primary/5">
+              <ShieldCheck className="size-3.5" /> Certified SEBI Audit
+            </Button>
             <Button size="sm" variant="outline" onClick={downloadCsv} className="gap-1.5 text-xs font-bold">
               <Download className="size-3.5" /> Download CSV
             </Button>
@@ -488,6 +493,18 @@ export function TradeStatementExporter({ isOpen, onClose }: TradeStatementExport
           )}
         </div>
       </div>
+
+      <SebiAuditCertificateModal
+        isOpen={isCertOpen}
+        onClose={() => setIsCertOpen(false)}
+        traderName={statement.account.display_name}
+        email={statement.account.email}
+        totalTrades={statement.financial_summary.total_trades}
+        totalTurnover={statement.financial_summary.total_turnover}
+        netRealizedPnl={statement.financial_summary.net_realized_pnl}
+        statutoryDeductions={statement.financial_summary.total_statutory_charges}
+        disciplineScore={statement.account.discipline_score}
+      />
     </div>
   );
 }

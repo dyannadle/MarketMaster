@@ -347,6 +347,37 @@
 | T-27.1.2 | Multi-Objective Calmar & Drawdown Scoring | P0 | COMPLETED AND VERIFIED | Evaluates equity curves, penalizing drawdowns $> 1.5\%$ per Rule 4.3 while rewarding smooth Calmar/Sharpe performance. |
 | T-27.1.3 | Strategy Lab Interactive Optimizer Panel | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/GeneticOptimizerPanel.tsx` in `/lab` with generation convergence chart and 1-click apply. |
 
+---
+
+## 28. Sub-Second Level-2 Order Book Heatmap & Depth Imbalance (Milestone 22 / PIP Part 1.4 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-28.1.1 | 10-Level Bid/Ask Depth Generator & Cumulative Volume | P1 | COMPLETED AND VERIFIED | `frontend/src/lib/order-book-depth.ts` calculating 10 depth levels with cumulative volume profiles. |
+| T-28.1.2 | Microstructure Order Imbalance Ratio ($\text{OIR}$) & Sweeps | P0 | COMPLETED AND VERIFIED | Computes $\text{OIR} = \frac{V_b - V_a}{V_b + V_a} \in [-1, 1]$ and flags predatory sweeps ($|\text{OIR}| > 0.40$). |
+| T-28.1.3 | Order Book Heatmap & Visual Imbalance Gauge | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/OrderBookHeatmap.tsx` in `/trade` with depth ladders and sweep alerts. |
+
+---
+
+## 29. SEBI Regulatory Risk Disclosure Watermarking & Audit Certificate (Milestone 23 / PIP Part 6.1 & 6.2)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-29.1.1 | SHA-256 Cryptographic Audit Digest Generator | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/sebi-certificate.ts` generating immutable SHA-256 verification hashes for statements. |
+| T-29.1.2 | Certified Statement Exporter with SEBI Watermark | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/SebiAuditCertificateModal.tsx` with diagonal SEBI Schedule II simulated trading watermark. |
+| T-29.1.3 | Mandatory NISM Risk Profiling Questionnaire | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/RiskProfilingQuestionnaire.tsx` in `/settings` unlocking leverage tiers (1x $\to$ 5x $\to$ F&O). |
+
+---
+
+## 30. Strategy Lab Monte Carlo Permutation Engine & Resampling Stress Test (Milestone 24 / PIP Part 2.3 & 4.2)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-30.1.1 | 1,000-Path Bootstrap Resampling Engine | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/monte-carlo.ts` computing VaR 95%, VaR 99%, Probability of Ruin, and max losing streaks. |
+| T-30.1.2 | Parameter Cluster Robustness Matrix | P1 | COMPLETED AND VERIFIED | 5x5 Fast EMA vs Slow EMA parameter evaluation detecting robust plateaus vs fragile overfitting cliffs. |
+| T-30.1.3 | Interactive Monte Carlo Resampling Panel in `/lab` | P2 | COMPLETED AND VERIFIED | `frontend/src/components/trading/MonteCarloStressPanel.tsx` with fan chart projections and parameter robustness heatmap. |
+
+
 
 
 

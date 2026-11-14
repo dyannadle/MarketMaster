@@ -614,3 +614,17 @@
 * **Impact**: 100% test pass rate across 13 Pytest backend tests, 20 Vitest frontend suites (76 tests), strict TypeScript validation (0 errors), Nitro SSR build, and signed release APK assembly (`app-release.apk`, 5.19 MB).
 
 ---
+
+### ADR-042: Level-2 Order Book Heatmap, SEBI Regulatory Audit Certificate & Monte Carlo Resampling Engine
+* **Status**: Accepted & Implemented (v1.0.40)
+* **Date**: 2026-11-14
+* **Context**: Enhancing microstructure transparency with sub-second order book depth and predatory sweep indicators, providing SEBI Schedule II compliant paper trading audit certificates with NISM risk-suitability profiling, and delivering quantitative Monte Carlo resampling and parameter cluster robustness analysis in the Strategy Lab.
+* **Decision**:
+  1. **Level-2 Order Book Heatmap & Depth Imbalance Engine**: Built `frontend/src/lib/order-book-depth.ts` and `frontend/src/components/trading/OrderBookHeatmap.tsx`. Generates 10-level bid/ask depth ladders with cumulative volume, computes the microstructure Order Imbalance Ratio $\text{OIR} = \frac{V_b - V_a}{V_b + V_a} \in [-1, 1]$, and triggers institutional liquidity sweep alerts when $|\text{OIR}| > 0.40$. Integrated as `"L2_DEPTH"` view tab in `/trade`.
+  2. **SEBI Schedule II Regulatory Audit Certificate & Risk Profiling**: Implemented `frontend/src/lib/sebi-certificate.ts` with SHA-256 cryptographic audit digest verification (`generateSha256Checksum`), Printable Certificate Modal (`frontend/src/components/trading/SebiAuditCertificateModal.tsx`) with diagonal watermarking and SEBI Schedule II compliance disclosures, and a 5-question NISM risk suitability questionnaire (`frontend/src/components/trading/RiskProfilingQuestionnaire.tsx`) in `/settings` unlocking leverage tiers (Tier 1: 1x Cash $\to$ Tier 2: 5x Intraday $\to$ Tier 3: F&O Derivatives).
+  3. **Monte Carlo Bootstrap Resampling & Parameter Robustness Matrix**: Implemented `frontend/src/lib/monte-carlo.ts` and `frontend/src/components/trading/MonteCarloStressPanel.tsx` in `/lab`. Runs 1,000-path bootstrap resampling to calculate Value-at-Risk (VaR 95% and VaR 99%), Probability of Ruin, and maximum consecutive losing streaks while enforcing Rule 4.3 limits. Evaluates a 5x5 parameter cluster robustness matrix (Fast EMA vs Slow EMA) to detect overfitting cliffs vs stable plateaus.
+* **Why Taken**: Completes Milestones 22, 23, and 24, delivering institutional-grade depth visualization, rigorous regulatory compliance certification, and statistical strategy validation.
+* **Impact**: 100% test pass rate across 13 Pytest backend tests, 21 Vitest frontend suites (83 tests), strict TypeScript validation (0 errors), Nitro SSR build, and signed release APK assembly (`app-release.apk`, 5.20 MB).
+
+---
+

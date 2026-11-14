@@ -747,3 +747,32 @@
   * Android Release APK compiled and signed (5.19 MB).
 
 ---
+
+### [v1.0.40] - 2026-11-14 - Level-2 Order Book Heatmap, SEBI Regulatory Audit Certificate & Monte Carlo Resampling Engine
+* **Category**: Microstructure Depth, SEBI Compliance Certification & Quantitative Resampling
+* **Files Modified / Added**:
+  * `frontend/src/lib/order-book-depth.ts`: 10-level bid/ask depth generator, cumulative volume calculator, microstructure Order Imbalance Ratio ($\text{OIR}$), and predatory sweep detector.
+  * `frontend/src/components/trading/OrderBookHeatmap.tsx`: Visual depth ladder, live bid/ask imbalance bar, and sweep detection warning banner.
+  * `frontend/src/routes/trade.tsx`: Added `"L2_DEPTH"` view tab and wired `OrderBookHeatmap`.
+  * `frontend/src/lib/sebi-certificate.ts`: SHA-256 cryptographic audit digest verification, certificate generator, and NISM risk suitability scoring engine.
+  * `frontend/src/components/trading/SebiAuditCertificateModal.tsx`: High-resolution printable certificate modal with SEBI Schedule II background watermark and verification digest.
+  * `frontend/src/components/trading/TradeStatementExporter.tsx`: Integrated `"Certified SEBI Audit"` trigger button.
+  * `frontend/src/components/trading/RiskProfilingQuestionnaire.tsx`: 5-question NISM risk suitability questionnaire in `/settings` unlocking leverage tiers (Tier 1 $\to$ Tier 2 $\to$ Tier 3).
+  * `frontend/src/routes/settings.tsx`: Added `"Risk Suitability (SEBI)"` tab and embedded `RiskProfilingQuestionnaire`.
+  * `frontend/src/lib/monte-carlo.ts`: 1,000-path bootstrap resampling engine (VaR 95/99, Probability of Ruin, percentile paths) and 5x5 parameter cluster robustness matrix.
+  * `frontend/src/components/trading/MonteCarloStressPanel.tsx`: Interactive Monte Carlo resampling UI with fan chart and parameter plateau heatmap.
+  * `frontend/src/routes/lab.tsx`: Added `"MONTE_CARLO"` mode in Strategy Lab.
+  * `frontend/src/test/depth-sebi-montecarlo.test.tsx`: Vitest suite covering depth imbalance, SEBI checksum generation, risk tier scoring, Monte Carlo VaR, and parameter cluster evaluation.
+  * `android/app/build/outputs/apk/release/app-release.apk`: Built signed release APK (5.20 MB).
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `scripts/run_all_tests.py` ran all 5 layers passing 100% in 59.27s.
+  * 13 Pytest backend tests green.
+  * 21 Vitest frontend suites (83 tests) green.
+  * Strict TypeScript check (`npx tsc --noEmit`) passed with 0 errors.
+  * Full Production Nitro SSR bundle compiled cleanly in 8.62s.
+  * Multi-Service Health & Docker Smoke Test passed in 4.22s.
+  * Android Release APK compiled and signed (5.20 MB).
+
+---
+

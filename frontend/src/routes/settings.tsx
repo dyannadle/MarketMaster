@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
 import { useAccount } from "@/lib/paper";
+import { RiskProfilingQuestionnaire } from "@/components/trading/RiskProfilingQuestionnaire";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({ meta: [
@@ -39,6 +40,7 @@ function Settings() {
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="trading">Trading</TabsTrigger>
+          <TabsTrigger value="suitability">Risk Suitability (SEBI)</TabsTrigger>
         </TabsList>
         <TabsContent value="profile" className="mt-6 max-w-xl space-y-4">
           <Field label="Full name"><Input value={p.name} onChange={(e) => setP({ ...p, name: e.target.value })} /></Field>
@@ -67,6 +69,9 @@ function Settings() {
             <p className="text-sm text-muted-foreground">Clears positions and orders; restores ₹10,00,000.</p>
             <Button variant="destructive" className="mt-3" onClick={() => { reset(); toast.success("Paper account reset"); }}>Reset account</Button>
           </div>
+        </TabsContent>
+        <TabsContent value="suitability" className="mt-6 max-w-2xl">
+          <RiskProfilingQuestionnaire />
         </TabsContent>
       </Tabs>
     </div>
