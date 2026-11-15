@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
-import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper, FileSpreadsheet, SlidersHorizontal, Terminal, Headphones, Rotate3d, Scale, Flame, Network, ShieldCheck, Sparkles, Activity } from "lucide-react";
+import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper, FileSpreadsheet, SlidersHorizontal, Terminal, Headphones, Rotate3d, Scale, Flame, Network, ShieldCheck, Sparkles, Activity, Binary } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change } from "@/components/AppShell";
 import { inr, instruments } from "@/lib/data";
@@ -33,6 +33,7 @@ import { FixSurveillancePanel } from "@/components/trading/FixSurveillancePanel"
 import { TapeReadingSandbox } from "@/components/trading/TapeReadingSandbox";
 import { VolatilityArbitrageScanner } from "@/components/trading/VolatilityArbitrageScanner";
 import { FixLevel3ReplayPanel } from "@/components/trading/FixLevel3ReplayPanel";
+import { FastProtocolInspector } from "@/components/trading/FastProtocolInspector";
 import {
   FifoLimitOrder,
   advanceFifoQueueTick,
@@ -71,8 +72,8 @@ function Trade() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [backendPositions, setBackendPositions] = useState<any[]>([]);
 
-  // Navigation View Toggle: Candlestick Chart vs Options Chain vs Strategy Builder vs News Wire vs FIX Inspector vs Voice Desk vs L2 Depth vs Vol Surface vs Algo Exec vs Footprint vs Correlation vs Surveillance vs Tape Reading vs Vol Arbitrage vs FIX L3 Stream
-  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE" | "FIX_INSPECTOR" | "VOICE_DESK" | "L2_DEPTH" | "VOL_SURFACE" | "ALGO_EXEC" | "FOOTPRINT" | "CORRELATION" | "SURVEILLANCE" | "TAPE_READING" | "VOL_ARBITRAGE" | "FIX_L3_STREAM">("CHART");
+  // Navigation View Toggle: Candlestick Chart vs Options Chain vs Strategy Builder vs News Wire vs FIX Inspector vs Voice Desk vs L2 Depth vs Vol Surface vs Algo Exec vs Footprint vs Correlation vs Surveillance vs Tape Reading vs Vol Arbitrage vs FIX L3 Stream vs FAST Protocol
+  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE" | "FIX_INSPECTOR" | "VOICE_DESK" | "L2_DEPTH" | "VOL_SURFACE" | "ALGO_EXEC" | "FOOTPRINT" | "CORRELATION" | "SURVEILLANCE" | "TAPE_READING" | "VOL_ARBITRAGE" | "FIX_L3_STREAM" | "FAST_PROTOCOL">("CHART");
   const [marketQuotes, setMarketQuotes] = useState<any[]>([]);
 
   // Multi-Leg Strategy Execution Handler
@@ -661,6 +662,14 @@ function Trade() {
               >
                 <Activity className="h-3.5 w-3.5" /> FIX L3 Stream
               </button>
+              <button
+                onClick={() => setTerminalView("FAST_PROTOCOL")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                  terminalView === "FAST_PROTOCOL" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Binary className="h-3.5 w-3.5" /> FAST Protocol
+              </button>
             </div>
 
           <div className="flex items-center gap-3">
@@ -742,6 +751,8 @@ function Trade() {
           <VolatilityArbitrageScanner />
         ) : terminalView === "FIX_L3_STREAM" ? (
           <FixLevel3ReplayPanel />
+        ) : terminalView === "FAST_PROTOCOL" ? (
+          <FastProtocolInspector />
         ) : (
           <LiveNewsFeed />
         )}

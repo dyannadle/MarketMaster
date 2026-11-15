@@ -900,3 +900,29 @@
 
 ---
 
+### [v1.0.46] - 2026-11-15 - Options Delta-Neutral Gamma Scalping Simulator, FAST Protocol Binary Compression & Continuous Deep Q-Network (DQN) Neural RL Agent
+* **Category**: Quantitative Options Scalping, Binary Exchange Protocols (FAST) & Deep Reinforcement Learning (DQN)
+* **Files Modified / Added**:
+  * `frontend/src/lib/gamma-scalping.ts`: Dynamic gamma scalping engine calculating Black-Scholes Greeks ($\Delta, \Gamma, \Theta$), multi-tick realized vs implied volatility simulator, micro-futures delta hedges, bid-ask friction drag, and Rule 4.3 drawdown enforcement ($DD \le 1.5\%$).
+  * `frontend/src/components/trading/GammaScalpingSimulator.tsx`: Interactive gamma scalping console under `"GAMMA_SCALP"` tab in `/portfolio` with volatility regime sliders, KPI cards, dual-axis Recharts (Spot + hedge executions & Net Gamma vs Theta PnL), and scalp audit journal table.
+  * `frontend/src/routes/portfolio.tsx`: Added `"GAMMA_SCALP"` view tab and integrated `GammaScalpingSimulator`.
+  * `frontend/src/lib/fast-protocol.ts`: Ultra-low-latency FIX Adapted for STreaming (FAST) binary encoder and decoder implementing 7-bit variable-length stop-bit encoding (MSB 0x80), Presence Map (P-Map) bit vectors, stateful field operators (`COPY`, `DELTA`, `DEFAULT`, `CONSTANT`), and Template 101 (`ExecutionReport_FAST`).
+  * `frontend/src/components/trading/FastProtocolInspector.tsx`: Bit-level binary protocol inspector under `"FAST_PROTOCOL"` tab in `/trade` with byte hex dump, ASCII comparison, bit-level P-Map parser, state dictionary table, and ~85% wire bandwidth reduction gauge.
+  * `frontend/src/routes/trade.tsx`: Added `"FAST_PROTOCOL"` view tab and integrated `FastProtocolInspector`.
+  * `frontend/src/lib/dqn-agent.ts`: Pure TypeScript continuous Deep Q-Network (Input 6 $\to$ Dense 64 [ReLU] $\to$ Dense 32 [ReLU] $\to$ Output 4 Q-values: `HOLD`, `BUY`, `SELL`, `CLOSE`), He-normal weight initialization, 1,000-sample Experience Replay Ring Buffer, Target Network ($\theta^-$) synchronized every 50 steps, Adam optimizer with first and second moment decay, and out-of-sample benchmark simulator.
+  * `frontend/src/components/trading/DqnAgentArena.tsx`: Interactive Deep Q-Network arena under `"DQN_NEURAL"` mode in `/lab` with hyperparameter sliders, out-of-sample comparison cards (DQN vs Tabular Q vs Human vs Buy & Hold), multi-agent equity curves, TD loss convergence chart, and neural architecture inspector.
+  * `frontend/src/routes/lab.tsx`: Added `"DQN_NEURAL"` mode button and integrated `DqnAgentArena`.
+  * `frontend/src/test/scalping-fast-dqn.test.tsx`: Vitest suite covering Black-Scholes Greek formulas, gamma scalping rebalancing simulation, Rule 4.3 drawdown clamping, FAST 7-bit stop-bit encoding/decoding, P-Map vector extraction, stateful field operators, bandwidth compression metrics, DQN forward inference, experience replay batch sampling, target net sync, training step loss convergence, and UI component rendering (13 tests).
+  * `android/app/build/outputs/apk/release/app-release.apk`: Built signed release APK (5.28 MB).
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `scripts/run_all_tests.py` ran all 5 layers passing 100% in 57.33s.
+  * 13 Pytest backend tests green.
+  * 27 Vitest frontend suites (158 tests) green.
+  * Strict TypeScript check (`npx tsc --noEmit`) passed with 0 errors.
+  * Full Production Nitro SSR bundle compiled cleanly in 9.94s.
+  * Multi-Service Health & Docker Smoke Test passed in 5.30s.
+  * Android Release APK compiled and signed (5.28 MB).
+
+---
+

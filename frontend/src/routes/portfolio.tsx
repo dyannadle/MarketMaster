@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { FileSpreadsheet, Brain, Layers, Activity, Scale, Calendar, PieChart } from "lucide-react";
+import { FileSpreadsheet, Brain, Layers, Activity, Scale, Calendar, PieChart, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change, PageHeader } from "@/components/AppShell";
 import { inr } from "@/lib/data";
@@ -11,6 +11,7 @@ import { PortfolioStressTesting } from "@/components/trading/PortfolioStressTest
 import { GreeksHedgingRebalancer } from "@/components/trading/GreeksHedgingRebalancer";
 import { CorporateActionsSimulator } from "@/components/trading/CorporateActionsSimulator";
 import { FactorRiskModelPanel } from "@/components/trading/FactorRiskModelPanel";
+import { GammaScalpingSimulator } from "@/components/trading/GammaScalpingSimulator";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/portfolio")({
 
 function Portfolio() {
   const [isExporterOpen, setIsExporterOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"POSITIONS" | "PSYCHOLOGY" | "STRESS_TESTING" | "GREEKS_HEDGE" | "CORPORATE_ACTIONS" | "FACTOR_RISK">("POSITIONS");
+  const [activeTab, setActiveTab] = useState<"POSITIONS" | "PSYCHOLOGY" | "STRESS_TESTING" | "GREEKS_HEDGE" | "CORPORATE_ACTIONS" | "FACTOR_RISK" | "GAMMA_SCALP">("POSITIONS");
   const prices = useLivePrices();
   const { acc, reset } = useAccount();
   const rows = acc.positions.map((p) => {
@@ -129,6 +130,17 @@ function Portfolio() {
           <PieChart className="size-4" />
           <span>Factor Risk Attribution (Barra)</span>
         </button>
+        <button
+          onClick={() => setActiveTab("GAMMA_SCALP")}
+          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-bold transition-all ${
+            activeTab === "GAMMA_SCALP"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Zap className="size-4 text-amber-400" />
+          <span>Gamma Scalping Simulator</span>
+        </button>
       </div>
 
       {activeTab === "POSITIONS" ? (
@@ -183,9 +195,13 @@ function Portfolio() {
         <div className="mx-5 md:mx-8">
           <CorporateActionsSimulator />
         </div>
-      ) : (
+      ) : activeTab === "FACTOR_RISK" ? (
         <div className="mx-5 md:mx-8">
           <FactorRiskModelPanel />
+        </div>
+      ) : (
+        <div className="mx-5 md:mx-8">
+          <GammaScalpingSimulator />
         </div>
       )}
 
