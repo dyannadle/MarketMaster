@@ -3,7 +3,34 @@
 
 ---
 
-### Release v1.0.46 (Current — Options Delta-Neutral Gamma Scalping Simulator, FAST Protocol Binary Compression & Continuous Deep Q-Network DQN Neural RL Agent)
+### Release v1.0.47 (Current — Options Dispersion & Correlation Arbitrage Engine, ITCH/OUCH DMA Binary Decoder & Continuous PPO Actor-Critic Agent)
+* **Release Date**: 2026-11-15 11:15 IST
+* **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
+* **Key Enhancements**:
+  * **Option 1: Real-Time Options Dispersion & Correlation Arbitrage Engine (Milestone 43)**:
+    * Implied correlation model (`frontend/src/lib/options-dispersion.ts`) using the weighted equicorrelation theorem ($\rho_{\text{implied}} \approx \frac{\sigma_I^2 - \sum w_i^2 \sigma_i^2}{2 \sum_{i<j} w_i w_j \sigma_i \sigma_j}$) across Nifty 50 and top 5 constituents (HDFCBANK, RELIANCE, ICICIBANK, INFY, TCS).
+    * Automated dispersion trade signal generator triggering Long Dispersion (Buy Basket, Sell Index) when spread $\Delta\rho > +8\%$ and Short Dispersion when $\Delta\rho < -8\%$.
+    * Interactive Options Dispersion console (`frontend/src/components/trading/OptionsDispersionPanel.tsx`) under `"DISPERSION"` tab in `/portfolio` with volatility sliders, constituent weighting table, cumulative P&L curves, and Greek attribution (Gamma rent vs Theta bleed) with Rule 4.3 drawdown enforcement ($DD \le 1.5\%$).
+  * **Option 2: ITCH / OUCH Direct Market Access (DMA) Binary Feed Replay & Latency Profiler (Milestone 44)**:
+    * Big-endian binary codecs (`frontend/src/lib/dma-protocols.ts`) for ITCH 5.0 (Add Order `A`, Executed `E`, Cancel `X`, Replace `U`) and OUCH 4.2 (Enter Order `O`, Accepted `A`, Executed `E`).
+    * Sub-microsecond Tick-to-Trade (T2T) latency distribution telemetry ($p_{50}$, $p_{90}$, $p_{99}$) reflecting hardware-accelerated kernel-bypass execution.
+    * Visual DMA Protocol Inspector tab (`frontend/src/components/trading/DmaProtocolsInspector.tsx`) under `"DMA_ITCH_OUCH"` in `/trade` with live feed stream, latency distribution histogram, protocol field dissector tree, and raw network byte hex dump.
+  * **Option 3: Proximal Policy Optimization (PPO) Continuous Trading Agent in `/lab` (Milestone 45)**:
+    * Dual Actor-Critic neural networks (`frontend/src/lib/ppo-agent.ts`) with continuous action space $[-1.0, 1.0]$ via Gaussian policy $\mathcal{N}(\mu, \sigma^2)$ (Actor: 6D $\to$ 64 [$\tanh$] $\to$ 32 [$\tanh$] $\to \mu \in [-1, 1]$ + trainable $\log\sigma$; Critic: 6D $\to$ 64 [ReLU] $\to$ 32 [ReLU] $\to V(s)$).
+    * Generalized Advantage Estimation (GAE-$\lambda$, $\lambda=0.95$), clipped surrogate objective $L^{\text{CLIP}}(\theta)$ ($\epsilon=0.2$), and Adam backpropagation.
+    * Interactive PPO Arena (`frontend/src/components/trading/PpoAgentArena.tsx`) under `"PPO_AGENT"` mode in `/lab` with Gaussian action density curve visualizer, hyperparameter sliders, multi-agent out-of-sample benchmark comparison (PPO vs DQN vs Tabular Q vs Buy & Hold), and training loss/entropy curves.
+  * **Master Verification Engine Verified**:
+    * Backend Pytest: 13/13 tests passing (100% green).
+    * Frontend Vitest: 172/172 tests passing across 28 suites (100% green).
+    * TypeScript: Zero errors (`npx tsc --noEmit`).
+    * Production Nitro Build: 100% clean SSR bundle (21.44s).
+    * Multi-Service Smoke Test: 100% passed (6.35s).
+    * Android Container: 82 production assets compiled and synchronized.
+    * Android Release APK: Verified signed assembly (`app-release.apk`, **5.05 MB**).
+
+---
+
+### Release v1.0.46 (Options Delta-Neutral Gamma Scalping Simulator, FAST Protocol Binary Compression & Continuous Deep Q-Network DQN Neural RL Agent)
 * **Release Date**: 2026-11-15 09:30 IST
 * **Status**: `STABLE / FULLY VERIFIED & AUTOMATED`
 * **Key Enhancements**:

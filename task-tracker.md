@@ -559,4 +559,34 @@
 
 ---
 
+## 49. Options Dispersion & Correlation Arbitrage Engine (Milestone 43 / PIP Part 2.3 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-49.1.1 | Implied Equicorrelation Model & Dispersion Signal Extraction | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/options-dispersion.ts` computing $\rho_{\text{implied}} \approx \frac{\sigma_I^2 - \sum w_i^2 \sigma_i^2}{2 \sum_{i<j} w_i w_j \sigma_i \sigma_j}$ across Nifty 50 and top 5 heavyweights. |
+| T-49.1.2 | Long/Short Dispersion Execution Structure & Greek Attribution | P0 | COMPLETED AND VERIFIED | Simulates vega-neutral paired straddle portfolios tracking net gamma rent vs theta bleed and enforcing Rule 4.3 drawdown limits ($DD \le 1.5\%$). |
+| T-49.1.3 | Interactive Dispersion Terminal in `/portfolio` | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/OptionsDispersionPanel.tsx` under `"DISPERSION"` tab in `/portfolio` with volatility sliders, constituent table, and Recharts PnL curves. |
+
+---
+
+## 50. ITCH / OUCH Direct Market Access (DMA) Binary Feed Replay (Milestone 44 / PIP Part 1.4 & 6.1)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-50.1.1 | Big-Endian ITCH 5.0 Multicast & OUCH 4.2 TCP Binary Codecs | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/dma-protocols.ts` encoding/decoding raw binary network buffers for Add Order, Executed, Cancel, and Enter Order messages. |
+| T-50.1.2 | Sub-Microsecond Tick-to-Trade (T2T) Latency Telemetry | P0 | COMPLETED AND VERIFIED | Calculates hardware-accelerated latency percentiles ($p_{50}$, $p_{90}$, $p_{99}$) and latency density histogram bins down to nanosecond precision. |
+| T-50.1.3 | Direct Feed Terminal & Protocol Dissector in `/trade` | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/DmaProtocolsInspector.tsx` under `"DMA_ITCH_OUCH"` in `/trade` with byte-level hex dump and protocol field dissector tree. |
+
+---
+
+## 51. Proximal Policy Optimization (PPO) Continuous RL Trading Agent (Milestone 45 / PIP Part 2.3 & 6.1)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-51.1.1 | Dual Actor-Critic Architecture with Continuous Action Sizing | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/ppo-agent.ts` with Actor (6D $\to$ 64 [$\tanh$] $\to$ 32 [$\tanh$] $\to \mu \in [-1, 1]$ + trainable $\log\sigma$) and Critic (6D $\to$ 64 [ReLU] $\to$ 32 [ReLU] $\to V(s)$). |
+| T-51.1.2 | Generalized Advantage Estimation (GAE-$\lambda$) & Clipped Loss | P0 | COMPLETED AND VERIFIED | Implements GAE-$\lambda$ ($\lambda = 0.95$), clipped surrogate objective $L^{\text{CLIP}}(\theta)$ ($\epsilon = 0.2$), Adam optimizer, and Rule 4.3 drawdown boundary penalties. |
+| T-51.1.3 | Continuous PPO Arena & Multi-Agent Benchmark UI in `/lab` | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/PpoAgentArena.tsx` under `"PPO_AGENT"` mode in `/lab` with Gaussian action density curve visualizer and out-of-sample benchmark curves. |
+
+---
+
 

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { FileSpreadsheet, Brain, Layers, Activity, Scale, Calendar, PieChart, Zap } from "lucide-react";
+import { FileSpreadsheet, Brain, Layers, Activity, Scale, Calendar, PieChart, Zap, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change, PageHeader } from "@/components/AppShell";
 import { inr } from "@/lib/data";
@@ -12,6 +12,7 @@ import { GreeksHedgingRebalancer } from "@/components/trading/GreeksHedgingRebal
 import { CorporateActionsSimulator } from "@/components/trading/CorporateActionsSimulator";
 import { FactorRiskModelPanel } from "@/components/trading/FactorRiskModelPanel";
 import { GammaScalpingSimulator } from "@/components/trading/GammaScalpingSimulator";
+import { OptionsDispersionPanel } from "@/components/trading/OptionsDispersionPanel";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/portfolio")({
 
 function Portfolio() {
   const [isExporterOpen, setIsExporterOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"POSITIONS" | "PSYCHOLOGY" | "STRESS_TESTING" | "GREEKS_HEDGE" | "CORPORATE_ACTIONS" | "FACTOR_RISK" | "GAMMA_SCALP">("POSITIONS");
+  const [activeTab, setActiveTab] = useState<"POSITIONS" | "PSYCHOLOGY" | "STRESS_TESTING" | "GREEKS_HEDGE" | "CORPORATE_ACTIONS" | "FACTOR_RISK" | "GAMMA_SCALP" | "DISPERSION">("POSITIONS");
   const prices = useLivePrices();
   const { acc, reset } = useAccount();
   const rows = acc.positions.map((p) => {
@@ -141,6 +142,17 @@ function Portfolio() {
           <Zap className="size-4 text-amber-400" />
           <span>Gamma Scalping Simulator</span>
         </button>
+        <button
+          onClick={() => setActiveTab("DISPERSION")}
+          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-bold transition-all ${
+            activeTab === "DISPERSION"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <TrendingUp className="size-4 text-emerald-400" />
+          <span>Options Dispersion Arbitrage</span>
+        </button>
       </div>
 
       {activeTab === "POSITIONS" ? (
@@ -199,9 +211,13 @@ function Portfolio() {
         <div className="mx-5 md:mx-8">
           <FactorRiskModelPanel />
         </div>
-      ) : (
+      ) : activeTab === "GAMMA_SCALP" ? (
         <div className="mx-5 md:mx-8">
           <GammaScalpingSimulator />
+        </div>
+      ) : (
+        <div className="mx-5 md:mx-8">
+          <OptionsDispersionPanel />
         </div>
       )}
 

@@ -44,6 +44,7 @@ import { BacktestVisualDebugger } from "@/components/trading/BacktestVisualDebug
 import { SymbolicAlphaDiscoverer } from "@/components/trading/SymbolicAlphaDiscoverer";
 import { RlTradingAgentArena } from "@/components/trading/RlTradingAgentArena";
 import { DqnAgentArena } from "@/components/trading/DqnAgentArena";
+import { PpoAgentArena } from "@/components/trading/PpoAgentArena";
 import {
   runQuantBacktest,
   PYTHON_STRATEGY_TEMPLATES,
@@ -71,8 +72,8 @@ function Lab() {
   const [riskPerTrade, setRiskPerTrade] = useState(1.0);
   const [isRunning, setIsRunning] = useState(false);
 
-  // Dual-Mode State: Visual No-Code vs Python Quant Pro vs Genetic Optimizer vs Monte Carlo vs SQL Analytics vs Visual Debugger vs Symbolic Alpha vs RL Agent vs DQN Neural
-  const [builderMode, setBuilderMode] = useState<"VISUAL" | "PYTHON" | "OPTIMIZER" | "MONTE_CARLO" | "SQL_ANALYTICS" | "DEBUGGER" | "SYMBOLIC_ALPHA" | "RL_AGENT" | "DQN_NEURAL">("VISUAL");
+  // Dual-Mode State: Visual No-Code vs Python Quant Pro vs Genetic Optimizer vs Monte Carlo vs SQL Analytics vs Visual Debugger vs Symbolic Alpha vs RL Agent vs DQN Neural vs PPO Agent
+  const [builderMode, setBuilderMode] = useState<"VISUAL" | "PYTHON" | "OPTIMIZER" | "MONTE_CARLO" | "SQL_ANALYTICS" | "DEBUGGER" | "SYMBOLIC_ALPHA" | "RL_AGENT" | "DQN_NEURAL" | "PPO_AGENT">("VISUAL");
 
   // Visual No-Code rule states
   const [entryOperator, setEntryOperator] = useState<"CROSSES_ABOVE" | "GREATER_THAN">("CROSSES_ABOVE");
@@ -660,6 +661,16 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
                 >
                   <Cpu className="h-3.5 w-3.5" /> DQN Neural Net
                 </button>
+                <button
+                  onClick={() => setBuilderMode("PPO_AGENT")}
+                  className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-bold transition-all ${
+                    builderMode === "PPO_AGENT"
+                      ? "bg-primary text-primary-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Brain className="h-3.5 w-3.5 text-emerald-400" /> PPO Continuous Agent
+                </button>
               </div>
 
               <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
@@ -912,8 +923,10 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
               <SymbolicAlphaDiscoverer />
             ) : builderMode === "RL_AGENT" ? (
               <RlTradingAgentArena />
-            ) : (
+            ) : builderMode === "DQN_NEURAL" ? (
               <DqnAgentArena />
+            ) : (
+              <PpoAgentArena />
             )}
           </div>
 

@@ -702,5 +702,18 @@
 
 ---
 
+### ADR-049: Options Dispersion & Implied Correlation Arbitrage Engine, ITCH/OUCH DMA Binary Decoder & Continuous PPO Actor-Critic Agent
+* **Status**: Accepted & Implemented (v1.0.47)
+* **Date**: 2026-11-15
+* **Context**: Delivering quantitative volatility dispersion trading between Nifty 50 and constituent equities with equicorrelation extraction, vega-neutrality, and gamma/theta attribution in `/portfolio`; direct exchange gateway binary protocol emulation (ITCH 5.0 multicast market data and OUCH 4.2 TCP order entry) with big-endian codecs and sub-microsecond tick-to-trade latency profiling in `/trade`; and continuous Proximal Policy Optimization (PPO) Actor-Critic deep reinforcement learning with GAE-$\lambda$ and clipped surrogate objectives in `/lab`.
+* **Decision**:
+  1. **Options Dispersion & Correlation Arbitrage Engine**: Implemented `frontend/src/lib/options-dispersion.ts` and `frontend/src/components/trading/OptionsDispersionPanel.tsx`. Calculates implied correlation $\rho_{\text{implied}} \approx \frac{\sigma_I^2 - \sum w_i^2 \sigma_i^2}{2 \sum_{i<j} w_i w_j \sigma_i \sigma_j}$ across Nifty 50 and top 5 heavyweights (HDFCBANK, RELIANCE, ICICIBANK, INFY, TCS). Recommends Long Dispersion (Long Basket, Short Index) when correlation spread $\Delta\rho > +8\%$ and Short Dispersion when $\Delta\rho < -8\%$. Simulates multi-day performance with gamma rent vs theta bleed attribution and Rule 4.3 drawdown limits ($DD \le 1.5\%$) under `"DISPERSION"` tab in `/portfolio`.
+  2. **ITCH 5.0 & OUCH 4.2 DMA Protocols Engine**: Implemented `frontend/src/lib/dma-protocols.ts` and `frontend/src/components/trading/DmaProtocolsInspector.tsx`. Encodes and decodes big-endian network byte buffers for ITCH 5.0 (Add Order `A`, Order Executed `E`, Order Cancel `X`, Order Replace `U`) and OUCH 4.2 (Enter Order `O`, Order Accepted `A`, Order Executed `E`). Measures sub-microsecond Tick-to-Trade (T2T) latency distributions ($p_{50}$, $p_{90}$, $p_{99}$) and provides a live stream feed with byte hex dumps and protocol dissector trees under `"DMA_ITCH_OUCH"` tab in `/trade`.
+  3. **Proximal Policy Optimization (PPO) Continuous RL Agent**: Implemented `frontend/src/lib/ppo-agent.ts` and `frontend/src/components/trading/PpoAgentArena.tsx` in `/lab`. Implements dual neural networks (Actor: Input 6 $\to$ Dense 64 [$\tanh$] $\to$ Dense 32 [$\tanh$] $\to$ Output $\mu \in [-1.0, 1.0]$ with trainable $\log\sigma$; Critic: Input 6 $\to$ Dense 64 [ReLU] $\to$ Dense 32 [ReLU] $\to$ Output $V(s)$). Utilizes Generalized Advantage Estimation (GAE-$\lambda$, $\lambda=0.95$), clipped surrogate loss $L^{\text{CLIP}}(\theta)$ ($\epsilon=0.2$), and Adam backpropagation. Features interactive Gaussian policy curve visualizer $\mathcal{N}(\mu, \sigma^2)$ and multi-agent benchmark comparisons (PPO vs DQN vs Tabular Q vs Buy & Hold) under `"PPO_AGENT"` mode in `/lab`.
+* **Why Taken**: Completes Milestones 43, 44, and 45, providing elite volatility correlation stat-arb, ultra-low-latency direct market access protocol fluency, and state-of-the-art continuous action reinforcement learning.
+* **Impact**: 100% test pass rate across 13 Pytest backend tests, 28 Vitest frontend suites (172 tests), strict TypeScript compilation (0 errors), Nitro SSR build, multi-service Docker smoke verification, and signed release APK assembly (`app-release.apk`, 5.05 MB).
+
+---
+
 
 

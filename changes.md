@@ -926,3 +926,29 @@
 
 ---
 
+### [v1.0.47] - 2026-11-15 - Options Dispersion & Correlation Arbitrage Engine, ITCH/OUCH DMA Binary Decoder & Continuous PPO Actor-Critic Agent
+* **Category**: Quantitative Options Dispersion Arbitrage, DMA Binary Protocols (ITCH/OUCH) & Continuous Reinforcement Learning (PPO)
+* **Files Modified / Added**:
+  * `frontend/src/lib/options-dispersion.ts`: Implied correlation extraction engine using the weighted equicorrelation formula ($\rho_{\text{implied}} \approx \frac{\sigma_I^2 - \sum w_i^2 \sigma_i^2}{2 \sum_{i<j} w_i w_j \sigma_i \sigma_j}$), rolling realized correlation tracker, Long/Short dispersion signal generator, vega-neutral paired straddle weighting, and multi-day gamma rent vs theta bleed simulation with Rule 4.3 drawdown limits ($DD \le 1.5\%$).
+  * `frontend/src/components/trading/OptionsDispersionPanel.tsx`: Interactive dispersion console under `"DISPERSION"` tab in `/portfolio` with volatility regime sliders, KPI cards, constituent weighting table (HDFCBANK, RELIANCE, ICICIBANK, INFY, TCS), cumulative PnL Recharts, and Greek attribution bar chart.
+  * `frontend/src/routes/portfolio.tsx`: Added `"DISPERSION"` view tab and integrated `OptionsDispersionPanel`.
+  * `frontend/src/lib/dma-protocols.ts`: Big-endian binary encoders and decoders for ITCH 5.0 (Add Order `A`, Order Executed `E`, Order Cancel `X`, Order Replace `U`) and OUCH 4.2 (Enter Order `O`, Order Accepted `A`, Order Executed `E`), hex dump generator, synthetic DMA stream generator, and sub-microsecond Tick-to-Trade (T2T) latency distribution profiler ($p_{50}$, $p_{90}$, $p_{99}$).
+  * `frontend/src/components/trading/DmaProtocolsInspector.tsx`: Direct Market Access protocol inspector under `"DMA_ITCH_OUCH"` tab in `/trade` with live stream feed, latency histogram, protocol dissector tree, and raw network byte hex dump.
+  * `frontend/src/routes/trade.tsx`: Added `"DMA_ITCH_OUCH"` view tab and integrated `DmaProtocolsInspector`.
+  * `frontend/src/lib/ppo-agent.ts`: Proximal Policy Optimization (PPO) continuous Actor-Critic agent (Actor: 6D $\to$ 64 [$\tanh$] $\to$ 32 [$\tanh$] $\to \mu \in [-1, 1]$ + trainable $\log\sigma$; Critic: 6D $\to$ 64 [ReLU] $\to$ 32 [ReLU] $\to V(s)$), Generalized Advantage Estimation (GAE-$\lambda$), clipped surrogate loss $L^{\text{CLIP}}(\theta)$, Adam optimizer, Rule 4.3 drawdown penalties, and multi-agent benchmark simulator (PPO vs DQN vs Tabular Q vs Buy & Hold).
+  * `frontend/src/components/trading/PpoAgentArena.tsx`: Continuous RL arena under `"PPO_AGENT"` mode in `/lab` with hyperparameter tuning sliders, Gaussian action density curve visualizer $\mathcal{N}(\mu, \sigma^2)$, multi-agent equity curves, and training convergence loss/entropy charts.
+  * `frontend/src/routes/lab.tsx`: Added `"PPO_AGENT"` mode button and integrated `PpoAgentArena`.
+  * `frontend/src/test/dispersion-dma-ppo.test.tsx`: Vitest suite covering Black-Scholes straddle metrics, equicorrelation formulas, dispersion signal generation, Rule 4.3 drawdown enforcement, ITCH 5.0 and OUCH 4.2 binary encoding/decoding, hex dump generation, latency telemetry, continuous Actor-Critic inference, GAE advantage estimation, PPO simulation training, and UI component rendering (14 tests).
+  * `android/app/build/outputs/apk/release/app-release.apk`: Built signed release APK (5.05 MB).
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `scripts/run_all_tests.py` ran all 5 layers passing 100% in 144.88s.
+  * 13 Pytest backend tests green.
+  * 28 Vitest frontend suites (172 tests) green.
+  * Strict TypeScript check (`npx tsc --noEmit`) passed with 0 errors.
+  * Full Production Nitro SSR bundle compiled cleanly in 21.44s.
+  * Multi-Service Health & Docker Smoke Test passed in 6.35s.
+  * Android Release APK compiled and signed (5.05 MB).
+
+---
+
