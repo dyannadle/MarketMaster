@@ -499,3 +499,34 @@
 
 ---
 
+## 43. Options IV Surface Interpolator & Volatility Arbitrage Scanner (Milestone 37 / PIP Part 2.3 & 3.6)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-43.1.1 | Bivariate Thin-Plate Radial Basis Spline Surface | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/volatility-arbitrage.ts` fitting continuous total implied variance $w(k, T)$ with ridge regularization ($\lambda = 10^{-4}$). |
+| T-43.1.2 | Negative Butterfly & Calendar Spread Arbitrage Scanner | P0 | COMPLETED AND VERIFIED | Detects strike convexity violations ($C(K_1) - 2C(K_2) + C(K_3) < 0$) and calendar inversions, computing guaranteed profit in INR. |
+| T-43.1.3 | Surface Residual Heatmap & Execution UI in `/trade` | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/VolatilityArbitrageScanner.tsx` in `/trade` under `"VOL_ARBITRAGE"` with 1-click execution structures. |
+
+---
+
+## 44. Level-3 FIX Drop-Copy Replay & Matching Engine Book Reconstructor (Milestone 38 / PIP Part 1.4 & 6.1)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-44.1.1 | Sub-Millisecond FIX 4.4 Drop-Copy Feed Streaming | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/fix-level3-stream.ts` serializing/parsing tag-value FIX strings with checksum and continuous SHA-256 hash chaining. |
+| T-44.1.2 | Live Reconstructed Level-3 / Level-2 Depth Book | P0 | COMPLETED AND VERIFIED | Incremental matching engine maintaining resting FIFO queues for bids/asks and computing live spread and order queue depths. |
+| T-44.1.3 | Cryptographic SEBI Form TR-8 Clearing Certificate Exporter | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/FixLevel3ReplayPanel.tsx` in `/trade` under `"FIX_L3_STREAM"` with 1-click JSON certificate download. |
+
+---
+
+## 45. Reinforcement Learning (RL) Trading Agent Arena & Q-Learning Benchmark (Milestone 39 / PIP Part 2.3 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-45.1.1 | Tabular Q-Learning Agent with 90 Composite States | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/rl-trading-agent.ts` encoding RSI zones, EMA trends, ATR volatility, and position states with Bellman TD updates. |
+| T-45.1.2 | Customizable Reward Weights & Rule 4.3 Drawdown Penalty | P0 | COMPLETED AND VERIFIED | Enforces exponential penalties when drawdown breaches 1.5% and deducts transaction friction to prevent churning. |
+| T-45.1.3 | Human vs RL Agent Arena & Q-Value Matrix UI in `/lab` | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/RlTradingAgentArena.tsx` in `/lab` under `"RL_AGENT"` with out-of-sample benchmarks and policy heatmap. |
+
+---
+
+

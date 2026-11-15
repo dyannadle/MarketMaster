@@ -676,3 +676,17 @@
 
 ---
 
+### ADR-047: Options IV Surface Interpolator & Arbitrage Scanner, Level-3 FIX Drop-Copy Replay & In-Browser RL Q-Trading Agent
+* **Status**: Accepted & Implemented (v1.0.45)
+* **Date**: 2026-11-15
+* **Context**: Delivering quantitative options surface interpolation with bivariate thin-plate radial basis splines and real-time butterfly and calendar spread convexity arbitrage scanners; institutional Level-3 FIX 4.4 drop-copy WebSocket feed simulator with live reconstructed matching engine order books and SHA-256 regulatory hash chaining; and client-side Tabular Reinforcement Learning Q-Agent training in the Strategy Lab featuring customizable reward functions and strict Rule 4.3 (1.5% drawdown) constraint penalties.
+* **Decision**:
+  1. **Options Implied Volatility Surface Interpolator & Volatility Arbitrage Scanner**: Implemented `frontend/src/lib/volatility-arbitrage.ts` and `frontend/src/components/trading/VolatilityArbitrageScanner.tsx`. Constructs an arbitrage-free total implied variance surface $w(k, T)$ using a 2D thin-plate spline RBF kernel with ridge regularization ($\lambda = 10^{-4}$). Detects negative butterfly spreads ($C(K_1) - 2C(K_2) + C(K_3) < 0$) and calendar spread inversions ($C(K, T_1) > C(K, T_2)$), generating 1-click synthetic execution structures and surface residual heatmaps under `"VOL_ARBITRAGE"` tab in `/trade`.
+  2. **Level-3 FIX Drop-Copy Real-Time Replay & Order Book Reconstructor**: Implemented `frontend/src/lib/fix-level3-stream.ts` and `frontend/src/components/trading/FixLevel3ReplayPanel.tsx`. Ingests sub-millisecond FIX 4.4 messages (`35=D`, `35=8`, `35=F`), maintaining resting order priority queues to reconstruct real-time Level-3 (Market By Order) and Level-2 depth ladders. Computes continuous rolling SHA-256 block hash chains on every drop-copy message and exports official SEBI Form TR-8 Clearing Audit Certificates under `"FIX_L3_STREAM"` tab in `/trade`.
+  3. **Reinforcement Learning Trading Agent Arena & Q-Learning Benchmark**: Implemented `frontend/src/lib/rl-trading-agent.ts` and `frontend/src/components/trading/RlTradingAgentArena.tsx` in `/lab`. Encodes a 90-state discrete composite market regime (RSI zones $\times$ EMA trend biases $\times$ ATR volatility $\times$ position state). Updates Q-table via the Bellman equation with $\epsilon$-greedy exploration decay and customizable reward weights. Enforces Rule 4.3 invariant with an exponential penalty whenever drawdown breaches 1.5%. Evaluates learned policy against Human Trader and Buy-and-Hold benchmarks with out-of-sample equity curves and Q-policy matrices under `"RL_AGENT"` mode in `/lab`.
+* **Why Taken**: Completes Milestones 37, 38, and 39, establishing hedge-fund-level volatility arbitrage modeling, matching engine drop-copy compliance replay, and interactive client-side AI reinforcement learning training.
+* **Impact**: 100% test pass rate across 13 Pytest backend tests, 26 Vitest frontend suites (145 tests), strict TypeScript compilation (0 errors), Nitro SSR build, multi-service Docker smoke verification, and signed release APK assembly (`app-release.apk`, 5.27 MB).
+
+---
+
+

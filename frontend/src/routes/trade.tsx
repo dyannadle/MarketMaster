@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
-import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper, FileSpreadsheet, SlidersHorizontal, Terminal, Headphones, Rotate3d, Scale, Flame, Network, ShieldCheck } from "lucide-react";
+import { ShieldAlert, Zap, ArrowDownUp, RefreshCw, Layers, LineChart as ChartIcon, HeartPulse, Radio, Newspaper, FileSpreadsheet, SlidersHorizontal, Terminal, Headphones, Rotate3d, Scale, Flame, Network, ShieldCheck, Sparkles, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Change } from "@/components/AppShell";
 import { inr, instruments } from "@/lib/data";
@@ -31,6 +31,8 @@ import { OrderFlowFootprintCanvas } from "@/components/trading/OrderFlowFootprin
 import { CorrelationCointegrationPanel } from "@/components/trading/CorrelationCointegrationPanel";
 import { FixSurveillancePanel } from "@/components/trading/FixSurveillancePanel";
 import { TapeReadingSandbox } from "@/components/trading/TapeReadingSandbox";
+import { VolatilityArbitrageScanner } from "@/components/trading/VolatilityArbitrageScanner";
+import { FixLevel3ReplayPanel } from "@/components/trading/FixLevel3ReplayPanel";
 import {
   FifoLimitOrder,
   advanceFifoQueueTick,
@@ -69,8 +71,8 @@ function Trade() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [backendPositions, setBackendPositions] = useState<any[]>([]);
 
-  // Navigation View Toggle: Candlestick Chart vs Options Chain vs Strategy Builder vs News Wire vs FIX Inspector vs Voice Desk vs L2 Depth vs Vol Surface vs Algo Exec vs Footprint vs Correlation vs Surveillance vs Tape Reading
-  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE" | "FIX_INSPECTOR" | "VOICE_DESK" | "L2_DEPTH" | "VOL_SURFACE" | "ALGO_EXEC" | "FOOTPRINT" | "CORRELATION" | "SURVEILLANCE" | "TAPE_READING">("CHART");
+  // Navigation View Toggle: Candlestick Chart vs Options Chain vs Strategy Builder vs News Wire vs FIX Inspector vs Voice Desk vs L2 Depth vs Vol Surface vs Algo Exec vs Footprint vs Correlation vs Surveillance vs Tape Reading vs Vol Arbitrage vs FIX L3 Stream
+  const [terminalView, setTerminalView] = useState<"CHART" | "OPTIONS_CHAIN" | "STRATEGY_BUILDER" | "NEWS_WIRE" | "FIX_INSPECTOR" | "VOICE_DESK" | "L2_DEPTH" | "VOL_SURFACE" | "ALGO_EXEC" | "FOOTPRINT" | "CORRELATION" | "SURVEILLANCE" | "TAPE_READING" | "VOL_ARBITRAGE" | "FIX_L3_STREAM">("CHART");
   const [marketQuotes, setMarketQuotes] = useState<any[]>([]);
 
   // Multi-Leg Strategy Execution Handler
@@ -643,6 +645,22 @@ function Trade() {
               >
                 <Zap className="h-3.5 w-3.5" /> Tape & Velocity
               </button>
+              <button
+                onClick={() => setTerminalView("VOL_ARBITRAGE")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                  terminalView === "VOL_ARBITRAGE" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Sparkles className="h-3.5 w-3.5" /> IV Arbitrage
+              </button>
+              <button
+                onClick={() => setTerminalView("FIX_L3_STREAM")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                  terminalView === "FIX_L3_STREAM" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Activity className="h-3.5 w-3.5" /> FIX L3 Stream
+              </button>
             </div>
 
           <div className="flex items-center gap-3">
@@ -720,6 +738,10 @@ function Trade() {
           <FixSurveillancePanel />
         ) : terminalView === "TAPE_READING" ? (
           <TapeReadingSandbox symbol={sym} currentPrice={q.p} />
+        ) : terminalView === "VOL_ARBITRAGE" ? (
+          <VolatilityArbitrageScanner />
+        ) : terminalView === "FIX_L3_STREAM" ? (
+          <FixLevel3ReplayPanel />
         ) : (
           <LiveNewsFeed />
         )}

@@ -874,3 +874,29 @@
   * Android Release APK compiled and signed (5.24 MB).
 
 ---
+
+### [v1.0.45] - 2026-11-15 - Options IV Surface Interpolator & Arbitrage Scanner, Level-3 FIX Drop-Copy Replay & In-Browser RL Q-Trading Agent
+* **Category**: Quantitative Options Arbitrage, FIX 4.4 Drop-Copy Replay & Reinforcement Learning Strategy Training
+* **Files Modified / Added**:
+  * `frontend/src/lib/volatility-arbitrage.ts`: 2D thin-plate radial basis spline surface interpolator on total variance $w(k, T)$ with ridge regularization ($\lambda = 10^{-4}$); negative butterfly arbitrage detector ($C(K_1) - 2C(K_2) + C(K_3) < 0$) and calendar spread inversion scanner ($C(K, T_1) > C(K, T_2)$); theoretical surface residual mispricing calculator.
+  * `frontend/src/components/trading/VolatilityArbitrageScanner.tsx`: Options volatility arbitrage scanner console under `"VOL_ARBITRAGE"` tab in `/trade` with KPI cards, 1-click synthetic arbitrage execution cards, strike $\times$ DTE residual heatmap, and Recharts smile cross-section plot.
+  * `frontend/src/lib/fix-level3-stream.ts`: Sub-millisecond FIX 4.4 drop-copy stream serializer and parser (`35=D`, `35=8`, `35=F`), continuous rolling SHA-256 block hash chain generator, and incremental Level-3 matching engine book reconstructor maintaining resting FIFO queues and generating top-5 Level-2 depth ladders.
+  * `frontend/src/components/trading/FixLevel3ReplayPanel.tsx`: Live drop-copy terminal console under `"FIX_L3_STREAM"` tab in `/trade` with streaming WebSocket playback controls, live reconstructed bid/ask depth ladders, SOH-delimited message log, and 1-click SEBI Form TR-8 Clearing Audit Certificate JSON export.
+  * `frontend/src/routes/trade.tsx`: Added `"VOL_ARBITRAGE"` and `"FIX_L3_STREAM"` view tabs and integrated components.
+  * `frontend/src/lib/rl-trading-agent.ts`: Tabular Q-Learning trading agent encoding a 90-state discrete composite market regime (RSI zones $\times$ EMA trends $\times$ ATR volatility $\times$ position state); customizable reward weights with exponential Rule 4.3 penalty (for drawdowns $> 1.5\%$) and transaction churn friction; multi-episode training runner and out-of-sample benchmark evaluator.
+  * `frontend/src/components/trading/RlTradingAgentArena.tsx`: In-browser reinforcement learning arena in `/lab` under `"RL_AGENT"` mode with hyperparameter tuning sliders, training convergence history chart, side-by-side head-to-head comparison cards (RL Agent vs Human vs Buy & Hold), Rule 4.3 compliance badges, and interactive Q-value policy matrix.
+  * `frontend/src/routes/lab.tsx`: Added `"RL_AGENT"` mode button and integrated `RlTradingAgentArena`.
+  * `frontend/src/test/vol-arbitrage-fix-rl.test.tsx`: Vitest suite covering Black-Scholes call bounds, RBF spline interpolation, negative butterfly detection, calendar spread inversions, FIX checksum & serialization, rolling SHA-256 hash chains, L3 book depth reconstruction, SEBI audit certificates, 90-state encoding/decoding, Rule 4.3 drawdown penalties, agent training & evaluation, and UI component rendering (16 tests).
+  * `android/app/build/outputs/apk/release/app-release.apk`: Built signed release APK (5.27 MB).
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `scripts/run_all_tests.py` ran all 5 layers passing 100% in 88.65s.
+  * 13 Pytest backend tests green.
+  * 26 Vitest frontend suites (145 tests) green.
+  * Strict TypeScript check (`npx tsc --noEmit`) passed with 0 errors.
+  * Full Production Nitro SSR bundle compiled cleanly in 14.82s.
+  * Multi-Service Health & Docker Smoke Test passed in 6.65s.
+  * Android Release APK compiled and signed (5.27 MB).
+
+---
+

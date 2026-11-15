@@ -31,6 +31,7 @@ import {
   Database,
   Activity,
   Binary,
+  Brain,
 } from "lucide-react";
 import { PageHeader } from "@/components/AppShell";
 import { inr, instruments, seededSeries, strategies } from "@/lib/data";
@@ -41,6 +42,7 @@ import { MonteCarloStressPanel } from "@/components/trading/MonteCarloStressPane
 import { SqlAnalyticsCachePanel } from "@/components/trading/SqlAnalyticsCachePanel";
 import { BacktestVisualDebugger } from "@/components/trading/BacktestVisualDebugger";
 import { SymbolicAlphaDiscoverer } from "@/components/trading/SymbolicAlphaDiscoverer";
+import { RlTradingAgentArena } from "@/components/trading/RlTradingAgentArena";
 import {
   runQuantBacktest,
   PYTHON_STRATEGY_TEMPLATES,
@@ -68,8 +70,8 @@ function Lab() {
   const [riskPerTrade, setRiskPerTrade] = useState(1.0);
   const [isRunning, setIsRunning] = useState(false);
 
-  // Dual-Mode State: Visual No-Code vs Python Quant Pro vs Genetic Optimizer vs Monte Carlo vs SQL Analytics vs Visual Debugger vs Symbolic Alpha
-  const [builderMode, setBuilderMode] = useState<"VISUAL" | "PYTHON" | "OPTIMIZER" | "MONTE_CARLO" | "SQL_ANALYTICS" | "DEBUGGER" | "SYMBOLIC_ALPHA">("VISUAL");
+  // Dual-Mode State: Visual No-Code vs Python Quant Pro vs Genetic Optimizer vs Monte Carlo vs SQL Analytics vs Visual Debugger vs Symbolic Alpha vs RL Agent
+  const [builderMode, setBuilderMode] = useState<"VISUAL" | "PYTHON" | "OPTIMIZER" | "MONTE_CARLO" | "SQL_ANALYTICS" | "DEBUGGER" | "SYMBOLIC_ALPHA" | "RL_AGENT">("VISUAL");
 
   // Visual No-Code rule states
   const [entryOperator, setEntryOperator] = useState<"CROSSES_ABOVE" | "GREATER_THAN">("CROSSES_ABOVE");
@@ -637,6 +639,16 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
                 >
                   <Binary className="h-3.5 w-3.5" /> Symbolic Alpha (AI)
                 </button>
+                <button
+                  onClick={() => setBuilderMode("RL_AGENT")}
+                  className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-bold transition-all ${
+                    builderMode === "RL_AGENT"
+                      ? "bg-primary text-primary-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Brain className="h-3.5 w-3.5" /> RL Agent Arena
+                </button>
               </div>
 
               <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
@@ -885,8 +897,10 @@ def execute_strategy(prices: pl.Series, fast: int = ${fast}, slow: int = ${slow}
                 fastPeriod={fast}
                 slowPeriod={slow}
               />
-            ) : (
+            ) : builderMode === "SYMBOLIC_ALPHA" ? (
               <SymbolicAlphaDiscoverer />
+            ) : (
+              <RlTradingAgentArena />
             )}
           </div>
 
