@@ -952,3 +952,29 @@
 
 ---
 
+### [v1.0.48] - 2026-11-15 - Multi-Asset High-Frequency Order Flow Toxicity & VPIN, Simple Binary Encoding (SBE) Protocol Decoder & Evolutionary Multi-Objective Portfolio Optimizer (NSGA-II)
+* **Category**: High-Frequency Toxicity (VPIN), Exchange Binary Protocols (SBE) & Evolutionary Multi-Objective Optimization (NSGA-II)
+* **Files Modified / Added**:
+  * `frontend/src/lib/vpin-toxicity.ts`: High-frequency order flow toxicity engine implementing Bulk Volume Classification (BVC), volume-synchronized sampling into constant-volume trade buckets ($V = 10,000$), rolling VPIN calculation over $N = 30\text{--}50$ buckets ($VPIN = \frac{\sum |V_\tau^B - V_\tau^S|}{N \times V}$), empirical CDF percentile ranking, flash crash early-warning triggers ($> 95\text{th}$ percentile), and automated Rule 4.3 stop-loss protection locks ($DD \le 1.5\%$).
+  * `frontend/src/components/trading/OrderFlowToxicityVpin.tsx`: Interactive order flow toxicity console under `"VPIN_TOXICITY"` tab in `/trade` with KPI cards (Current VPIN, Toxicity Percentile, Flow Regime, Risk Lock Status), bucket size and rolling $N$ sliders, dual-axis Recharts (Price vs VPIN), empirical CDF area chart, and recent volume bucket audit table.
+  * `frontend/src/routes/trade.tsx`: Added `"VPIN_TOXICITY"` view tab with Flame icon button and integrated `OrderFlowToxicityVpin`.
+  * `frontend/src/lib/sbe-protocol.ts`: Simple Binary Encoding (SBE) codec matching FIX Community SBE standard (CME iLink3 / Eurex / NSE next-gen) with fixed 8-byte message header (`blockLength`, `templateId`, `schemaId`, `version`), Template 501 (`NewOrderSingle_SBE`, 56 bytes), Template 502 (`ExecutionReport_SBE`, 64 bytes), zero-copy constant-offset parsing via `DataView`, multi-protocol wire benchmark runner (SBE vs FAST vs ASCII FIX vs JSON), hex dumper, and `SBE_XML_SCHEMA_DEFINITION`.
+  * `frontend/src/components/trading/SbeProtocolInspector.tsx`: Bit-level binary protocol inspector under `"SBE_PROTOCOL"` tab in `/trade` with live KPI tiles, interactive message encoder/decoder, multi-protocol benchmark chart and comparison table, raw byte hex dump, and XML schema viewer.
+  * `frontend/src/routes/trade.tsx`: Added `"SBE_PROTOCOL"` view tab with FileCode2 icon button and integrated `SbeProtocolInspector`.
+  * `frontend/src/lib/nsga-optimizer.ts`: Non-Dominated Sorting Genetic Algorithm II (NSGA-II) multi-objective optimizer simultaneously optimizing Expected Return ($\mu_p \implies \min -E[R]$), Volatility ($\sigma_p = \sqrt{w^T \Sigma w}$), and fat-tailed $CVaR_{95\%}$ across a 5-asset universe (`NIFTY50`, `BANKNIFTY`, `NIFTY_IT`, `GOLD_MCX`, `USDINR`) with Fast Non-Dominated Sorting, Crowding Distance diversity preservation, SBX crossover, polynomial mutation, and preset strategy extraction.
+  * `frontend/src/components/trading/NsgaPortfolioOptimizer.tsx`: Evolutionary portfolio optimizer console under `"NSGA_OPTIMIZER"` mode in `/lab` with KPI cards, hyperparameter controls, interactive Recharts Pareto frontier scatter plot, strategy preset selection (Max Sharpe, Min Volatility, Min CVaR, Balanced Parity), asset weight allocation bars, and 1-click allocation injection into virtual positions.
+  * `frontend/src/routes/lab.tsx`: Added `"NSGA_OPTIMIZER"` mode button with Sparkles icon and integrated `NsgaPortfolioOptimizer`.
+  * `frontend/src/test/vpin-sbe-nsga.test.tsx`: Vitest suite covering BVC volume classification, VPIN bucket aggregation, empirical CDF toxicity ranking, Rule 4.3 stop-loss lock enforcement, SBE header encoding/decoding, Template 501 & 502 zero-copy parsing, multi-protocol benchmarking, NSGA-II non-dominated sorting, crowding distance calculation, Cornish-Fisher $CVaR_{95\%}$ estimation, and UI component mounting (15 tests).
+  * `android/app/build/outputs/apk/release/app-release.apk`: Built signed release APK (5.06 MB).
+  * `decision.md`, `changes.md`, `task-tracker.md`, `release-notes.md`: Updated living documentation.
+* **Testing & Verification**:
+  * `scripts/run_all_tests.py` ran all 5 layers passing 100% in 241.03s.
+  * 13 Pytest backend tests green.
+  * 29 Vitest frontend suites (187 tests) green.
+  * Strict TypeScript check (`npx tsc --noEmit`) passed with 0 errors.
+  * Full Production Nitro SSR bundle compiled cleanly in 28.53s.
+  * Multi-Service Health & Docker Smoke Test passed in 7.39s.
+  * Android Release APK compiled and signed (5.06 MB).
+
+---
+

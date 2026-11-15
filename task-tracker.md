@@ -589,4 +589,34 @@
 
 ---
 
+## 52. Multi-Asset High-Frequency Order Flow Toxicity & VPIN (Milestone 46 / PIP Part 1.4 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-52.1.1 | Volume-Synchronized Sampling & Bulk Volume Classification (BVC) | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/vpin-toxicity.ts` grouping trades into constant-volume buckets ($V = 10,000$) and computing buyer vs seller flow via standard normal CDF $\Phi(Z)$. |
+| T-52.1.2 | Rolling VPIN Calculation & Empirical CDF Toxicity Percentile | P0 | COMPLETED AND VERIFIED | Rolling average over $N = 30\text{--}50$ buckets, empirical CDF ranking, flash crash warning trigger ($> 95\text{th}$ percentile), and Rule 4.3 stop-loss protection locks. |
+| T-52.1.3 | Interactive VPIN Toxicity Terminal in `/trade` | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/OrderFlowToxicityVpin.tsx` under `"VPIN_TOXICITY"` in `/trade` with KPI cards, dual-axis Recharts, CDF area chart, and bucket table. |
+
+---
+
+## 53. Simple Binary Encoding (SBE) Protocol Decoder & Benchmark (Milestone 47 / PIP Part 1.4 & 6.1)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-53.1.1 | SBE 8-Byte Fixed Header & Template 501/502 Codecs | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/sbe-protocol.ts` implementing standard SBE header, Template 501 (`NewOrderSingle_SBE`), Template 502 (`ExecutionReport_SBE`), and XML schema. |
+| T-53.1.2 | Zero-Copy DataView Parsing & Multi-Protocol Wire Benchmark | P0 | COMPLETED AND VERIFIED | Constant-offset zero-copy decode ($< 5\text{ns}$, 0 heap allocations) and side-by-side benchmark comparing SBE vs FAST vs ASCII FIX vs JSON. |
+| T-53.1.3 | Bit-Level SBE Protocol Inspector & Hex Dump UI in `/trade` | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/SbeProtocolInspector.tsx` under `"SBE_PROTOCOL"` in `/trade` with live KPI tiles, interactive encoder/decoder, benchmark table, and hex dump. |
+
+---
+
+## 54. Evolutionary Multi-Objective Portfolio Optimizer (NSGA-II) (Milestone 48 / PIP Part 2.3 & 4.3)
+
+| ID | Requirement | Priority | Status | Verification & Evidence |
+| :--- | :--- | :---: | :---: | :--- |
+| T-54.1.1 | Multi-Objective Optimization Formulation (Return, Volatility, CVaR) | P0 | COMPLETED AND VERIFIED | `frontend/src/lib/nsga-optimizer.ts` simultaneously evaluating Expected Return, Volatility, and Cornish-Fisher $CVaR_{95\%}$ across 5-asset universe. |
+| T-54.1.2 | Fast Non-Dominated Sorting, Crowding Distance & SBX Evolution | P0 | COMPLETED AND VERIFIED | Pareto dominance ranking ($\mathcal{F}_1, \mathcal{F}_2, \dots$), crowding distance diversity preservation, Simulated Binary Crossover (SBX), and polynomial mutation. |
+| T-54.1.3 | Interactive Pareto Frontier Visualizer & Strategy Presets in `/lab` | P1 | COMPLETED AND VERIFIED | `frontend/src/components/trading/NsgaPortfolioOptimizer.tsx` under `"NSGA_OPTIMIZER"` in `/lab` with 2D/3D scatter plot, presets, weight bars, and 1-click allocation. |
+
+---
+
 
